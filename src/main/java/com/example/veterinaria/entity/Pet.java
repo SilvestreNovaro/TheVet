@@ -1,4 +1,4 @@
-package entity;
+package com.example.veterinaria.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
