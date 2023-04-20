@@ -48,6 +48,7 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer with the name  " + customer.getName() + " is already on our registers");
         }
         if(customerOptional.isPresent()){
+            customerService.updateCustomer(customer, id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Customert updated succesfully!");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers");
