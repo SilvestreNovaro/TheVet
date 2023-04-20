@@ -17,7 +17,16 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
-    public Customer updateCustomer(Customer customer) {
+    public Customer updateCustomer(Customer customer, Long id) {
+        Optional<Customer> optionalCustomer = customerRepository.findById(id);
+        if(optionalCustomer.isPresent()){
+            Customer existingCustomer = optionalCustomer.get();
+            if(customer.getName() !=null && !customer.getName().isEmpty()) existingCustomer.setName(customer.getName());
+            if(customer.getLastName() !=null && !customer.getLastName().isEmpty()) existingCustomer.setLastName(customer.getLastName());
+            if(customer.getAdress() !=null && !customer.getAdress().isEmpty()) existingCustomer.setAdress(customer.getAdress());
+            if(customer.getEmail() !=null && !customer.getEmail().isEmpty()) existingCustomer.setEmail(customer.getEmail());
+            if(customer.getContactNumber() !=null && !customer.getContactNumber().equals("")) existingCustomer.setContactNumber(customer.getContactNumber());
+        }
         return customerRepository.save(customer);
     }
 
@@ -31,6 +40,10 @@ public class CustomerService {
 
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
+    }
+
+    public Optional<Customer> findByName(String name){
+        return customerRepository.findByName(name);
     }
 
     // add any additional methods here
