@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Veterinarian {
+public class Vet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class Veterinarian {
 
     private String email;
 
-    private String phone;
+    private Integer phone;
     private String license;
 
 }

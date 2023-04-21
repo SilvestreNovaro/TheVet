@@ -1,7 +1,7 @@
 package com.example.veterinaria.repository;
 
 import com.example.veterinaria.entity.Customer;
-import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.entity.Vet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PetRepository extends JpaRepository<Pet, Long> {
+public interface VetRepository extends JpaRepository <Vet, Long> {
 
-    @Query("select p from Pet p where p.petName = ?1")
-    public Optional<Pet> findByName(String name);
+    @Query("select v from Vet v where v.license = ?1")
+    public Optional<Vet> findByLicense(String license);
 }
