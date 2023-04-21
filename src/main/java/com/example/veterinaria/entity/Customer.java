@@ -1,10 +1,15 @@
 package com.example.veterinaria.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -28,4 +33,16 @@ public class Customer {
     private String email;
     @Column
     private Long contactNumber;
+
+    @OneToMany(mappedBy = "customer")
+    @JsonIgnore
+    private List<Pet> pets;
+
+    @ManyToMany
+    @JoinTable(name = "customer_vet",
+    joinColumns = @JoinColumn(name="customer_id"),
+    inverseJoinColumns = @JoinColumn(name = "vet_id"))
+    private List<Vet> vets;
+
+
 }

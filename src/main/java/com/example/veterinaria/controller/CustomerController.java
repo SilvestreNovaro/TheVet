@@ -62,6 +62,6 @@ public class CustomerController {
             customerService.deleteCustomer(id);
             return ResponseEntity.status(HttpStatus.OK).body("Customer with id " + id + " deleted");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no characteristic with the id " + id);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Customer with the id " + id);
     }
 }

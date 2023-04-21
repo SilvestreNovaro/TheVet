@@ -28,5 +28,11 @@ public class Pet {
     @Column
     private String petSpecies;
 
+    @ManyToOne
+    @JoinColumn(name ="customer_id")
+    private Customer customer;
+
+
+
 
 }

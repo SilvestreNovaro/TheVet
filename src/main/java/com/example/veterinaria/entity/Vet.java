@@ -1,9 +1,8 @@
 package com.example.veterinaria.entity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,5 +23,7 @@ public class Vet {
 
     private Long phone;
     private String license;
+    @ManyToMany(mappedBy = "vets")
+    private List<Customer> customers;
 
 }

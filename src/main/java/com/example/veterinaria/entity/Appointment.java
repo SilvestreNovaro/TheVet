@@ -31,5 +31,8 @@ public class Appointment {
     @JoinColumn(name = "pet_id")
     private Pet pet;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vet_id")
+    private Vet vet;
 }
 
