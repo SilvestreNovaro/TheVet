@@ -38,7 +38,7 @@ public class PetController {
     }
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> update (@Validated @RequestBody Pet pet, Long id){
+    public ResponseEntity<?> update (@Validated @RequestBody Pet pet, @PathVariable Long id){
         Optional<Pet> sameNamePet= petService.findByName(pet.getPetName());
         Optional<Pet> optionalPet = petService.getPetById(id);
         if(sameNamePet.isPresent()){
@@ -51,7 +51,7 @@ public class PetController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet with the id  " + id + " does not exist on our registers");
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id){
         Optional<Pet> petOptional = petService.getPetById(id);
         if(petOptional.isPresent()){

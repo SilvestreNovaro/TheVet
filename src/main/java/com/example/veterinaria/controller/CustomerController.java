@@ -41,7 +41,7 @@ public class CustomerController {
 
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> update (@Validated @RequestBody Customer customer, Long id){
+    public ResponseEntity<?> update (@Validated @RequestBody Customer customer, @PathVariable Long id){
         Optional<Customer> sameNameCustomer = customerService.findByName(customer.getName());
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
         if(sameNameCustomer.isPresent()){
@@ -55,7 +55,7 @@ public class CustomerController {
     }
 
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Optional<Customer> optionalCustomer = customerService.getCustomerById(id);
         if (optionalCustomer.isPresent()) {

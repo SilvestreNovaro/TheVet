@@ -27,7 +27,7 @@ public class CustomerService {
             if(customer.getAdress() !=null && !customer.getAdress().isEmpty()) existingCustomer.setAdress(customer.getAdress());
             if(customer.getEmail() !=null && !customer.getEmail().isEmpty()) existingCustomer.setEmail(customer.getEmail());
             if(customer.getContactNumber() !=null && !customer.getContactNumber().equals("")) existingCustomer.setContactNumber(customer.getContactNumber());
-            customerRepository.save(customer);
+            customerRepository.save(existingCustomer);
         }
 
     }

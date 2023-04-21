@@ -27,7 +27,7 @@ public class PetService {
             if(pet.getAge() !=null && !pet.getAge().equals("")) existingPet.setAge(pet.getAge());
             if(pet.getGender() !=null && !pet.getGender().isEmpty()) existingPet.setGender(pet.getGender());
             if(pet.getPetSpecies() !=null && !pet.getPetSpecies().isEmpty()) existingPet.setPetSpecies(pet.getPetSpecies());
-            petRepository.save(pet);
+            petRepository.save(existingPet);
         }
 
 
