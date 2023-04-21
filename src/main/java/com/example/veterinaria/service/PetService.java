@@ -18,7 +18,7 @@ public class PetService {
         return petRepository.save(pet);
     }
 
-    public Pet updatePet(Pet pet, Long id) {
+    public void updatePet(Pet pet, Long id) {
         Optional<Pet> optionalPet = petRepository.findById(id);
         if(optionalPet.isPresent()){
             Pet existingPet = optionalPet.get();
@@ -27,10 +27,10 @@ public class PetService {
             if(pet.getAge() !=null && !pet.getAge().equals("")) existingPet.setAge(pet.getAge());
             if(pet.getGender() !=null && !pet.getGender().isEmpty()) existingPet.setGender(pet.getGender());
             if(pet.getPetSpecies() !=null && !pet.getPetSpecies().isEmpty()) existingPet.setPetSpecies(pet.getPetSpecies());
-
+            petRepository.save(pet);
         }
 
-        return petRepository.save(pet);
+
     }
 
     public List<Pet> getAllPets() {

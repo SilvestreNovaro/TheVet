@@ -17,7 +17,7 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
-    public Customer updateCustomer(Customer customer, Long id) {
+    public void updateCustomer(Customer customer, Long id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
         if(optionalCustomer.isPresent()){
             // como no puedo setearle a un optional, guardo en una variable ya del tipo del objeto Customer para setearle los valores.
@@ -27,8 +27,9 @@ public class CustomerService {
             if(customer.getAdress() !=null && !customer.getAdress().isEmpty()) existingCustomer.setAdress(customer.getAdress());
             if(customer.getEmail() !=null && !customer.getEmail().isEmpty()) existingCustomer.setEmail(customer.getEmail());
             if(customer.getContactNumber() !=null && !customer.getContactNumber().equals("")) existingCustomer.setContactNumber(customer.getContactNumber());
+            customerRepository.save(customer);
         }
-        return customerRepository.save(customer);
+
     }
 
     public List<Customer> getAllCustomers() {

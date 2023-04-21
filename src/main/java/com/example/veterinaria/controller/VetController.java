@@ -33,12 +33,12 @@ public class VetController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet  " + vet.getName() + " is already on our registers");
         }
         vetService.createVet(vet);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Pet added succesfully!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Vet added succesfully!");
     }
 
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> update(@Validated @RequestBody Vet vet, Long id){
+    public ResponseEntity<?> update(@Validated @RequestBody Vet vet, @PathVariable Long id){
         Optional<Vet> sameLicenseVet = vetService.findByLicense(vet.getLicense());
         Optional<Vet> optionalVet = vetService.getVetById(id);
         if(sameLicenseVet.isPresent()){
@@ -51,12 +51,12 @@ public class VetController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vet with the id  " + id + " does not exist on our registers");
     }
 
-    @DeleteMapping("delete")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<?> delete (@PathVariable Long id){
         Optional<Vet> optionalVet = vetService.getVetById(id);
         if(optionalVet.isPresent()){
             vetService.deleteVet(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Pet with id " + id + " deleted");
+            return ResponseEntity.status(HttpStatus.OK).body("Vet with id " + id + " deleted");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the id " + id);
     }

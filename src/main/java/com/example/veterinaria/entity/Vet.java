@@ -22,7 +22,7 @@ public class Vet {
 
     private String email;
 
-    private Integer phone;
+    private Long phone;
     private String license;
 
 }

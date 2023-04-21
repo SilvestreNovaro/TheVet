@@ -16,7 +16,7 @@ public class VetService {
         return vetRepository.save(vet);
     }
 
-    public Vet updateVet(Vet vet, Long id) {
+    public void updateVet(Vet vet, Long id) {
         Optional<Vet> optionalVet = vetRepository.findById(id);
         if(optionalVet.isPresent()){
             Vet existingVet = optionalVet.get();
@@ -25,9 +25,9 @@ public class VetService {
             if(vet.getEmail() !=null && !vet.getEmail().isEmpty()) existingVet.setEmail(vet.getEmail());
             if(vet.getPhone() !=null && !vet.getPhone().equals("")) existingVet.setPhone(vet.getPhone());
             if(vet.getLicense() !=null && !vet.getLicense().isEmpty()) existingVet.setLicense(vet.getLicense());
-
+            vetRepository.save(existingVet);
         }
-        return vetRepository.save(vet);
+
     }
 
     public List<Vet> getAllVets() {
