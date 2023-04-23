@@ -66,8 +66,8 @@ public class CustomerService {
         return petList;
     }
 
-    public List<Customer> getCustomerByPetsId(Long id){
-        return customerRepository.getCustomersByPetsId(id);
+    public List<Pet> getCustomerPets(Long id){
+        return customerRepository.getCustomerPets(id);
     }
 }
 

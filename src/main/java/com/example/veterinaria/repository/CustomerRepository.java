@@ -1,6 +1,7 @@
 package com.example.veterinaria.repository;
 
 import com.example.veterinaria.entity.Customer;
+import com.example.veterinaria.entity.Pet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,5 +17,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     //@Query("select c FROM Pet c where c.pet.id = ?1")
     @Query("SELECT c FROM Customer c JOIN c.pets p WHERE p.id = ?1")
-    public List<Customer> getCustomersByPetsId(Long id);
+    public List<Pet> getCustomerPets(Long id);
 }

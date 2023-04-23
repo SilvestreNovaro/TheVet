@@ -67,11 +67,11 @@ public class CustomerController {
     }
 
     @GetMapping("/petsById/{id}")
-        public ResponseEntity<?> findCustomerByPetId(@PathVariable Long id) {
-            List<Customer> customerList = customerService.getCustomerByPetsId(id);{
-            return customerList.isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet with id " + id + ", doesnt belong to a customer")
-                    : ResponseEntity.ok(customerList);
+        public ResponseEntity<?> findPetsFromCustomer(@PathVariable Long id) {
+            List<Pet> petList = customerService.getCustomerPets(id);{
+            return petList.isEmpty()
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The customer with id " + id + ", doesnt have any pets")
+                    : ResponseEntity.ok(petList);
         }
     }
 }
