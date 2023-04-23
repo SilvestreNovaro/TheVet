@@ -76,7 +76,7 @@ public class VetController {
     public ResponseEntity<?> deleteByLicense(@PathVariable String license){
         Optional<Vet> optionalVet = vetService.findByLicense(license);
         if(optionalVet.isPresent()){
-            vetService.deleteByLicense(license);
+            vetService.deleteVet(optionalVet.get().getId());
             return ResponseEntity.status(HttpStatus.OK).body("Vet with license " + license + " deleted");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the license " + license);
@@ -96,7 +96,7 @@ public class VetController {
     public ResponseEntity<?> deleteByName (@PathVariable String name){
         Optional<Vet> optionalVet = vetService.findByName(name);
         if(optionalVet.isPresent()){
-            vetService.deleteByName(name);
+            vetService.deleteVet(optionalVet.get().getId());
             return ResponseEntity.status(HttpStatus.OK).body("Vet with name " + name + " deleted");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the name " + name);

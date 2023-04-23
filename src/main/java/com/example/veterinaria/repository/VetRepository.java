@@ -23,6 +23,6 @@ public interface VetRepository extends JpaRepository <Vet, Long> {
     @Query("select v from Vet v where v.name = ?1")
     public Optional<Vet> findByName(String name);
 
-    @Query("DELETE FROM Vet WHERE name=?1")
+    @Query("DELETE FROM Vet v WHERE v.name=?1")
     public void deleteByName(String name);
 }
