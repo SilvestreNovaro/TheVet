@@ -29,9 +29,8 @@ public class Pet {
     private String petSpecies;
 
     @ManyToOne
-    @JoinColumn(name ="customer_id")
+    @JoinColumn(name ="customerid")
     private Customer customer;
-
 
 
 

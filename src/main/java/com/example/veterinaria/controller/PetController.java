@@ -2,13 +2,16 @@ package com.example.veterinaria.controller;
 
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.PetService;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +23,7 @@ import java.util.Optional;
 public class PetController {
 
     private final PetService petService;
+    private final CustomerService customerService;
 
 
     @GetMapping("/list")
@@ -60,4 +64,35 @@ public class PetController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no pet with the id " + id);
     }
+
+    @GetMapping("/findPetByName/{name}")
+    public ResponseEntity<?> findByName(@PathVariable String name){
+
+        Optional<Pet> petOptional= petService.findByName(name);
+
+        return petOptional.isEmpty()
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The name : " + name + " doesnt belong to any Pet on this vet")
+                : ResponseEntity.ok(petOptional);
+    }
+
+    @GetMapping("find/{id}")
+    public ResponseEntity<?> find (@PathVariable Long id){
+        Optional<Pet> petOptional = petService.getPetById(id);
+        if(petOptional.isPresent()){
+           return ResponseEntity.ok(petOptional);
+        }
+       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet with the id " + id + " on our registers");
+    }
+
+
+    @GetMapping("/findPetOwner/{name}")
+    public ResponseEntity<?> findOwner(@PathVariable String name){
+        Optional<Customer> optionalCustomer = petService.findPetOwner(name);
+        if(optionalCustomer.isPresent()){
+            return ResponseEntity.ok(optionalCustomer);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet associated with that owner");
+    }
+
+
 }

@@ -44,8 +44,20 @@ public class VetService {
 
     // add any additional methods here
 
+    public void deleteByLicense(String license){
+        vetRepository.deleteByLicense(license);
+    }
+
     public Optional<Vet>findByLicense(String license){
         return vetRepository.findByLicense(license);
+    }
+
+    public Optional<Vet>findByName(String name){
+        return vetRepository.findByName(name);
+    }
+
+    public void deleteByName(String name){
+        vetRepository.deleteByName(name);
     }
 
 }

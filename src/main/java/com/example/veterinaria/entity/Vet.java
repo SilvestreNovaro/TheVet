@@ -23,7 +23,8 @@ public class Vet {
 
     private Long phone;
     private String license;
-    @ManyToMany(mappedBy = "vets")
-    private List<Customer> customers;
+
+
+
 
 }

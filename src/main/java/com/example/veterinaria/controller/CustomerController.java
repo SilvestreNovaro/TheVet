@@ -2,6 +2,7 @@ package com.example.veterinaria.controller;
 
 
 import com.example.veterinaria.entity.Customer;
+import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -63,5 +64,14 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.OK).body("Customer with id " + id + " deleted");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Customer with the id " + id);
+    }
+
+    @GetMapping("/petsById/{id}")
+        public ResponseEntity<?> findCustomerByPetId(@PathVariable Long id) {
+            List<Customer> customerList = customerService.getCustomerByPetsId(id);{
+            return customerList.isEmpty()
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet with id " + id + ", doesnt belong to a customer")
+                    : ResponseEntity.ok(customerList);
+        }
     }
 }

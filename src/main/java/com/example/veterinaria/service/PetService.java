@@ -50,5 +50,9 @@ public class PetService {
     public Optional<Pet> findByName(String name) {
         return petRepository.findByName(name);
     }
+
+    public Optional<Customer> findPetOwner(String name){
+        return petRepository.findPetOwner(name);
+    }
 }
 

@@ -28,21 +28,20 @@ public class Customer {
     @Column
     private String lastName;
     @Column
-    private String adress;
+    private String address;
     @Column
     private String email;
     @Column
     private Long contactNumber;
 
-    @OneToMany(mappedBy = "customer")
-    @JsonIgnore
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Pet> pets;
 
-    @ManyToMany
+    /*@ManyToMany
     @JoinTable(name = "customer_vet",
     joinColumns = @JoinColumn(name="customer_id"),
     inverseJoinColumns = @JoinColumn(name = "vet_id"))
     private List<Vet> vets;
-
+*/
 
 }

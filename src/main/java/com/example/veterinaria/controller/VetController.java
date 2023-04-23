@@ -1,6 +1,8 @@
 package com.example.veterinaria.controller;
 
 
+import com.example.veterinaria.entity.Customer;
+import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.VetService;
 import lombok.AllArgsConstructor;
@@ -51,7 +53,7 @@ public class VetController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vet with the id  " + id + " does not exist on our registers");
     }
 
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete (@PathVariable Long id){
         Optional<Vet> optionalVet = vetService.getVetById(id);
         if(optionalVet.isPresent()){
@@ -59,6 +61,45 @@ public class VetController {
             return ResponseEntity.status(HttpStatus.OK).body("Vet with id " + id + " deleted");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the id " + id);
+    }
+
+    @GetMapping("/vetByLicense/{license}")
+    public ResponseEntity<?> findVetByLicense(@PathVariable String license) {
+        Optional vett = vetService.findByLicense(license);{
+            return vett.isEmpty()
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vet with license " + license + " doesnt exist")
+                    : ResponseEntity.ok(vett);
+        }
+    }
+
+    @DeleteMapping("/deleteByLicense/{license}")
+    public ResponseEntity<?> deleteByLicense(@PathVariable String license){
+        Optional<Vet> optionalVet = vetService.findByLicense(license);
+        if(optionalVet.isPresent()){
+            vetService.deleteByLicense(license);
+            return ResponseEntity.status(HttpStatus.OK).body("Vet with license " + license + " deleted");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the license " + license);
+    }
+
+    @GetMapping("/findVetByName/{name}")
+    public ResponseEntity<?> findByName(@PathVariable String name){
+
+        Optional<Vet> vetOptional = vetService.findByName(name);
+
+        return vetOptional.isEmpty()
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The name : " + name + " doesnt belong to any Vet on this vet")
+                : ResponseEntity.ok(vetOptional);
+    }
+
+    @DeleteMapping("/deleteByName/{name}")
+    public ResponseEntity<?> deleteByName (@PathVariable String name){
+        Optional<Vet> optionalVet = vetService.findByName(name);
+        if(optionalVet.isPresent()){
+            vetService.deleteByName(name);
+            return ResponseEntity.status(HttpStatus.OK).body("Vet with name " + name + " deleted");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the name " + name);
     }
 }
 

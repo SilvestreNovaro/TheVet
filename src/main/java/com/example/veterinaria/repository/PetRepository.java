@@ -13,4 +13,8 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
 
     @Query("select p from Pet p where p.petName = ?1")
     public Optional<Pet> findByName(String name);
+
+    //@Query("select c from Customer c JOIN Pet where p.petName= ?1")
+    @Query("SELECT p.petName FROM Customer c JOIN Pet p ON c.id = p.id WHERE c.name = ?1")
+    public Optional<Customer> findPetOwner(String name);
 }

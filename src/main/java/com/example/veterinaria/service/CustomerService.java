@@ -1,9 +1,12 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.entity.Customer;
+import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +27,7 @@ public class CustomerService {
             Customer existingCustomer = optionalCustomer.get();
             if(customer.getName() !=null && !customer.getName().isEmpty()) existingCustomer.setName(customer.getName());
             if(customer.getLastName() !=null && !customer.getLastName().isEmpty()) existingCustomer.setLastName(customer.getLastName());
-            if(customer.getAdress() !=null && !customer.getAdress().isEmpty()) existingCustomer.setAdress(customer.getAdress());
+            if(customer.getAddress() !=null && !customer.getAddress().isEmpty()) existingCustomer.setAddress(customer.getAddress());
             if(customer.getEmail() !=null && !customer.getEmail().isEmpty()) existingCustomer.setEmail(customer.getEmail());
             if(customer.getContactNumber() !=null && !customer.getContactNumber().equals("")) existingCustomer.setContactNumber(customer.getContactNumber());
             customerRepository.save(existingCustomer);
@@ -50,5 +53,21 @@ public class CustomerService {
 
     // add any additional methods here
 
+    public List<Pet> findCustomersPets(Long Petid) {
+        List<Pet> petList = new ArrayList<>();
+         List<Customer> customerList = customerRepository.findAll();
+        for (Customer customer : customerList) {
+            var petList1 = customer.getPets();
+            for (Pet pet : petList) {
+                if (pet.getId().equals(Petid))
+                   petList.add(pet);
+            }
+        }
+        return petList;
+    }
+
+    public List<Customer> getCustomerByPetsId(Long id){
+        return customerRepository.getCustomersByPetsId(id);
+    }
 }
 
