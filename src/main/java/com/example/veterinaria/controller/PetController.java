@@ -106,8 +106,8 @@ public class PetController {
                 }
 
             }
-        if (petList1.size() < 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There are no dogs on our register");
+        if (petList1.size() < 1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There are no " + petSpecies + " on our register");
 
         }
         return ResponseEntity.ok(petList1);
