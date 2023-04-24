@@ -2,6 +2,7 @@ package com.example.veterinaria.controller;
 
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.PetService;
 import lombok.AllArgsConstructor;
@@ -94,5 +95,23 @@ public class PetController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet associated with that owner");
     }
 
+    @GetMapping("/getSpecies/{petSpecies}")
+    public ResponseEntity<?> getSpecies(@PathVariable String petSpecies) {
+        List<Pet> petList = petService.getAllPets();
+        List<Pet> petList1 = new ArrayList<>();
+        for (Pet pet : petList) {
+            if (pet.getPetSpecies().equals(petSpecies)) {
+                petList1.add(pet);
 
+                }
+
+            }
+        if (petList1.size() < 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There are no dogs on our register");
+
+        }
+        return ResponseEntity.ok(petList1);
+    }
+
+    //me devuelve un array vacio cuando no encuentra el parametro en vez de devolver BAD_REQUEST.
 }

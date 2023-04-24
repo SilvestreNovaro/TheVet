@@ -16,6 +16,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     public Optional<Customer> findByName(String name);
 
     //@Query("select c FROM Pet c where c.pet.id = ?1")
-    @Query("SELECT c FROM Customer c JOIN c.pets p WHERE p.id = ?1")
+    //@Query("SELECT c FROM Customer c JOIN c.pets p WHERE p.id = ?1")
+    @Query("SELECT p from Pet p JOIN p.customer c WHERE c.id =?1")
     public List<Pet> getCustomerPets(Long id);
+
+
 }

@@ -34,7 +34,7 @@ public class Customer {
     @Column
     private Long contactNumber;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.PERSIST)
     private List<Pet> pets;
 
     /*@ManyToMany
