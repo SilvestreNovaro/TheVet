@@ -27,9 +27,9 @@ public class Appointment {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pet_id")
-    private Pet pet;
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "pet_id")
+    //private Pet pet;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vet_id")

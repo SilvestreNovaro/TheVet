@@ -101,6 +101,18 @@ public class VetController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the name " + name);
     }
+
+    @DeleteMapping("/byLicense/{license}")
+    public ResponseEntity<?> byLicense (@PathVariable String license){
+        Optional<Vet> vetOptional = vetService.findByLicense(license);
+        if(vetOptional.isPresent()){
+            vetService.deleteByLicense(license);
+            return ResponseEntity.ok(vetOptional);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no vet with de license " + license);
+
+    }
+    // no logro que ejecute bien la query
 }
 
 

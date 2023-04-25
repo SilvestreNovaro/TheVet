@@ -5,6 +5,7 @@ import com.example.veterinaria.entity.Vet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -17,8 +18,8 @@ public interface VetRepository extends JpaRepository <Vet, Long> {
 
 
     @Modifying
-    @Query("DELETE FROM Vet v WHERE v.license = ?1")
-    public void deleteByLicense(String license);
+    @Query("DELETE FROM Vet v WHERE v.license = :license")
+    void deleteByLicense(@Param("license") String license);
 
     @Query("select v from Vet v where v.name = ?1")
     public Optional<Vet> findByName(String name);

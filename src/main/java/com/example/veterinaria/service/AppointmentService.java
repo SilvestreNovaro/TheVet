@@ -30,10 +30,10 @@ public class AppointmentService {
         return appointmentRepository.findByCustomerId(customerId);
     }
 
-    public List<Appointment> getAppointmentsByPetId(Long petId) {
+    /*public List<Appointment> getAppointmentsByPetId(Long petId) {
         return appointmentRepository.findByPetId(petId);
     }
-
+*/
     public void deleteAppointment(Long id) {
         appointmentRepository.deleteById(id);
     }

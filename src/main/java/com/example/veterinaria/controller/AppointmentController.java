@@ -11,11 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/appointments")
+@RequestMapping("/appointment")
 public class AppointmentController {
 
     @Autowired
     private AppointmentService appointmentService;
+
+    @GetMapping("/list")
+    public List<Appointment> list(){
+        return appointmentService.getAllAppointments();
+    }
 
     @PostMapping("/create")
     public ResponseEntity<Appointment> createAppointment(@RequestBody Appointment appointment) {
@@ -23,7 +28,7 @@ public class AppointmentController {
         return new ResponseEntity<>(savedAppointment, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/findById/{id}")
     public ResponseEntity<Appointment> getAppointmentById(@PathVariable Long id) {
         Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
         if (appointment.isPresent()) {
@@ -45,13 +50,15 @@ public class AppointmentController {
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
-    @GetMapping("/pet/{petId}")
+    /*@GetMapping("/pet/{petId}")
     public ResponseEntity<List<Appointment>> getAppointmentsByPetId(@PathVariable Long petId) {
         List<Appointment> appointments = appointmentService.getAppointmentsByPetId(petId);
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
+    */
 
-    @DeleteMapping("/{id}")
+
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteAppointment(@PathVariable Long id) {
         appointmentService.deleteAppointment(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
