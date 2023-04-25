@@ -3,19 +3,25 @@ package com.example.veterinaria.controller;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.veterinaria.DTO.AppointmentDTO;
 import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.service.AppointmentService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@AllArgsConstructor
+@Validated
+@RestControllerAdvice
 @RequestMapping("/appointment")
 public class AppointmentController {
 
     @Autowired
-    private AppointmentService appointmentService;
+    private final AppointmentService appointmentService;
 
     @GetMapping("/list")
     public List<Appointment> list(){
@@ -23,8 +29,8 @@ public class AppointmentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Appointment> createAppointment(@RequestBody Appointment appointment) {
-        Appointment savedAppointment = appointmentService.createAppointment(appointment);
+    public ResponseEntity<Appointment> createAppointment(@RequestBody AppointmentDTO appointmentDTO) {
+        Appointment savedAppointment = appointmentService.createAppointment(appointmentDTO);
         return new ResponseEntity<>(savedAppointment, HttpStatus.CREATED);
     }
 

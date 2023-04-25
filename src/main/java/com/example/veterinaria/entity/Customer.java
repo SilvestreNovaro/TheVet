@@ -1,6 +1,7 @@
 package com.example.veterinaria.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,6 +37,7 @@ public class Customer {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="pet_id")
+    @JsonIgnoreProperties({"petName"})
     private List<Pet> pets = new ArrayList<>();
 
 

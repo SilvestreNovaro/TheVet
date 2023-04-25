@@ -2,15 +2,16 @@ package com.example.veterinaria.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Getter
+@Setter
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "Appointment")
 public class Appointment {
 
     @Id
@@ -23,15 +24,16 @@ public class Appointment {
 
     private String appointmentNotes;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "customer_id")
+    @JsonIgnoreProperties({"address", "email", "contactNumber"})
     private Customer customer;
 
     //@ManyToOne(fetch = FetchType.LAZY)
     //@JoinColumn(name = "pet_id")
     //private Pet pet;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "vet_id")
     private Vet vet;
 }

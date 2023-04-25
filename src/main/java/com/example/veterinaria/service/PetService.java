@@ -3,11 +3,12 @@ package com.example.veterinaria.service;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.repository.PetRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
-
+@AllArgsConstructor
 @Service
 public class PetService {
 

@@ -1,11 +1,13 @@
 package com.example.veterinaria.service;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.repository.VetRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Service
 public class VetService {
 
