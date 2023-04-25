@@ -86,14 +86,7 @@ public class PetController {
     }
 
 
-    @GetMapping("/findPetOwner/{name}")
-    public ResponseEntity<?> findOwner(@PathVariable String name){
-        Optional<Customer> optionalCustomer = petService.findPetOwner(name);
-        if(optionalCustomer.isPresent()){
-            return ResponseEntity.ok(optionalCustomer);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet associated with that owner");
-    }
+
 
     @GetMapping("/getSpecies/{petSpecies}")
     public ResponseEntity<?> getSpecies(@PathVariable String petSpecies) {
@@ -102,10 +95,10 @@ public class PetController {
         for (Pet pet : petList) {
             if (pet.getPetSpecies().equals(petSpecies)) {
                 petList1.add(pet);
-
+                System.out.println("Pet species: " + pet.getPetSpecies() + " " + pet.getPetName());
                 }
 
-            }
+        }
         if (petList1.size() < 1) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There are no " + petSpecies + " on our register");
 
@@ -113,5 +106,37 @@ public class PetController {
         return ResponseEntity.ok(petList1);
     }
 
-    //me devuelve un array vacio cuando no encuentra el parametro en vez de devolver BAD_REQUEST.
-}
+    @GetMapping("/bySpecies/{petSpecies}")
+    public ResponseEntity<List<Pet>> getPetsBySpecies(@PathVariable String petSpecies){
+        List<Pet> petList = petService.findBySpecies(petSpecies);
+        if(petList.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(petList);
+    }
+    //THIS LAST 2 METHODS ARE THE SAME.
+
+
+
+
+    @GetMapping("/byAge/{age}")
+    public ResponseEntity<List<Pet>> getPetsByAge(@PathVariable Integer age) {
+        List<Pet> pets = petService.findByAge(age);
+        if (pets.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(pets);
+    }
+
+    @GetMapping("/byGender/{gender}")
+    public ResponseEntity<List<Pet>> getPetsByGender(@PathVariable String gender){
+        List<Pet> pets = petService.findByGender(gender);
+            if(pets.isEmpty()){
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(pets);
+        }
+    }
+
+
+

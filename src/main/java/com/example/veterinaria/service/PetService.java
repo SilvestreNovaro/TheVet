@@ -51,8 +51,20 @@ public class PetService {
         return petRepository.findByName(name);
     }
 
-    public Optional<Customer> findPetOwner(String name){
-        return petRepository.findPetOwner(name);
+    public List<Pet> findByAge(Integer age){
+        return petRepository.findByAge(age);
     }
+
+    public List<Pet> findByGender(String gender){
+        return petRepository.findByGender(gender);
+    }
+
+    public List<Pet> findBySpecies(String petSpecies){
+        return petRepository.findBypetSpecies(petSpecies);
+    }
+
+
+
+
 }
 

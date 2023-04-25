@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name="Pets")
+@Table(name="Pet")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Pet {
@@ -28,9 +28,7 @@ public class Pet {
     @Column
     private String petSpecies;
 
-    @ManyToOne
-    @JoinColumn(name ="customerid")
-    private Customer customer;
+
 
 
 

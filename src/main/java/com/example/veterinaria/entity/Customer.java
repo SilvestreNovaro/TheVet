@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name="Customers")
+@Table(name="Customer")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Customer {
@@ -34,8 +34,11 @@ public class Customer {
     @Column
     private Long contactNumber;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.PERSIST)
-    private List<Pet> pets;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="pet_id")
+    private List<Pet> pets = new ArrayList<>();
+
+
 
     /*@ManyToMany
     @JoinTable(name = "customer_vet",

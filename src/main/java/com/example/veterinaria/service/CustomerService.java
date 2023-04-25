@@ -2,6 +2,7 @@ package com.example.veterinaria.service;
 
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,8 +67,52 @@ public class CustomerService {
         return petList;
     }
 
-    public List<Pet> getCustomerPets(Long id){
-        return customerRepository.getCustomerPets(id);
+
+
+
+
+    public List<Pet> findPetsByCustomerName(String name) {
+        return customerRepository.findPetsByCustomerName(name);
     }
-}
+
+    public List<Customer> findCustomersByPetName(String petName) {
+        return customerRepository.findCustomersByPetName(petName);
+    }
+
+    // otros métodos del servicio de Customer
+
+    public void addPetToCustomer(Long customerId, Pet pet) {
+        Customer customer = customerRepository.findById(customerId).get();
+        customer.getPets().add(pet);
+        customerRepository.save(customer);
+    }
+
+
+
+
+        public void deletePetById(Long customerId, Long petId) {
+            Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+            if (optionalCustomer.isPresent()) {
+                Customer customer = optionalCustomer.get();
+                List<Pet> pets = customer.getPets();
+                Optional<Pet> optionalPet = pets.stream().filter(p -> p.getId().equals(petId)).findFirst();
+                if (optionalPet.isPresent()) {
+                    Pet pet = optionalPet.get();
+                    pets.remove(pet);
+                    customer.setPets(pets);
+                    customerRepository.save(customer);
+                } else {
+                    throw new NotFoundException("Pet not found with id: " + petId);
+                }
+            } else {
+                throw new NotFoundException("Customer not found with id: " + customerId);
+            }
+        }
+
+        // otros métodos del servicio de Customer
+    }
+
+
+
+
 
