@@ -35,11 +35,17 @@ public class Customer {
     @Column
     private Long contactNumber;
 
+    @Column
+    private String password;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="pet_id")
     @JsonIgnoreProperties({"petName"})
     private List<Pet> pets = new ArrayList<>();
 
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "role_id")
+    private Role role;
 
 
     /*@ManyToMany

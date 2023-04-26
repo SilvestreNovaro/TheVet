@@ -6,6 +6,8 @@ import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,9 +20,25 @@ public class CustomerService {
 
     @Autowired
     private CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+
 
     public Customer createCustomer(Customer customer) {
-        return customerRepository.save(customer);
+
+        Customer customer1 = new Customer();
+        customer1.setName(customer.getName());
+        customer1.setLastName(customer.getLastName());
+        customer1.setAddress(customer.getAddress());
+        customer1.setEmail(customer.getEmail());
+        customer1.setContactNumber(customer.getContactNumber());
+        customer1.setPets(customer.getPets());
+        customer1.setRole(customer.getRole());
+
+        String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
+        customer1.setPassword(encodedPassword);
+
+        return customerRepository.save(customer1);
     }
 
     public void updateCustomer(Customer customer, Long id) {
@@ -31,8 +49,13 @@ public class CustomerService {
             if(customer.getName() !=null && !customer.getName().isEmpty()) existingCustomer.setName(customer.getName());
             if(customer.getLastName() !=null && !customer.getLastName().isEmpty()) existingCustomer.setLastName(customer.getLastName());
             if(customer.getAddress() !=null && !customer.getAddress().isEmpty()) existingCustomer.setAddress(customer.getAddress());
-            if(customer.getEmail() !=null && !customer.getEmail().isEmpty()) existingCustomer.setEmail(customer.getEmail());
             if(customer.getContactNumber() !=null && !customer.getContactNumber().equals("")) existingCustomer.setContactNumber(customer.getContactNumber());
+            if(customer.getEmail() !=null && !customer.getEmail().isEmpty()) existingCustomer.setEmail(customer.getEmail());
+            if(customer.getPassword() !=null && !customer.getPassword().isEmpty()){
+                String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
+                existingCustomer.setPassword(encodedPassword);
+            }
+
             customerRepository.save(existingCustomer);
         }
 
@@ -67,6 +90,10 @@ public class CustomerService {
             }
         }
         return petList;
+    }
+
+    public Optional<Customer> findByEmail(String email){
+        return customerRepository.findByEmail(email);
     }
 
 
@@ -112,6 +139,8 @@ public class CustomerService {
         }
 
         // otros métodos del servicio de Customer
+
+
     }
 
 

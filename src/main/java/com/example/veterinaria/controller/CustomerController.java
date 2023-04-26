@@ -38,21 +38,23 @@ public class CustomerController {
 
     @PostMapping("/add")
     public ResponseEntity<?> add(@Validated @RequestBody Customer customer) {
-        Optional<Customer> customerOptional = customerService.findByName(customer.getName());
+        Optional<Customer> customerOptional = customerService.findByEmail(customer.getEmail());
         if (customerOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer  " + customer.getName() + " is already on our registers");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer  " + customer.getEmail() + " is already on our registers");
         }
         customerService.createCustomer(customer);
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added succesfully!");
     }
 
+    // si quiero agregar un cliente, deberia buscarlo por email, no por nombre ya que no es un atributo unico, y lo que me interesa a mi es cuando doy de alta un cliente el email no exista en la DB.
+
 
     @PutMapping("/modify/{id}")
     public ResponseEntity<?> update(@Validated @RequestBody Customer customer, @PathVariable Long id) {
-        Optional<Customer> sameNameCustomer = customerService.findByName(customer.getName());
+        Optional<Customer> sameEmailCustomer = customerService.findByEmail(customer.getEmail());
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
-        if (sameNameCustomer.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer with the name  " + customer.getName() + " is already on our registers");
+        if (sameEmailCustomer.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer with the email  " + customer.getEmail() + " is already on our registers");
         }
         if (customerOptional.isPresent()) {
             customerService.updateCustomer(customer, id);
