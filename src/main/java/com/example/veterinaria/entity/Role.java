@@ -22,6 +22,8 @@ public class Role {
 
 
     @Column
-    private String roleName;
+    private ERole roleName;
+
+
 
 }
