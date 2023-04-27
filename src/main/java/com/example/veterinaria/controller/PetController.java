@@ -6,7 +6,6 @@ import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.PetService;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
