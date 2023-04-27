@@ -50,12 +50,13 @@ public class AppointmentController {
 
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<Appointment> getAppointmentById(@PathVariable Long id) {
+    public ResponseEntity<?> getAppointmentById(@PathVariable Long id) {
         Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
         if (appointment.isPresent()) {
-            return new ResponseEntity<>(appointment.get(), HttpStatus.OK);
+            return ResponseEntity.ok(appointment);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the id " + id);
         }
     }
 
@@ -66,20 +67,29 @@ public class AppointmentController {
     }
 
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<Appointment>> getAppointmentsByCustomerId(@PathVariable Long customerId) {
+    public ResponseEntity<?> getAppointmentsByCustomerId(@PathVariable Long customerId) {
         List<Appointment> appointments = appointmentService.getAppointmentsByCustomerId(customerId);
+        if(appointments.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Customer id " + customerId);
+        }
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
     @GetMapping("/vet/{vetId}")
-    public ResponseEntity<List<Appointment>> getAppointmentsByVetId(@PathVariable Long vetId){
+    public ResponseEntity<?> getAppointmentsByVetId(@PathVariable Long vetId){
         List<Appointment> appointmentList = appointmentService.findByVetId(vetId);
+        if(appointmentList.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Vet id " + vetId);
+        }
         return new ResponseEntity<>(appointmentList, HttpStatus.OK);
     }
 
     @GetMapping("/vetLicense/{vetLicense}")
-    public ResponseEntity<List<Appointment>> getAppointmentsByLicense(@PathVariable String vetLicense){
+    public ResponseEntity<?> getAppointmentsByLicense(@PathVariable String vetLicense){
         List<Appointment> appointmentList = appointmentService.findByLicense(vetLicense);
+        if(appointmentList.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Vet license " + vetLicense);
+        }
         return new ResponseEntity<>(appointmentList, HttpStatus.OK);
     }
 

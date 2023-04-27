@@ -76,7 +76,7 @@ public class PetController {
                 : ResponseEntity.ok(petOptional);
     }
 
-    @GetMapping("find/{id}")
+    @GetMapping("/find/{id}")
     public ResponseEntity<?> find (@PathVariable Long id){
         Optional<Pet> petOptional = petService.getPetById(id);
         if(petOptional.isPresent()){
