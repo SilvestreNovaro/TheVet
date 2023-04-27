@@ -1,5 +1,6 @@
 package com.example.veterinaria.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,8 +47,31 @@ public class AppointmentService {
 
     }
 
+    public void updateAppointment(AppointmentDTO appointmentDTO, Long id){
+
+
+        Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
+
+        var appDateTime = appointmentDTO.getAppointmentDateTime();
+        var appReason = appointmentDTO.getAppointmentReason();
+        var appNotes = appointmentDTO.getAppointmentNotes();
+        if(optionalAppointment.isPresent()){
+            Appointment appointment1 = optionalAppointment.get();
+            if(appDateTime !=null && !appDateTime.equals("")) appointment1.setAppointmentDateTime(appDateTime);
+            if(appReason !=null && !appReason.isEmpty()) appointment1.setAppointmentNotes(appReason);
+            if(appNotes!=null && !appNotes.isEmpty()) appointment1.setAppointmentReason(appNotes);
+
+            appointmentRepository.save(appointment1);
+
+        }
+    }
+
     public Optional<Appointment> getAppointmentById(Long id) {
         return appointmentRepository.findById(id);
+    }
+
+    public Optional<Appointment> findByAppointmentDateTime(LocalDateTime appointmentDateTime){
+        return appointmentRepository.findByAppointmentDateTime(appointmentDateTime);
     }
 
     public List<Appointment> getAllAppointments() {
@@ -66,5 +90,13 @@ public class AppointmentService {
         appointmentRepository.deleteById(id);
     }
 
+
+    public List<Appointment> findByVetId(Long vetId){
+        return appointmentRepository.findByVetId(vetId);
+    }
+
+    public List<Appointment> findByLicense(String license){
+        return appointmentRepository.findByVetLicense(license);
+    }
 }
 

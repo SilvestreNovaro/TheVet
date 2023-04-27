@@ -34,6 +34,21 @@ public class AppointmentController {
         return new ResponseEntity<>(savedAppointment, HttpStatus.CREATED);
     }
 
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<?> update(@RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id){
+        Optional<Appointment> optionalAppointment = appointmentService.getAppointmentById(id);
+        if(optionalAppointment.isPresent()){
+            appointmentService.updateAppointment(appointmentDTO, id);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Appointment updated succesfully!");
+
+        }
+
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No appointment for the id " + id);
+
+    }
+
+
     @GetMapping("/findById/{id}")
     public ResponseEntity<Appointment> getAppointmentById(@PathVariable Long id) {
         Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
@@ -44,7 +59,7 @@ public class AppointmentController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/findAllAppointments")
     public ResponseEntity<List<Appointment>> getAllAppointments() {
         List<Appointment> appointments = appointmentService.getAllAppointments();
         return new ResponseEntity<>(appointments, HttpStatus.OK);
@@ -56,12 +71,18 @@ public class AppointmentController {
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
-    /*@GetMapping("/pet/{petId}")
-    public ResponseEntity<List<Appointment>> getAppointmentsByPetId(@PathVariable Long petId) {
-        List<Appointment> appointments = appointmentService.getAppointmentsByPetId(petId);
-        return new ResponseEntity<>(appointments, HttpStatus.OK);
+    @GetMapping("/vet/{vetId}")
+    public ResponseEntity<List<Appointment>> getAppointmentsByVetId(@PathVariable Long vetId){
+        List<Appointment> appointmentList = appointmentService.findByVetId(vetId);
+        return new ResponseEntity<>(appointmentList, HttpStatus.OK);
     }
-    */
+
+    @GetMapping("/vetLicense/{vetLicense}")
+    public ResponseEntity<List<Appointment>> getAppointmentsByLicense(@PathVariable String vetLicense){
+        List<Appointment> appointmentList = appointmentService.findByLicense(vetLicense);
+        return new ResponseEntity<>(appointmentList, HttpStatus.OK);
+    }
+
 
 
     @DeleteMapping("/delete/{id}")

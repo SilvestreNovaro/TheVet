@@ -29,9 +29,6 @@ public class Appointment {
     @JsonIgnoreProperties({"address", "email", "contactNumber"})
     private Customer customer;
 
-    //@ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "pet_id")
-    //private Pet pet;
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "vet_id")

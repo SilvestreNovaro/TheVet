@@ -32,7 +32,7 @@ public class VetController {
     public ResponseEntity<?> add(@Validated @RequestBody Vet vet) {
         Optional<Vet> vetOptional = vetService.findByLicense(vet.getLicense());
         if (vetOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet  " + vet.getName() + " is already on our registers");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet  " + vet.getLicense() + " is already on our registers");
         }
         vetService.createVet(vet);
         return ResponseEntity.status(HttpStatus.CREATED).body("Vet added succesfully!");

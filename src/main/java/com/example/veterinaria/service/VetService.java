@@ -15,7 +15,14 @@ public class VetService {
     private VetRepository vetRepository;
 
     public Vet createVet(Vet vet) {
-        return vetRepository.save(vet);
+        Vet vet1 = new Vet();
+        vet1.setName(vet.getName());
+        vet1.setSurname(vet.getSurname());
+        vet1.setEmail(vet.getEmail());
+        vet1.setPhone(vet.getPhone());
+        vet1.setLicense(vet.getLicense());
+
+        return vetRepository.save(vet1);
     }
 
     public void updateVet(Vet vet, Long id) {
