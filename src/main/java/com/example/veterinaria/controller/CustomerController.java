@@ -74,7 +74,6 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Customer with the id " + id);
     }
 
-
     @PostMapping("/addAnimalToCustomer/{customerId}/animals")
     public ResponseEntity<?> addAnimalToCustomer(@Validated @PathVariable Long customerId, @RequestBody Pet pet) {
         Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
@@ -120,6 +119,8 @@ public class CustomerController {
         return ResponseEntity.ok("Pet with id " + petId + " has been successfully deleted from Customer with id " + customerId);
     }
 
+  /*  @PostMapping("/signUp")
+    public ResponseEntity<?> signUp()
 
-
-        }
+        }*/
+}
