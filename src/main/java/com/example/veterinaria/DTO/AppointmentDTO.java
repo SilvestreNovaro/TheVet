@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,4 +21,6 @@ public class AppointmentDTO {
     private Long customer_id;
 
     private Long vet_id;
+
+
 }

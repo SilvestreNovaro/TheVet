@@ -1,10 +1,13 @@
 package com.example.veterinaria.controller;
 
 
+import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.PetService;
+import com.example.veterinaria.service.RoleService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
@@ -29,6 +32,8 @@ public class CustomerController {
 
     private final PetService petService;
 
+    private final RoleService roleService;
+
 
     @GetMapping("list")
     public List<Customer> list() {
@@ -47,6 +52,29 @@ public class CustomerController {
     }
 
     // si quiero agregar un cliente, deberia buscarlo por email, no por nombre ya que no es un atributo unico, y lo que me interesa a mi es cuando doy de alta un cliente el email no exista en la DB.
+
+
+    @PostMapping("/addCustomerDTO")
+    public ResponseEntity<?> addCustomer(@Validated @RequestBody CustomerDTO customerDTO){
+        String email = customerDTO.getEmail();
+        Optional<Customer> optionalCustomer = customerService.findByEmail(email);
+        if(optionalCustomer.isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email : " + email + " already exists");
+        }
+        Optional<Role> optionalRole = roleService.findById(customerDTO.getRole_id());
+        if(optionalRole.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Role with the id " + customerDTO.getRole_id());
+        }
+        /*List<Pet> petOptional = petService.getPetById(customerDTO.getPet_id());
+        if(petOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet : " + customerDTO.getPet_id() + " doesnt exists");
+        }
+         */
+        Customer newCustomer = customerService.createCustomerDTO(customerDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Customer added succesfully");
+    }
+
+
 
 
     @PutMapping("/modify/{id}")

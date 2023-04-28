@@ -1,11 +1,15 @@
 package com.example.veterinaria.service;
 
+import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,10 @@ public class CustomerService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    private PetService petService;
+
+    private RoleService roleService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 
@@ -40,6 +48,30 @@ public class CustomerService {
 
         return customerRepository.save(customer1);
     }
+
+    public Customer createCustomerDTO(CustomerDTO customerDTO) {
+
+        Customer customer1 = new Customer();
+        customer1.setName(customerDTO.getName());
+        customer1.setLastName(customerDTO.getLastName());
+        customer1.setAddress(customerDTO.getAddress());
+        customer1.setEmail(customerDTO.getEmail());
+        customer1.setContactNumber(customerDTO.getContactNumber());
+        List<Pet> pets = new ArrayList<>();
+        for (Long petId : customerDTO.getPet_ids()) {
+            pets.add(petService.getPetById(petId).orElseThrow(() -> new RuntimeException("Pet not found with ID: " + petId)));
+        }
+        customer1.setPets(pets);
+        customer1.setRole(roleService.findById(customerDTO.getRole_id()).get());
+
+
+        String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
+        customer1.setPassword(encodedPassword);
+
+        return customerRepository.save(customer1);
+    }
+
+
 
     public void updateCustomer(Customer customer, Long id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
