@@ -170,10 +170,31 @@ public class CustomerService {
             }
         }
 
+    public List<Customer> findCustomerByRoleId(Long id){
+        return customerRepository.findCustomerByRoleId(id);
+    }
         // otros métodos del servicio de Customer
 
+    public void deleteRoleById(Long customerId, Long roleId){
+        Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+        if(optionalCustomer.isPresent()){
+            Customer customer = optionalCustomer.get();
+            if(customer.getRole() !=null && customer.getRole().getId().equals(roleId)){
+                customer.setRole(null);
+                customerRepository.save(customer);
+                roleService.delete(roleId);
+            }else {
+                throw new NotFoundException("Role not found with the id " + roleId);
+            }
+            }else {
+                throw new NotFoundException("Customer not found with the id " + customerId);
+            }
 
+
+        }
     }
+
+
 
 
 

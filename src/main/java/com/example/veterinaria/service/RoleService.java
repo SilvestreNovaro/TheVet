@@ -1,5 +1,6 @@
 package com.example.veterinaria.service;
 
+import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.repository.RoleRepository;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,8 @@ public class RoleService {
     public void delete(Long id){
         roleRepository.deleteById(id);
     }
+
+
 
     public Optional<Role> findByRoleName(String roleName){
         return roleRepository.findByRoleName(roleName);

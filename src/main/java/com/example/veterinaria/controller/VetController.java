@@ -44,7 +44,7 @@ public class VetController {
         Optional<Vet> sameLicenseVet = vetService.findByLicense(vet.getLicense());
         Optional<Vet> optionalVet = vetService.getVetById(id);
         if(sameLicenseVet.isPresent()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet with the name  " + vet.getName() + " is already on our registers");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet with the name  " + vet.getLicense() + " is already on our registers");
         }
         if(optionalVet.isPresent()){
             vetService.updateVet(vet, id);

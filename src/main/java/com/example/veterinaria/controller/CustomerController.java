@@ -147,8 +147,12 @@ public class CustomerController {
         return ResponseEntity.ok("Pet with id " + petId + " has been successfully deleted from Customer with id " + customerId);
     }
 
-  /*  @PostMapping("/signUp")
-    public ResponseEntity<?> signUp()
+    @DeleteMapping("/deleteRoleFromCustomer/{customerId}/{roleId}")
+    public ResponseEntity<?> deleteRoleFromCustomer (@PathVariable Long customerId, @PathVariable Long roleId){
+        customerService.deleteRoleById(customerId, roleId);
+        return ResponseEntity.ok("Role with id " + roleId + " has been successfully deleted from Customer with id " + customerId);
 
-        }*/
+    }
+
+
 }
