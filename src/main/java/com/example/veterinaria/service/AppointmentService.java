@@ -62,14 +62,11 @@ public class AppointmentService {
         var vet = appointmentDTO.getVet_id();
 
 
-
         if(optionalAppointment.isPresent()){
             Appointment appointment1 = optionalAppointment.get();
             if(appDateTime !=null && !appDateTime.equals("")) appointment1.setAppointmentDateTime(appDateTime);
             if(appReason !=null && !appReason.isEmpty()) appointment1.setAppointmentNotes(appReason);
             if(appNotes!=null && !appNotes.isEmpty()) appointment1.setAppointmentReason(appNotes);
-            //Como vet y customer son del tipo Long, yo no puedo hacer "appointment1.setCustomer(customer) ya que estoy pasando algo del tipo Long y necesito algo del tipo Customer
-            //Para eso, si la validacion se cumple de que no sea nulo ni vacio, con el getId le paso por parametro "customer" y ahi pregunto si esta presente, lo guardo en una variable y le hago un .get()
             if(customer!=null && !customer.equals("")) {
                 Optional<Customer> optionalCustomer = customerService.getCustomerById(customer);
                 if (optionalCustomer.isPresent()) {

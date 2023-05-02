@@ -8,14 +8,19 @@ import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.PetService;
 import com.example.veterinaria.service.RoleService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +61,7 @@ public class CustomerController {
 
 
     @PostMapping("/addCustomerDTO")
-    public ResponseEntity<?> addCustomer(@Validated @RequestBody CustomerDTO customerDTO){
+    public ResponseEntity<?> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) throws MessagingException {
         String email = customerDTO.getEmail();
         Optional<Customer> optionalCustomer = customerService.findByEmail(email);
         if(optionalCustomer.isPresent()){
@@ -75,6 +80,56 @@ public class CustomerController {
         //Crear el mensaje de correo electronico
 
         Customer newCustomer = customerService.createCustomerDTO(customerDTO);
+
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        String formattedDateTime = now.format(formatter);
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setTo(newCustomer.getEmail());
+        helper.setSubject("¡Creacion de registro Exitosa!");
+        String htmlMsg =
+                "<html>" +
+                        "<head>" +
+                        "<style>" +
+                        "table {" +
+                        "  border-collapse: collapse;" +
+                        "  width: 100%;" +
+                        "}" +
+                        "th, td {" +
+                        "  text-align: left;" +
+                        "  padding: 8px;" +
+                        "}" +
+                        "th {" +
+                        "  background-color: #dddddd;" +
+                        "  color: #333333;" +
+                        "}" +
+                        "</style>" +
+                        "</head>" +
+                        "<body>" +
+                        "<h1 style='color: #007bff;'>Confirmación de registro</h1>" +
+                        "<p>Estimado/a " + newCustomer.getName() + ",</p>" +
+                        "<p>Por favor, revise los detalles de su Registro en la siguiente tabla:</p>" +
+                        "<table>" +
+                        "<tr>" +
+                        "<th>Nombre</th>" +
+                        "<th>Apellido</th>" +
+                        "<th>Ciudad</th>" +
+                        "<th>Cancelada</th>" +
+                        "</tr>" +
+                        "<tr>" +
+                        "<td>" + newCustomer.getName() + "</td>" +
+                        "<td>" + newCustomer.getLastName() + "</td>" +
+                        "<td>" + formattedDateTime+ "</td>" +
+                        "</tr>" +
+                        "</table>" +
+                        "<p>You have successfully registered.</p>" +
+                        "<p>Sincerely</p>" +
+                        "<p>The vet</p>" +
+                        "</body>" +
+                        "</html>";
+        helper.setText(htmlMsg, true);
+        javaMailSender.send(message);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added succesfully");
     }
