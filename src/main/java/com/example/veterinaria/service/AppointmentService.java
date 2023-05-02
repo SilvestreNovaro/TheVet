@@ -1,6 +1,7 @@
 package com.example.veterinaria.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +10,7 @@ import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.repository.AppointmentRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -98,5 +100,43 @@ public class AppointmentService {
     public List<Appointment> findByLicense(String license){
         return appointmentRepository.findByVetLicense(license);
     }
+
+    public Long[] deleteAppointmentsByIds(Long[] appointmentIds) {
+        List<Long> deletedIds = new ArrayList<>();
+        List<Long> notFoundIds = new ArrayList<>();
+
+        for (Long appointmentId : appointmentIds) {
+            Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
+            if (optionalAppointment.isPresent()) {
+                appointmentRepository.deleteById(optionalAppointment.get().getId());
+                deletedIds.add(appointmentId);
+            } else {
+                notFoundIds.add(appointmentId);
+            }
+        }
+
+        if (notFoundIds.isEmpty()) {
+            return deletedIds.toArray(new Long[0]);
+        } else {
+            return notFoundIds.toArray(new Long[0]);
+        }
+    }
+
+    @Transactional
+    public List<Long> eliminarCitas(List<Long> idsCitas) {
+        List<Long> idsInexistentes = new ArrayList<>();
+
+        for (Long idCita : idsCitas) {
+            Optional<Appointment> citaOptional = appointmentRepository.findById(idCita);
+            if (citaOptional.isPresent()) {
+                appointmentRepository.delete(citaOptional.get());
+            } else {
+                idsInexistentes.add(idCita);
+            }
+        }
+
+        return idsInexistentes;
+    }
+
 }
 

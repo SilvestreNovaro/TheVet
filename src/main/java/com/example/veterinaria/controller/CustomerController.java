@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,8 @@ public class CustomerController {
     private final CustomerService customerService;
 
     private final PetService petService;
+
+    private JavaMailSender javaMailSender;
 
     private final RoleService roleService;
 
@@ -70,7 +73,11 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet : " + customerDTO.getPet_id() + " doesnt exists");
         }
          */
+
+        //Crear el mensaje de correo electronico
+
         Customer newCustomer = customerService.createCustomerDTO(customerDTO);
+
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added succesfully");
     }
 
@@ -152,6 +159,12 @@ public class CustomerController {
         customerService.deleteRoleById(customerId, roleId);
         return ResponseEntity.ok("Role with id " + roleId + " has been successfully deleted from Customer with id " + customerId);
 
+    }
+
+    @PostMapping("/addRoleToCustomer/{customerId}/{role}")
+    public ResponseEntity<?> addRole(@PathVariable Long customerId, @PathVariable Role role){
+        customerService.addRoleToCustomer(customerId, role);
+        return ResponseEntity.ok("Customer with id " + customerId + " has now the Role " + role.toString());
     }
 
 

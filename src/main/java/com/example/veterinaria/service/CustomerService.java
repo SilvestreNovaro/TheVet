@@ -148,6 +148,14 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
+    public void addRoleToCustomer(Long customerId, Role role){
+        Customer customer = customerRepository.findById(customerId).get();
+        //if(customer.getRole() == null || customer.getRole().equals(""))
+        customer.setRole(role);
+        customerRepository.save(customer);
+    }
+
+
 
 
 
@@ -182,7 +190,7 @@ public class CustomerService {
             if(customer.getRole() !=null && customer.getRole().getId().equals(roleId)){
                 customer.setRole(null);
                 customerRepository.save(customer);
-                roleService.delete(roleId);
+                //roleService.delete(roleId); Si agrego esta linea, borra el rol del customer y el rol de la base de datos.
             }else {
                 throw new NotFoundException("Role not found with the id " + roleId);
             }

@@ -39,7 +39,7 @@ public class Customer {
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="pet_id")
+    @JoinColumn(name="customer_id")
     private List<Pet> pets = new ArrayList<>();
 
     @ManyToOne(cascade = CascadeType.DETACH)

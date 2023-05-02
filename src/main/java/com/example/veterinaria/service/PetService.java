@@ -61,8 +61,10 @@ public class PetService {
     }
 
     public List<Pet> findBySpecies(String petSpecies){
-        return petRepository.findBypetSpecies(petSpecies);
+        return petRepository.findByPetSpecies(petSpecies);
     }
+
+
 
 
 

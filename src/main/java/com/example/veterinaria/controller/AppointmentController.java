@@ -101,5 +101,18 @@ public class AppointmentController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @DeleteMapping("/deleteByIds")
+    public ResponseEntity<Object> deleteAppointmentsByIds(@RequestParam List <Long> appointmentIds) {
+        var deletedIds = appointmentService.eliminarCitas(appointmentIds);
+        if(deletedIds.size()>0){
+            return ResponseEntity.ok("ids inexistentes " + deletedIds);
+        }else{
+            return ResponseEntity.ok("se eliminaron todos de forma correcta " + appointmentIds.toString());
+        }
+
+    }
+
+
+
 }
 
