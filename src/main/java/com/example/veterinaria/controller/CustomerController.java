@@ -8,9 +8,7 @@ import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.PetService;
 import com.example.veterinaria.service.RoleService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -99,27 +97,28 @@ public class CustomerController {
     }
 
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        Optional<Customer> optionalCustomer = customerService.getCustomerById(id);
-        if (optionalCustomer.isPresent()) {
-            customerService.deleteCustomer(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Customer with id " + id + " deleted");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Customer with the id " + id);
+    @GetMapping("/find/{id}")
+    public ResponseEntity<?> findById(@Validated @PathVariable Long id){
+        Optional<Customer> customerOptional = customerService.findById(id);
+        //customerOptional.map(...): Si el objeto customerOptional contiene un Customer, la función lambda dentro del map se ejecuta y crea un objeto ResponseEntity con un código de estado 200 (OK) y un mensaje que indica el nombre del Customer correspondiente al id. El map devuelve un Optional<ResponseEntity>.
+        // .orElseGet(...): Si el objeto customerOptional está vacío, la función lambda dentro del orElseGet se ejecuta y crea un objeto ResponseEntity con un código de estado 404 (NOT FOUND) y un mensaje que indica que el Customer no existe en los registros. El orElseGet devuelve un ResponseEntity.
+        //Una función lambda es una función anónima que se puede utilizar para representar un bloque de código que se puede pasar como argumento a otro método o función. En el caso del método map de Optional, la función lambda se utiliza para transformar el valor contenido en el objeto Optional en otro valor.
+        //La sintaxis básica de una función lambda es la siguiente: (parametros) -> expresion
+        // En este caso La función lambda toma un objeto Customer como parámetro y devuelve un objeto ResponseEntity<String> que contiene un mensaje personalizado basado en el Customer encontrado. En otras palabras, la función lambda utiliza el Customer encontrado para construir la respuesta HTTP que se devuelve al cliente.
+        return customerOptional.map(customer -> ResponseEntity.status(HttpStatus.OK).body("The id " + id + " belongs to the customer " + customer.getName())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers"));
     }
 
-    @PostMapping("/addAnimalToCustomer/{customerId}/animals")
-    public ResponseEntity<?> addAnimalToCustomer(@Validated @PathVariable Long customerId, @RequestBody Pet pet) {
-        Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
-        if (customerOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customer found with the id " + id);
+
+    //SAME METHOD AS ABOVE.
+    @GetMapping("/findCustomerById/{id}")
+    public ResponseEntity<?> findCustomerById(@Validated @PathVariable Long id){
+        Optional<Customer> customerOptional = customerService.findById(id);
+        if(customerOptional.isPresent()){
+            return ResponseEntity.ok(customerOptional);
         }
-        var customer = customerOptional.get();
-        //customer.addPet(pet);
-        customerService.createCustomer(customer);
-        return ResponseEntity.ok(customer);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers");
     }
+
 
     @GetMapping("/petsByCustomerName/{name}")
     public ResponseEntity<?> findPetsFromCustomer(@PathVariable String name) {
@@ -140,18 +139,24 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet associated with that owner");
     }
 
-    @PostMapping("/{customerId}/Addpet")
-    public ResponseEntity<?> addPetToCustomer(@PathVariable Long customerId, @RequestBody Pet pet) {
-        customerService.addPetToCustomer(customerId, pet);
-
-        return ResponseEntity.ok("Se guardo correctamente");
-    }
 
 
     @DeleteMapping("/deletePetById/{customerId}/{petId}")
     public ResponseEntity<String> deletePetById(@PathVariable Long customerId,@PathVariable Long petId){
        customerService.deletePetById(customerId, petId);
         return ResponseEntity.ok("Pet with id " + petId + " has been successfully deleted from Customer with id " + customerId);
+    }
+
+
+    //DELETE.
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        Optional<Customer> optionalCustomer = customerService.getCustomerById(id);
+        if (optionalCustomer.isPresent()) {
+            customerService.deleteCustomer(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Customer with id " + id + " deleted");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Customer with the id " + id);
     }
 
     @DeleteMapping("/deleteRoleFromCustomer/{customerId}/{roleId}")
@@ -165,6 +170,33 @@ public class CustomerController {
     public ResponseEntity<?> addRole(@PathVariable Long customerId, @PathVariable Role role){
         customerService.addRoleToCustomer(customerId, role);
         return ResponseEntity.ok("Customer with id " + customerId + " has now the Role " + role.toString());
+    }
+
+
+
+    //SAME METHODS TO ADD PET.
+    @PostMapping("/{customerId}/Addpet")
+    public ResponseEntity<?> addPetToCustomer(@PathVariable Long customerId, @RequestBody Pet pet) {
+        customerService.addPetToCustomer(customerId, pet);
+
+        return ResponseEntity.ok("Added pet tu customer succesfully");
+    }
+
+    @PostMapping("/addAnimalToCustomer/{customerId}/animals")
+    public ResponseEntity<?> addAnimalToCustomer(@Validated @PathVariable Long customerId, @RequestBody Pet pet) {
+        Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
+        if (customerOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customer found with the id " + id);
+        }
+        Customer customer = customerOptional.get();
+        customerService.addAnimalToCustomer(customerId, pet);
+        return ResponseEntity.ok(customer);
+    }
+
+    @PostMapping("/addPetToCustomerByPetId/{customerId}/{petId}")
+    public ResponseEntity<?> addPetId(@PathVariable Long customerId, @PathVariable Long petId){
+        customerService.addPetToCustomer(customerId, petId);
+        return ResponseEntity.ok("Added pet tu customer succesfully");
     }
 
 

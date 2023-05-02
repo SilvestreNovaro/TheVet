@@ -72,9 +72,7 @@ public class AppointmentService {
         return appointmentRepository.findById(id);
     }
 
-    public Optional<Appointment> findByAppointmentDateTime(LocalDateTime appointmentDateTime){
-        return appointmentRepository.findByAppointmentDateTime(appointmentDateTime);
-    }
+
 
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
@@ -137,6 +135,16 @@ public class AppointmentService {
 
         return InexistentIds;
     }
+
+   /* public Optional<LocalDateTime> localDate(LocalDateTime localDateTime){
+        return appointmentRepository.findByAppointmentDateTime(localDateTime());
+    }
+
+    */
+   public Optional<Appointment> findByAppointmentDateTime(LocalDateTime appointmentDateTime) {
+       return appointmentRepository.findByAppointmentDateTime(appointmentDateTime);
+   }
+
 
 }
 

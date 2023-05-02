@@ -83,6 +83,8 @@ public class CustomerService {
             if(customer.getAddress() !=null && !customer.getAddress().isEmpty()) existingCustomer.setAddress(customer.getAddress());
             if(customer.getContactNumber() !=null && !customer.getContactNumber().equals("")) existingCustomer.setContactNumber(customer.getContactNumber());
             if(customer.getEmail() !=null && !customer.getEmail().isEmpty()) existingCustomer.setEmail(customer.getEmail());
+            if(customer.getPets() !=null && !customer.getPets().isEmpty()) existingCustomer.setPets(customer.getPets());
+            if(customer.getRole() !=null && !customer.getRole().equals("")) existingCustomer.setRole(customer.getRole());
             if(customer.getPassword() !=null && !customer.getPassword().isEmpty()){
                 String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
                 existingCustomer.setPassword(encodedPassword);
@@ -128,6 +130,10 @@ public class CustomerService {
         return customerRepository.findByEmail(email);
     }
 
+    public Optional<Customer> findById(Long id){
+        return customerRepository.findById(id);
+    }
+
 
 
 
@@ -148,6 +154,20 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
+    public void addPetToCustomer(Long customerId, Long petId) {
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new RuntimeException("Customer not found"));
+        Pet pet = petService.getPetById(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
+        Pet newPet = new Pet();
+        newPet.setId(pet.getId());
+        newPet.setPetName(pet.getPetName());
+        newPet.setMedicalHistory(pet.getMedicalHistory());
+        newPet.setAge(pet.getAge());
+        newPet.setGender(pet.getGender());
+        newPet.setPetSpecies(pet.getPetSpecies());
+        customer.getPets().add(newPet);
+        customerRepository.save(customer);
+    }
+
     public void addRoleToCustomer(Long customerId, Role role){
         Customer customer = customerRepository.findById(customerId).get();
         //if(customer.getRole() == null || customer.getRole().equals(""))
@@ -155,6 +175,11 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
+    public void addAnimalToCustomer(Long customerId, Pet pet){
+        Customer customer = customerRepository.findById(customerId).get();
+        customer.getPets().add(pet);
+        customerRepository.save(customer);
+    }
 
 
 
@@ -200,6 +225,8 @@ public class CustomerService {
 
 
         }
+
+
     }
 
 

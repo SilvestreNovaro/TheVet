@@ -1,11 +1,16 @@
 package com.example.veterinaria.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import com.example.veterinaria.DTO.AppointmentDTO;
 import com.example.veterinaria.entity.Appointment;
+import com.example.veterinaria.entity.Customer;
+import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.AppointmentService;
+import com.example.veterinaria.service.CustomerService;
+import com.example.veterinaria.service.VetService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,13 +28,41 @@ public class AppointmentController {
     @Autowired
     private final AppointmentService appointmentService;
 
+    private final CustomerService customerService;
+
+    private final VetService vetService;
+
+
     @GetMapping("/list")
     public List<Appointment> list(){
         return appointmentService.getAllAppointments();
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Appointment> createAppointment(@RequestBody AppointmentDTO appointmentDTO) {
+    public ResponseEntity<?> createAppointment(@RequestBody AppointmentDTO appointmentDTO) {
+
+        Long customerId = appointmentDTO.getCustomer_id();
+        Long vetId = appointmentDTO.getVet_id();
+        LocalDateTime localDateTime = appointmentDTO.getAppointmentDateTime();
+
+        Optional<Customer> optionalCustomer = customerService.getCustomerById(customerId);
+        Optional<Vet> optionalVetId = vetService.getVetById(vetId);
+        Optional<Appointment> appointmentOptional = appointmentService.findByAppointmentDateTime(localDateTime);
+
+
+        if(optionalCustomer.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customerId " + customerId + " not found");
+        }
+        if(optionalVetId.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("vetId " + vetId + " not found");
+        }
+        if(appointmentOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time "+ localDateTime);
+        }
+        if(localDateTime == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Local date time cant be null");
+        }
+
         Appointment savedAppointment = appointmentService.createAppointment(appointmentDTO);
         return new ResponseEntity<>(savedAppointment, HttpStatus.CREATED);
     }
@@ -84,6 +117,8 @@ public class AppointmentController {
         return new ResponseEntity<>(appointmentList, HttpStatus.OK);
     }
 
+
+    //FOUND VET BY LICENSE.
     @GetMapping("/vetLicense/{vetLicense}")
     public ResponseEntity<?> getAppointmentsByLicense(@PathVariable String vetLicense){
         List<Appointment> appointmentList = appointmentService.findByLicense(vetLicense);
@@ -95,12 +130,16 @@ public class AppointmentController {
 
 
 
+    //DELTE 1 APPOINTMENT BY ID.
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteAppointment(@PathVariable Long id) {
         appointmentService.deleteAppointment(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+
+    //DELETE MANY APPOINTMENTS.
     @DeleteMapping("/deleteByIds")
     public ResponseEntity<Object> deleteAppointmentsByIds(@RequestParam List <Long> appointmentIds) {
         var deletedIds = appointmentService.deleteAppointment(appointmentIds);
