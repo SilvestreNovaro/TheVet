@@ -123,19 +123,19 @@ public class AppointmentService {
     }
 
     @Transactional
-    public List<Long> eliminarCitas(List<Long> idsCitas) {
-        List<Long> idsInexistentes = new ArrayList<>();
+    public List<Long> deleteAppointment(List<Long> appointmentIds) {
+        List<Long> InexistentIds = new ArrayList<>();
 
-        for (Long idCita : idsCitas) {
-            Optional<Appointment> citaOptional = appointmentRepository.findById(idCita);
-            if (citaOptional.isPresent()) {
-                appointmentRepository.delete(citaOptional.get());
+        for (Long idAppointment : appointmentIds) {
+            Optional<Appointment> appointmentOptional = appointmentRepository.findById(idAppointment );
+            if (appointmentOptional.isPresent()) {
+                appointmentRepository.delete(appointmentOptional.get());
             } else {
-                idsInexistentes.add(idCita);
+                InexistentIds.add(idAppointment );
             }
         }
 
-        return idsInexistentes;
+        return InexistentIds;
     }
 
 }

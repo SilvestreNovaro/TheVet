@@ -103,11 +103,11 @@ public class AppointmentController {
 
     @DeleteMapping("/deleteByIds")
     public ResponseEntity<Object> deleteAppointmentsByIds(@RequestParam List <Long> appointmentIds) {
-        var deletedIds = appointmentService.eliminarCitas(appointmentIds);
+        var deletedIds = appointmentService.deleteAppointment(appointmentIds);
         if(deletedIds.size()>0){
-            return ResponseEntity.ok("ids inexistentes " + deletedIds);
+            return ResponseEntity.ok("non existent ids " + deletedIds);
         }else{
-            return ResponseEntity.ok("se eliminaron todos de forma correcta " + appointmentIds.toString());
+            return ResponseEntity.ok("appointents deleted succesfully " + appointmentIds.toString());
         }
 
     }
