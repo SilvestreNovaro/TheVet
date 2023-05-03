@@ -13,6 +13,9 @@ import com.example.veterinaria.repository.AppointmentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -102,11 +105,8 @@ public class AppointmentService {
         return appointmentRepository.findByCustomerId(customerId);
     }
 
-    /*public List<Appointment> getAppointmentsByPetId(Long petId) {
-        return appointmentRepository.findByPetId(petId);
-    }
-*/
-    public void deleteAppointment(Long id) {
+
+    public void deleteAppointmentId(Long id) {
         appointmentRepository.deleteById(id);
     }
 
@@ -119,26 +119,58 @@ public class AppointmentService {
         return appointmentRepository.findByVetLicense(license);
     }
 
+    /*
     public Long[] deleteAppointmentsByIds(Long[] appointmentIds) {
+        // Recibe por parametro un array de ids de appointment.
+        //Creo una lista vacia para guardar los ids eliminados
         List<Long> deletedIds = new ArrayList<>();
+        //Creo una lista vacia para guardaar los ids que no encontre.
         List<Long> notFoundIds = new ArrayList<>();
 
+        //Recorro el array de appointment ids.
         for (Long appointmentId : appointmentIds) {
+            //Dentro del for, se utiliza el método findById para buscar un appointmemnt con el ID actual en la lista de appointments.
             Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
+            // Si encuentra el appointment, se elimina y se agrega el id del appointment a la lista de ids eliminados.
             if (optionalAppointment.isPresent()) {
                 appointmentRepository.deleteById(optionalAppointment.get().getId());
                 deletedIds.add(appointmentId);
             } else {
+                // Si no se encuentra se agrega el id a la lista de los no encontrados.
                 notFoundIds.add(appointmentId);
             }
         }
-
+        //Pregunto si la lista de ids no encontrados esta vacia. Si esta vacia, devuelve la lista de ids eliminados convertida a un array del tipo Long.
+        // Si la lista de ids no encontrados no esta vacia, devuelve la lista de ids no encontrados convertida a un array del tipo Long.
         if (notFoundIds.isEmpty()) {
             return deletedIds.toArray(new Long[0]);
         } else {
             return notFoundIds.toArray(new Long[0]);
         }
     }
+
+     */
+    public ResponseEntity<?> deleteAppointmentsByIds(Long[] appointmentIds) {
+        List<Long> deletedIds = new ArrayList<>();
+        List<Long> notFoundIds = new ArrayList<>();
+
+        for (Long appointmentId : appointmentIds) {
+            Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
+            if (optionalAppointment.isPresent()) {
+                appointmentRepository.deleteById(appointmentId);
+                deletedIds.add(appointmentId);
+            } else {
+                notFoundIds.add(appointmentId);
+            }
+        }
+
+        if (!deletedIds.isEmpty()) {
+            return ResponseEntity.ok("Se eliminaron las citas con los siguientes IDs: " + deletedIds);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointments for the ids " + notFoundIds);
+        }
+    }
+
 
     @Transactional
     public List<Long> deleteAppointment(List<Long> appointmentIds) {
@@ -156,11 +188,6 @@ public class AppointmentService {
         return InexistentIds;
     }
 
-   /* public Optional<LocalDateTime> localDate(LocalDateTime localDateTime){
-        return appointmentRepository.findByAppointmentDateTime(localDateTime());
-    }
-
-    */
    public Optional<Appointment> findByAppointmentDateTime(LocalDateTime appointmentDateTime) {
        return appointmentRepository.findByAppointmentDateTime(appointmentDateTime);
    }
