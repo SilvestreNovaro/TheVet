@@ -39,7 +39,7 @@ public class Customer {
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="customer_id")
+    @JoinColumn(name = "customer_id")
     private List<Pet> pets = new ArrayList<>();
 
     @ManyToOne(cascade = CascadeType.DETACH)
@@ -47,11 +47,6 @@ public class Customer {
     private Role role;
 
 
-    /*@ManyToMany
-    @JoinTable(name = "customer_vet",
-    joinColumns = @JoinColumn(name="customer_id"),
-    inverseJoinColumns = @JoinColumn(name = "vet_id"))
-    private List<Vet> vets;
-*/
+
 
 }

@@ -2,12 +2,15 @@ package com.example.veterinaria.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.example.veterinaria.DTO.AppointmentDTO;
 import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.Customer;
+import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.repository.AppointmentRepository;
 import jakarta.transaction.Transactional;
@@ -28,12 +31,19 @@ public class AppointmentService {
     private final VetService vetService;
     private final CustomerService customerService;
 
+    private final PetService petService;
+
     public Appointment createAppointment(AppointmentDTO appointmentDTO) {
         var appLocalDate = appointmentDTO.getAppointmentDateTime();
         var appReason = appointmentDTO.getAppointmentReason();
         var appNotes = appointmentDTO.getAppointmentNotes();
         var appCustomerId = appointmentDTO.getCustomer_id();
         var appVetId = appointmentDTO.getVet_id();
+        //var appPets = appointmentDTO.getPets_ids();
+
+        //List<Pet> pets = petService.getAllPetsIds(appPets);
+
+
 
         Appointment appointment = new Appointment();
         Optional<Customer> optionalCustomer = customerService.getCustomerById(appCustomerId);
@@ -41,16 +51,18 @@ public class AppointmentService {
         optionalCustomer.ifPresent(appointment::setCustomer);
 
         Optional<Vet> optionalVet = vetService.getVetById(appVetId);
-        optionalVet.ifPresent(appointment:: setVet);
+        optionalVet.ifPresent(appointment::setVet);
 
         appointment.setAppointmentNotes(appNotes);
         appointment.setAppointmentReason(appReason);
         appointment.setAppointmentDateTime(appLocalDate);
+        //appointment.setPets(pets);
+
 
         return appointmentRepository.save(appointment);
-
-
     }
+
+
 
     public void updateAppointment(AppointmentDTO appointmentDTO, Long id){
 

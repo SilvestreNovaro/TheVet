@@ -9,9 +9,11 @@ import java.util.Optional;
 import com.example.veterinaria.DTO.AppointmentDTO;
 import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.Customer;
+import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.AppointmentService;
 import com.example.veterinaria.service.CustomerService;
+import com.example.veterinaria.service.PetService;
 import com.example.veterinaria.service.VetService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -38,6 +40,7 @@ public class AppointmentController {
 
     private final VetService vetService;
 
+    private final PetService petService;
     private JavaMailSender javaMailSender;
 
 
@@ -52,7 +55,13 @@ public class AppointmentController {
         Long customerId = appointmentDTO.getCustomer_id();
         Long vetId = appointmentDTO.getVet_id();
         LocalDateTime localDateTime = appointmentDTO.getAppointmentDateTime();
+        /*List<Long> petsIds = appointmentDTO.getPets_ids();
 
+        if(petsIds.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("petsIds " + petsIds + " not found");
+        }
+
+         */
         Optional<Customer> optionalCustomer = customerService.getCustomerById(customerId);
         Optional<Vet> optionalVetId = vetService.getVetById(vetId);
         Optional<Appointment> appointmentOptional = appointmentService.findByAppointmentDateTime(localDateTime);
@@ -71,7 +80,11 @@ public class AppointmentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Local date time cant be null");
         }
 
+
+
+
         Appointment savedAppointment = appointmentService.createAppointment(appointmentDTO);
+
 
         // Crear el mensaje de correo electrónico
         LocalDateTime now = LocalDateTime.now();
@@ -116,13 +129,13 @@ public class AppointmentController {
                         "<td>" + appointmentDTO.getAppointmentReason().toString() + "</td>" +
                         "<td>" + appointmentDTO.getAppointmentNotes().toString() + "</td>" +
                         "<td>" + optionalVetId.get().getName()+ "</td>" +
-                        "td>" + optionalCustomer.get().getPets()+ "</td>" +
+                        "td>" + optionalCustomer.get().getPets().toString()+ "</td>" +
                         "<td>" + formattedDateTime+ "</td>" +
                         "</tr>" +
                         "</table>" +
                         "<p>Hope to see you soon!.</p>" +
                         "<p>Sincirely,</p>" +
-                        "<p>Thye vet</p>" +
+                        "<p>The vet</p>" +
                         "</body>" +
                         "</html>";
         helper.setText(htmlMsg, true);

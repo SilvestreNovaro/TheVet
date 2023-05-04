@@ -22,5 +22,7 @@ public class AppointmentDTO {
 
     private Long vet_id;
 
+    private List<Long> pets_ids;
+
 
 }
