@@ -1,5 +1,6 @@
 package com.example.veterinaria.DTO;
 
+import com.example.veterinaria.entity.Pet;
 import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,7 @@ public class AppointmentDTO {
 
     private Long vet_id;
 
-    private List<Long> pets_ids;
+    private List<Pet> pets;
 
 
 }
