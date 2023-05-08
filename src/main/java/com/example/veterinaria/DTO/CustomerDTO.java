@@ -27,7 +27,7 @@ public class CustomerDTO {
 
     private Long role_id;
 
-    private List<Long> pet_ids;
+    private List<Pet> pets;
 
 
 }
