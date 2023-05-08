@@ -28,7 +28,7 @@ public class Appointment {
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "customer_id")
-    @JsonIgnoreProperties({"address", "email", "contactNumber"})
+    @JsonIgnoreProperties({"pets"})
     private Customer customer;
 
 
@@ -36,8 +36,26 @@ public class Appointment {
     @JoinColumn(name = "vet_id")
     private Vet vet;
 
-    @OneToMany(cascade = CascadeType.ALL)
+
+
+
+
+    /*@OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "appointment_id")
     private List<Pet> pets;
+*/
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "appointment_pet",
+            joinColumns = @JoinColumn(name = "appointment_id"),
+            inverseJoinColumns = @JoinColumn(name = "pet_id")
+    )
+    private List<Pet> pets = new ArrayList<>();
+
+
+    public void setPets(List<Pet> pets) {
+        this.pets = pets;
+    }
 }
 

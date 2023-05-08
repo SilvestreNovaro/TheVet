@@ -1,6 +1,7 @@
 package com.example.veterinaria.DTO;
 
 import com.example.veterinaria.entity.Pet;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,11 +20,15 @@ public class AppointmentDTO {
 
     private String appointmentNotes;
 
+
     private Long customer_id;
+
 
     private Long vet_id;
 
-    private List<Pet> pets;
+    private List<Long> petIds;
+
+
 
 
 }

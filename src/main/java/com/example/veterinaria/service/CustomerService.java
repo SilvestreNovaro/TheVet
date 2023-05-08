@@ -57,11 +57,13 @@ public class CustomerService {
         customer1.setAddress(customerDTO.getAddress());
         customer1.setEmail(customerDTO.getEmail());
         customer1.setContactNumber(customerDTO.getContactNumber());
-        List<Pet> pets = new ArrayList<>();
-        for (Long petId : customerDTO.getPet_ids()) {
-            pets.add(petService.getPetById(petId).orElseThrow(() -> new RuntimeException("Pet not found with ID: " + petId)));
+        customer1.setPets(customerDTO.getPets());
+        /*List<Pet> pets = new ArrayList<>();
+        for (Pet pet : customerDTO.getPets()) {
+            pets.add(petService.ge.orElseThrow(() -> new RuntimeException("Pet not found with ID: " + petId)));
         }
-        customer1.setPets(pets);
+
+         */
         customer1.setRole(roleService.findById(customerDTO.getRole_id()).get());
 
 

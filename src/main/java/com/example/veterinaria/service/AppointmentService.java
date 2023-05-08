@@ -12,6 +12,7 @@ import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
+import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.AppointmentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -34,28 +35,46 @@ public class AppointmentService {
     private final PetService petService;
 
     public Appointment createAppointment(AppointmentDTO appointmentDTO) {
-        var appLocalDate = appointmentDTO.getAppointmentDateTime();
-        var appReason = appointmentDTO.getAppointmentReason();
-        var appNotes = appointmentDTO.getAppointmentNotes();
-        var appCustomerId = appointmentDTO.getCustomer_id();
-        var appVetId = appointmentDTO.getVet_id();
-        //var appPets = appointmentDTO.getPets_ids();
 
-        //List<Pet> pets = petService.getAllPetsIds(appPets);
+        LocalDateTime appLocalDate = appointmentDTO.getAppointmentDateTime();
+        String appReason = appointmentDTO.getAppointmentReason();
+        String appNotes = appointmentDTO.getAppointmentNotes();
+        Long appCustomerId = appointmentDTO.getCustomer_id();
+        Long appVetId = appointmentDTO.getVet_id();
+        List<Long> appPetIds = appointmentDTO.getPetIds();
 
 
 
         Appointment appointment = new Appointment();
         Optional<Customer> optionalCustomer = customerService.getCustomerById(appCustomerId);
+        if(optionalCustomer.isEmpty()) {
+            throw new NotFoundException("customerId " + appCustomerId + " not found");
+
+        }
+        Customer customer = optionalCustomer.get();
 
         optionalCustomer.ifPresent(appointment::setCustomer);
 
         Optional<Vet> optionalVet = vetService.getVetById(appVetId);
         optionalVet.ifPresent(appointment::setVet);
 
+        // customer.getPets(): Obtiene la lista de mascotas (pets) del objeto customer
+        // .stream(): Convierte la lista de mascotas en un flujo de elementos, lo cual permite realizar operaciones de filtrado y transformación.
+        List<Pet> selectedPets = customer.getPets().stream()
+                //.filter(pet -> appPetIds.contains(pet.getId())): Filtra el flujo de mascotas y mantiene solo aquellas cuyo ID se encuentra en la lista de appPetIds. Es decir, se seleccionan únicamente las mascotas que fueron elegidas por el cliente.
+                .filter(pet -> appPetIds.contains(pet.getId()))
+                // .collect(Collectors.toList()): Recopila los elementos del flujo en una lista, devolviendo una lista de mascotas seleccionadas (selectedPets).
+                .collect(Collectors.toList());
+        // if (selectedPets.size() != appPetIds.size()): Verifica si el tamaño de la lista de mascotas seleccionadas es diferente al tamaño de la lista de appPetIds. Si son diferentes, significa que uno o más IDs de mascotas no se encontraron en la lista de mascotas del cliente.
+        if (selectedPets.size() != appPetIds.size()) {
+            //throw new NotFoundException("One or more petIds not found for the customer"): Lanza una excepción NotFoundException con un mensaje indicando que uno o más IDs de mascotas no se encontraron para el cliente.
+            throw new NotFoundException("One or more petIds not found for the customer");
+        }
+
         appointment.setAppointmentNotes(appNotes);
         appointment.setAppointmentReason(appReason);
         appointment.setAppointmentDateTime(appLocalDate);
+        appointment.setPets(selectedPets);
         //appointment.setPets(pets);
 
 
