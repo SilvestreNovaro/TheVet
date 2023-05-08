@@ -6,6 +6,7 @@ import com.example.veterinaria.entity.Category;
 import com.example.veterinaria.entity.Image;
 import com.example.veterinaria.entity.Product;
 import com.example.veterinaria.service.CategoryService;
+import com.example.veterinaria.service.ImageService;
 import com.example.veterinaria.service.ProductService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +30,8 @@ public class ProductController {
     private final ProductService productService;
 
     private final CategoryService categoryService;
+
+    private final ImageService imageService;
 
 
     @GetMapping("list")
@@ -53,7 +57,17 @@ public class ProductController {
         }
         List<Image> images = productDTO.getImages();
         if(images.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres are no images");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There are no images");
+        }
+        // Crea una lista de imágenes vacía que se llenará con las imágenes asociadas al nuevo producto
+        List<Image> savedImages = new ArrayList<>();
+
+        // Itera sobre las imágenes proporcionadas en el DTO
+        for (Image image : images) {
+            // Guarda cada imagen en la base de datos
+            Image savedImage = imageService.saveImage(image);
+            // Agrega la imagen guardada a la lista de imágenes asociadas al nuevo producto
+            savedImages.add(savedImage);
         }
 
         Product product = productService.createProduct(productDTO);

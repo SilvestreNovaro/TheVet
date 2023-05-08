@@ -42,5 +42,7 @@ public class ImageService {
     }
 
 
-
+    public Image saveImage(Image image) {
+        return imageRepository.save(image);
+    }
 }
