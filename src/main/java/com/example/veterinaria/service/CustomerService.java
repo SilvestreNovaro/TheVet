@@ -75,20 +75,26 @@ public class CustomerService {
 
 
 
-    public void updateCustomer(Customer customer, Long id) {
+    public void updateCustomer(CustomerDTO customerDTO, Long id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
         if(optionalCustomer.isPresent()){
             // como no puedo setearle a un optional, guardo en una variable ya del tipo del objeto Customer para setearle los valores.
             Customer existingCustomer = optionalCustomer.get();
-            if(customer.getName() !=null && !customer.getName().isEmpty()) existingCustomer.setName(customer.getName());
-            if(customer.getLastName() !=null && !customer.getLastName().isEmpty()) existingCustomer.setLastName(customer.getLastName());
-            if(customer.getAddress() !=null && !customer.getAddress().isEmpty()) existingCustomer.setAddress(customer.getAddress());
-            if(customer.getContactNumber() !=null && !customer.getContactNumber().equals("")) existingCustomer.setContactNumber(customer.getContactNumber());
-            if(customer.getEmail() !=null && !customer.getEmail().isEmpty()) existingCustomer.setEmail(customer.getEmail());
-            if(customer.getPets() !=null && !customer.getPets().isEmpty()) existingCustomer.setPets(customer.getPets());
-            if(customer.getRole() !=null && !customer.getRole().equals("")) existingCustomer.setRole(customer.getRole());
-            if(customer.getPassword() !=null && !customer.getPassword().isEmpty()){
-                String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
+            if(customerDTO.getName() !=null && !customerDTO.getName().isEmpty()) existingCustomer.setName(customerDTO.getName());
+            if(customerDTO.getLastName() !=null && !customerDTO.getLastName().isEmpty()) existingCustomer.setLastName(customerDTO.getLastName());
+            if(customerDTO.getAddress() !=null && !customerDTO.getAddress().isEmpty()) existingCustomer.setAddress(customerDTO.getAddress());
+            if(customerDTO.getContactNumber() !=null && !customerDTO.getContactNumber().equals("")) existingCustomer.setContactNumber(customerDTO.getContactNumber());
+            if(customerDTO.getEmail() !=null && !customerDTO.getEmail().isEmpty()) existingCustomer.setEmail(customerDTO.getEmail());
+            if(customerDTO.getPets() !=null && !customerDTO.getPets().isEmpty()) existingCustomer.setPets(customerDTO.getPets());
+            Optional<Role> optionalRole = roleService.findById(customerDTO.getRole_id());
+            if(optionalRole.isPresent()){
+                Role role = optionalRole.get();
+                if(customerDTO.getRole_id() !=null && !customerDTO.getRole_id().equals("")) existingCustomer.setRole(role);
+
+            }
+
+            if(customerDTO.getPassword() !=null && !customerDTO.getPassword().isEmpty()){
+                String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
                 existingCustomer.setPassword(encodedPassword);
             }
 

@@ -138,16 +138,21 @@ public class CustomerController {
 
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> update(@Validated @RequestBody Customer customer, @PathVariable Long id) {
-        Optional<Customer> sameEmailCustomer = customerService.findByEmail(customer.getEmail());
+    public ResponseEntity<?> update(@Validated @RequestBody CustomerDTO customerDTO, @PathVariable Long id) {
+        Optional<Customer> sameEmailCustomer = customerService.findByEmail(customerDTO.getEmail());
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
+        Optional<Role> roleOptional = roleService.findById(customerDTO.getRole_id());
+        if(roleOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The roleId " + customerDTO.getRole_id() + " doesnt exist");
+        }
         if (sameEmailCustomer.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer with the email  " + customer.getEmail() + " is already on our registers");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer with the email  " + customerDTO.getEmail() + " is already on our registers");
         }
         if (customerOptional.isPresent()) {
-            customerService.updateCustomer(customer, id);
+            customerService.updateCustomer(customerDTO, id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Customer updated succesfully!");
         }
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers");
     }
 

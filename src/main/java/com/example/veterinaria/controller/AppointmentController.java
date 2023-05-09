@@ -162,7 +162,7 @@ public class AppointmentController {
         return new ResponseEntity<>(savedAppointment, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/update/{id}")
+    /*@PatchMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id){
         Optional<Appointment> optionalAppointment = appointmentService.getAppointmentById(id);
         if(optionalAppointment.isPresent()){
@@ -176,6 +176,16 @@ public class AppointmentController {
 
     }
 
+
+
+    @PatchMapping("/updateApp/{id}")
+    public ResponseEntity<?> update(@Validated @RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id){
+        Optional<Customer> optionalCustomer = customerService.findById(id);
+        if()
+    }
+
+
+     */
 
     @GetMapping("/findById/{id}")
     public ResponseEntity<?> getAppointmentById(@PathVariable Long id) {
