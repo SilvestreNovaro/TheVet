@@ -69,6 +69,12 @@ public class PetService {
         return petRepository.findByPetSpecies(petSpecies);
     }
 
+    /*public List<Pet> findByIdAndCustomer_Id(List<Long> petIds, Long customerId){
+        return petRepository.findByIdInAndCustomer_Id(petIds, customerId);
+    }
+
+     */
+
 
 
 

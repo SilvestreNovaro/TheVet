@@ -39,12 +39,6 @@ public class Appointment {
 
 
 
-
-    /*@OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "appointment_id")
-    private List<Pet> pets;
-*/
-
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "appointment_pet",

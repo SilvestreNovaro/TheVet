@@ -22,6 +22,11 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
 
     List<Pet> findByPetSpecies(String petSpecies);
 
+   /* List<Pet> findByIdInAndCustomer_Id(List<Long> petIds, Long customerId);
+
+    */
+
+
 
 
 

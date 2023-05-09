@@ -83,44 +83,65 @@ public class AppointmentService {
 
 
 
-    public void updateAppointment(AppointmentDTO appointmentDTO, Long id){
+    public void updateAppointment(AppointmentDTO appointmentDTO, Long id) {
 
 
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
 
-        var appDateTime = appointmentDTO.getAppointmentDateTime();
-        var appReason = appointmentDTO.getAppointmentReason();
-        var appNotes = appointmentDTO.getAppointmentNotes();
+        LocalDateTime appDateTime = appointmentDTO.getAppointmentDateTime();
+        String appReason = appointmentDTO.getAppointmentReason();
+        String appNotes = appointmentDTO.getAppointmentNotes();
+        List<Long> appPetIds = appointmentDTO.getPetIds();
+        System.out.println("pets ids " + appPetIds);
+
 
         var customer = appointmentDTO.getCustomer_id();
+        System.out.println("customer id " + customer);
         var vet = appointmentDTO.getVet_id();
 
 
-        if(optionalAppointment.isPresent()){
+        if (optionalAppointment.isPresent()) {
             Appointment appointment1 = optionalAppointment.get();
-            if(appDateTime !=null && !appDateTime.equals("")) appointment1.setAppointmentDateTime(appDateTime);
-            if(appReason !=null && !appReason.isEmpty()) appointment1.setAppointmentNotes(appReason);
-            if(appNotes!=null && !appNotes.isEmpty()) appointment1.setAppointmentReason(appNotes);
-            if(customer!=null && !customer.equals("")) {
+            //System.out.println(appointment1.getAppointmentNotes().toString());
+            if (appDateTime != null && !appDateTime.equals("")) appointment1.setAppointmentDateTime(appDateTime);
+            if (appReason != null && !appReason.isEmpty()) appointment1.setAppointmentNotes(appReason);
+            if (appNotes != null && !appNotes.isEmpty()) appointment1.setAppointmentReason(appNotes);
+            if (customer != null && !customer.equals("")) {
                 Optional<Customer> optionalCustomer = customerService.getCustomerById(customer);
                 if (optionalCustomer.isPresent()) {
                     Customer customerObj = optionalCustomer.get();
-                    appointment1.setCustomer(customerObj);
+                    System.out.println("customer name " + customerObj.getName().toString());
+                    // Verificar si las mascotas proporcionadas pertenecen al cliente
+                    List<Pet> validPets = new ArrayList<>();
+                    System.out.println("valid pets array " + validPets);
+                    for (Long petId : appPetIds) {
+                        System.out.println("pets ids on for " + petId);
+                        Optional<Pet> optionalPet = petService.getPetById(petId);
+                        System.out.println("pet name " + optionalPet.get().getPetName().toString());
+                        //if (optionalPet.isPresent() && appointment1.getCustomer().equals(customerObj)) {
+                            Pet pet = optionalPet.get();
+                            validPets.add(pet);
+                            System.out.println("valid pets" + validPets);
+
+                            appointment1.setPets(validPets);
+                            appointment1.setCustomer(customerObj);
+                        }
+
+
+                    }
+                    if (vet != null && !vet.equals("")) {
+                        Optional<Vet> vetOptional = vetService.getVetById(vet);
+                        if (vetOptional.isPresent()) {
+                            Vet vetObj = vetOptional.get();
+                            appointment1.setVet(vetObj);
+                        }
+                    }
+                    appointmentRepository.save(appointment1);
+
                 }
-
             }
-            if(vet!=null && !vet.equals("")){
-                Optional<Vet> vetOptional = vetService.getVetById(vet);
-                if(vetOptional.isPresent()){
-                    Vet vetObj = vetOptional.get();
-                    appointment1.setVet(vetObj);
-                }
-            }
-
-            appointmentRepository.save(appointment1);
-
         }
-    }
+
 
     public Optional<Appointment> getAppointmentById(Long id) {
         return appointmentRepository.findById(id);
