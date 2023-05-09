@@ -122,7 +122,8 @@ public class AppointmentService {
                         //if (optionalPet.isPresent() && appointment1.getCustomer().equals(customerObj)) {
                         Pet pet = optionalPet.get();
                         System.out.println("Pet pet " + pet.getPetName().toString());
-                        List<Pet> customerPets = customerService.findPetsByCustomerName(customerObj.getName());
+                        //List<Pet> customerPets = customerService.findPetsByCustomerName(customerObj.getName());
+                        List<Pet> customerPets = customerService.findPetsByCustomerLastName(customerObj.getLastName());
                         System.out.println("customer pets " + customerPets.toString());
                         for (Pet customerPet : customerPets) {
                             System.out.println("pets en el for de customer " + customerPet.getPetName().toString());
@@ -139,8 +140,6 @@ public class AppointmentService {
                             appointment1.setPets(validPets);
                             appointment1.setCustomer(customerObj);
                         }
-
-
                     }
                     if (vet != null && !vet.equals("")) {
                         Optional<Vet> vetOptional = vetService.getVetById(vet);
@@ -150,7 +149,6 @@ public class AppointmentService {
                         }
                     }
                     appointmentRepository.save(appointment1);
-
                 }
             }
         }

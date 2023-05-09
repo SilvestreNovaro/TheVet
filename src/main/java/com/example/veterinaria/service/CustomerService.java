@@ -144,6 +144,14 @@ public class CustomerService {
         return customerRepository.findPetsByCustomerName(name);
     }
 
+    public List<Pet> findPetsByCustomerLastName(String lastName){
+        return customerRepository.findPetsByCustomerLastName(lastName);
+    }
+
+    public Optional<Customer> findByLastName(String lastName){
+        return customerRepository.findByLastName(lastName);
+    }
+
     public List<Customer> findCustomersByPetName(String petName) {
         return customerRepository.findCustomersByPetName(petName);
     }
