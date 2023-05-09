@@ -180,7 +180,7 @@ public class CustomerController {
         List<Pet> petList = customerService.findPetsByCustomerName(name);
         {
             return petList.isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The customer with id " + id + ", doesnt have any pets")
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The customer with name " + name + ", doesnt have any pets")
                     : ResponseEntity.ok(petList);
         }
     }

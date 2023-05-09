@@ -110,6 +110,7 @@ public class AppointmentService {
                 Optional<Customer> optionalCustomer = customerService.getCustomerById(customer);
                 if (optionalCustomer.isPresent()) {
                     Customer customerObj = optionalCustomer.get();
+                    //Optional<Customer> customerOptional = customerService.findPetsByCustomerName(customerObj.getName().equals(pet))
                     System.out.println("customer name " + customerObj.getName().toString());
                     // Verificar si las mascotas proporcionadas pertenecen al cliente
                     List<Pet> validPets = new ArrayList<>();
@@ -119,8 +120,20 @@ public class AppointmentService {
                         Optional<Pet> optionalPet = petService.getPetById(petId);
                         System.out.println("pet name " + optionalPet.get().getPetName().toString());
                         //if (optionalPet.isPresent() && appointment1.getCustomer().equals(customerObj)) {
-                            Pet pet = optionalPet.get();
-                            validPets.add(pet);
+                        Pet pet = optionalPet.get();
+                        System.out.println("Pet pet " + pet.getPetName().toString());
+                        List<Pet> customerPets = customerService.findPetsByCustomerName(customerObj.getName());
+                        System.out.println("customer pets " + customerPets.toString());
+                        for (Pet customerPet : customerPets) {
+                            System.out.println("pets en el for de customer " + customerPet.getPetName().toString());
+                            //no entra a este if
+                            if (customerPet.getPetName().equals(pet.getPetName())) {
+                               // validPets.add(customerPet);
+                                validPets.add(customerPet);
+                                System.out.println("lo que guardo al final " + validPets);
+                            }
+                        }
+                            //validPets.add(customerPet);
                             System.out.println("valid pets" + validPets);
 
                             appointment1.setPets(validPets);
