@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     List<Appointment> findByCustomerId(Long customerId);
 
+    List<Appointment> findByPetsId(Long petIds);
+
 
     public Optional<Appointment> findByAppointmentDateTime(LocalDateTime appointmentDateTime);
 
@@ -19,5 +21,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     List<Appointment> findByVetLicense(String license);
 
+    Optional<Appointment> findById(Long id);
 
 }

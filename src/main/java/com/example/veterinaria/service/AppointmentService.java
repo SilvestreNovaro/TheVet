@@ -255,6 +255,9 @@ public class AppointmentService {
        return appointmentRepository.findByAppointmentDateTime(appointmentDateTime);
    }
 
+   public List<Appointment> findByPetsId(Long petsId){
+        return appointmentRepository.findByPetsId(petsId);
+   }
 
 }
 
