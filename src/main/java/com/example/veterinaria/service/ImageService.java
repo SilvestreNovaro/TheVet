@@ -41,6 +41,12 @@ public class ImageService {
         return imageRepository.findByUrl(url);
     }
 
+    public Optional<Image> findById (Long id){
+        return imageRepository.findById(id);
+    }
+
+
+
 
     public Image saveImage(Image image) {
         return imageRepository.save(image);

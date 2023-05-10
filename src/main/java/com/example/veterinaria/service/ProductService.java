@@ -2,7 +2,6 @@ package com.example.veterinaria.service;
 
 
 import com.example.veterinaria.DTO.ProductDTO;
-import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.Category;
 import com.example.veterinaria.entity.Image;
 import com.example.veterinaria.entity.Product;
@@ -135,17 +134,21 @@ public class ProductService {
 
 
 
-    public void agregarImagenAProducto(Long idProducto, Image imagen) {
+    public void addImageToProduct(Long productId, Image image) {
         // busco el producto por el id
-        Product product = productRepository.findById(idProducto).orElseThrow(() -> new NotFoundExceptionLong(idProducto));
-        //obtengo la lista actual de imagenes que tenga el producto
-        List<Image> imagenes = product.getImages();
-        //Si el producto tiene imagenes, se agrega a la lista la nueva, si no tiene imagenes, se crea una lista vacia, y se agrega la imagen en cuestion despues se guarda el producto.
-        if(imagenes == null) {
-            imagenes = new ArrayList<>();
+        Product product = productRepository.findById(productId).orElseThrow(() -> new NotFoundExceptionLong(productId));
+        // Guardo la instancia de Image antes de agregarla a la lista
+        Image savedImage = imageRepository.save(image);
+        //obtengo la lista actual de images que tenga el producto
+        List<Image> images = product.getImages();
+        //Si el producto tiene images, se agrega a la lista la nueva, si no tiene images, se crea una lista vacia, y se agrega la image en cuestion despues se guarda el producto.
+        if(images == null) {
+            images = new ArrayList<>();
         }
-        imagenes.add(imagen);
-        product.setImages(imagenes);
+        images.add(savedImage);
+        // Actualizo la lista de imágenes del producto
+        product.setImages(images);
+        // Guardo el objeto Product, que contiene la lista de imágenes, en el repositorio
         productRepository.save(product);
     }
 

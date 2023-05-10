@@ -5,6 +5,7 @@ import com.example.veterinaria.DTO.ProductDTO;
 import com.example.veterinaria.entity.Category;
 import com.example.veterinaria.entity.Image;
 import com.example.veterinaria.entity.Product;
+import com.example.veterinaria.exception.NotFoundExceptionLong;
 import com.example.veterinaria.repository.ProductRepository;
 import com.example.veterinaria.service.CategoryService;
 import com.example.veterinaria.service.ImageService;
@@ -82,6 +83,18 @@ public class ProductController {
     }
 
 
+    @PostMapping("/addImage/{id}")
+    public ResponseEntity<?> addImage(@Validated @RequestBody Image image, @PathVariable Long id){
+        Optional<Product> productOptional = productService.findById(id);
+        if(productOptional.isPresent()){
+            Product product = productOptional.get();
+            productService.addImageToProduct(id, image);
+            return ResponseEntity.status(HttpStatus.CREATED).body("image added succesfully!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + id);
+    }
+
+
     @PutMapping("/modify/{id}")
     public ResponseEntity<?> update(@Validated @RequestBody ProductDTO productDTO, @PathVariable Long id){
         Optional<Product> optionalProduct = productRepository.findById(id);
@@ -138,6 +151,20 @@ public class ProductController {
             return ResponseEntity.ok("Products deleted succesfully " + productIds.toString());
         }
 
+    }
+
+
+    @DeleteMapping("/{productId}/images/{imageIds}")
+    public ResponseEntity<?> deleteImagesFromProduct(
+            @PathVariable Long productId,
+            @PathVariable List<Long> imageIds
+    ) {
+        try {
+            productService.deleteImagesFromproduct(productId, imageIds);
+            return ResponseEntity.ok("Images deleted from product successfully");
+        } catch (NotFoundExceptionLong e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
 
