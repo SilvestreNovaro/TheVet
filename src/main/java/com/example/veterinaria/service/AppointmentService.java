@@ -228,7 +228,7 @@ public class AppointmentService {
         }
 
         if (!deletedIds.isEmpty()) {
-            return ResponseEntity.ok("Se eliminaron las citas con los siguientes IDs: " + deletedIds);
+            return ResponseEntity.ok("The following appointments have been deleted: " + deletedIds);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointments for the ids " + notFoundIds);
         }

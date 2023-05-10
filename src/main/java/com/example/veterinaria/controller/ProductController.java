@@ -5,6 +5,7 @@ import com.example.veterinaria.DTO.ProductDTO;
 import com.example.veterinaria.entity.Category;
 import com.example.veterinaria.entity.Image;
 import com.example.veterinaria.entity.Product;
+import com.example.veterinaria.repository.ProductRepository;
 import com.example.veterinaria.service.CategoryService;
 import com.example.veterinaria.service.ImageService;
 import com.example.veterinaria.service.ProductService;
@@ -32,6 +33,7 @@ public class ProductController {
     private final CategoryService categoryService;
 
     private final ImageService imageService;
+    private final ProductRepository productRepository;
 
 
     @GetMapping("list")
@@ -78,6 +80,68 @@ public class ProductController {
 
 
     }
+
+
+    @PutMapping("/modify/{id}")
+    public ResponseEntity<?> update(@Validated @RequestBody ProductDTO productDTO, @PathVariable Long id){
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        Optional<Product> productOptional = productService.findByTitle(productDTO.getTitle());
+        if(productOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The title " + productDTO.getTitle() + " alredy exists on another product");
+        }
+        Optional<Category> categoryOptional = categoryService.findById(productDTO.getCategory_id());
+        if(categoryOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No category for the id " + productDTO.getCategory_id());
+        }
+        if(optionalProduct.isPresent()){
+            productService.updateProduct(productDTO, id);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Product updated succesfully!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + id);
+    }
+
+
+    @GetMapping("/findById/{id}")
+    public ResponseEntity<?> findById (@Validated @PathVariable Long id){
+        Optional<Product> optionalProduct = productService.findById(id);
+        if(optionalProduct.isPresent()){
+            return ResponseEntity.ok(optionalProduct);
+        } else {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No product found for the id " + id);
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete (@Validated @PathVariable Long id){
+        Optional<Product> productOptional = productService.findById(id);
+        if(productOptional.isPresent()){
+            productService.deleteProduct(id);
+             return ResponseEntity.ok("Appointment with id " + id + " deleted");
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + id);
+        }
+    }
+
+    @DeleteMapping("/deleteByIds")
+    public ResponseEntity<?> deleteProductsByIds(@Validated @RequestParam Long[] productIds){
+       return productService.deleteVariousProductsByIds(productIds);
+
+    }
+
+    @DeleteMapping("/deleteManyProducts")
+    public ResponseEntity<Object> deleteProducts(@RequestParam List <Long> productIds) {
+        List<Long> deletedIds = productService.deleteProducts(productIds);
+        if(deletedIds.size()>0){
+            return ResponseEntity.ok("non existent ids " + deletedIds);
+        }else{
+            return ResponseEntity.ok("Products deleted succesfully " + productIds.toString());
+        }
+
+    }
+
+
+
 
 
 

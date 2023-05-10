@@ -52,6 +52,16 @@ public class CustomerService {
     public Customer createCustomerDTO(CustomerDTO customerDTO) {
 
         Customer customer1 = new Customer();
+
+        Long role = customerDTO.getRole_id();
+        String name = customerDTO.getName();
+        String lastName = customerDTO.getLastName();
+        String address = customerDTO.getAddress();
+        String email = customerDTO.getEmail();
+        Long contactNumber = customerDTO.getContactNumber();
+
+
+
         customer1.setName(customerDTO.getName());
         customer1.setLastName(customerDTO.getLastName());
         customer1.setAddress(customerDTO.getAddress());
@@ -64,7 +74,9 @@ public class CustomerService {
         }
 
          */
-        customer1.setRole(roleService.findById(customerDTO.getRole_id()).get());
+        Optional<Role> roleOptional = roleService.findById(role);
+        roleOptional.ifPresent(customer1::setRole);
+        //customer1.setRole(roleService.findById(customerDTO.getRole_id()).get());
 
 
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());

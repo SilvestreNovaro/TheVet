@@ -26,7 +26,7 @@ public class Product {
     private String description;
 
 
-    @OneToMany(cascade = CascadeType.DETACH, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.DETACH) //, orphanRemoval = true)
     @JoinColumn(name = "product_id")
     private List<Image> images;
 

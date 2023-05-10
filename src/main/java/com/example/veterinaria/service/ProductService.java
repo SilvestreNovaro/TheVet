@@ -2,13 +2,16 @@ package com.example.veterinaria.service;
 
 
 import com.example.veterinaria.DTO.ProductDTO;
+import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.Category;
 import com.example.veterinaria.entity.Image;
 import com.example.veterinaria.entity.Product;
 import com.example.veterinaria.exception.NotFoundExceptionLong;
 import com.example.veterinaria.repository.ImageRepository;
 import com.example.veterinaria.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -62,9 +65,73 @@ public class ProductService {
 
     }
 
+
+    public void updateProduct(ProductDTO productDTO, Long id){
+        Optional<Product> productOptional = productRepository.findById(id);
+        if(productOptional.isPresent()){
+            Product product = productOptional.get();
+            if(productDTO.getTitle() !=null && !productDTO.getTitle().isEmpty()) product.setTitle(productDTO.getTitle());
+            if(productDTO.getDescription() !=null && !productDTO.getTitle().isEmpty()) product.setTitle(productDTO.getTitle());
+            //Creo una lista savedImages que almacenara las instancias de Image guardadas en la base de datos.
+            List<Image> savedImages = new ArrayList<>();
+            if(productDTO.getImages() !=null && !productDTO.getImages().isEmpty()){
+                //Este bucle itera sobra cada instancia de "Image" en la lista propductDTO.getImages()
+                for (Image image : productDTO.getImages()) {
+                    // Dentro del bucle, cada instancia de Image se guarda en la base de datos utilizando save(image). La instancia guardada se asigna a la variable "savedImage".
+                    Image savedImage = imageRepository.save(image);
+                    //La instancia guardada de Image se agrega a la lista savedImages, que almacenara las intancias guardadas.
+                    savedImages.add(savedImage);
+                }
+            }
+            //Despues de terminar el bucle, se establece la liosta de imagenes guardadas (savedImages) en la entidad product. Esto actualiza la lista de imagenes en la entidad Product con las instancias de Image guardadas en la base de datos.
+            product.setImages(savedImages);
+
+            productRepository.save(product);
+        }
+    }
+
     public void deleteProduct(Long id){
         productRepository.deleteById(id);
     }
+
+    public ResponseEntity<?> deleteVariousProductsByIds(Long[] productIds) {
+        List<Long> deletedIds = new ArrayList<>();
+        List<Long> notFoundIds = new ArrayList<>();
+
+        for (Long productId : productIds) {
+            Optional<Product> productOptional = productRepository.findById(productId);
+            if(productOptional.isPresent()){
+                productRepository.deleteById(productId);
+                deletedIds.add(productId);
+            } else {
+                notFoundIds.add(productId);
+            }
+
+        }
+        if(!deletedIds.isEmpty()){
+            return ResponseEntity.ok("The following products have been deleted " + deletedIds);
+
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Products not found fot the ids " + notFoundIds);
+        }
+    }
+
+    @Transactional
+    public List<Long> deleteProducts(List<Long> productIds) {
+        List<Long> InexistentIds = new ArrayList<>();
+
+        for (Long productId : productIds) {
+            Optional<Product> productOptional = productRepository.findById(productId);
+            if (productOptional.isPresent()) {
+                productRepository.delete(productOptional.get());
+            } else {
+                InexistentIds.add(productId);
+            }
+        }
+
+        return InexistentIds;
+    }
+
 
 
 

@@ -265,8 +265,14 @@ public class AppointmentController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteAppointment(@PathVariable Long id) {
-        appointmentService.deleteAppointmentId(id);
-        return ResponseEntity.ok("Appointment with id " + id + " deleted");
+        Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
+        if(appointmentOptional.isPresent()){
+            appointmentService.deleteAppointmentId(id);
+            return ResponseEntity.ok("Appointment with id " + id + " deleted");
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointment found with the given id " + id);
+        }
+
     }
 
 
