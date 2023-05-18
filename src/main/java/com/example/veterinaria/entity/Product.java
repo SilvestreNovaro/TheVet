@@ -25,12 +25,19 @@ public class Product {
 
     private String description;
 
+    @Override
+    public String toString() {
+        return title;
+    }
+
+
+
 
     @OneToMany(cascade = CascadeType.DETACH) //, orphanRemoval = true)
     @JoinColumn(name = "product_id")
     private List<Image> images;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
     private Category category;
 }

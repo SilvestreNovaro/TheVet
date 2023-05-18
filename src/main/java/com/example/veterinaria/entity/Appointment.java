@@ -48,8 +48,12 @@ public class Appointment {
     private List<Pet> pets = new ArrayList<>();
 
 
+
+
     public void setPets(List<Pet> pets) {
         this.pets = pets;
     }
+
+
 }
 

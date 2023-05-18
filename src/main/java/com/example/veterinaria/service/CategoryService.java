@@ -2,12 +2,16 @@ package com.example.veterinaria.service;
 
 
 import com.example.veterinaria.entity.Category;
+import com.example.veterinaria.entity.Product;
+import com.example.veterinaria.exception.NotFoundExceptionLong;
 import com.example.veterinaria.repository.CategoryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -52,6 +56,76 @@ public class CategoryService {
     public Optional<Category> findByCategoryName(String categoryName){
         return categoryRepository.findByCategoryName(categoryName);
     }
+
+    public List<Product> getProductsFromCategory(Long categoryId){
+        return categoryRepository.getProductsFromCategory(categoryId);
+    }
+
+    /*public void deleteProductsFromCategory(Long categoryId, List<Long> productIds){
+        // find the category with id
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new NotFoundExceptionLong(categoryId));
+        System.out.println("CATEGORY: " + category);
+        // obtein the products the category has
+        List<Product> products = categoryRepository.getProductsFromCategory(categoryId);
+        System.out.println("category.getProducts() = " + products.toString());
+        //if the category has products then:
+        if(products !=null) {
+            System.out.println("products en if = " + products);
+            //removes the product if the id is a match.
+
+            products.removeIf(p -> productIds.contains(p.getId()) && products.contains(p));
+
+
+            System.out.println("products.removeIf = " + products);
+            // set the new values of products to the category
+            category.setProducts(products);
+            System.out.println("SetProducts + " + products);
+            //save the category
+            categoryRepository.save(category);
+            System.out.println(category.getProducts());
+        }
+    }
+
+
+    /*public void deleteProductsFromCategory(Long categoryId, List<Long> productIds) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundExceptionLong(categoryId));
+
+        List<Product> productsToRemove = new ArrayList<>();
+
+        for (Product product : category.getProducts()) {
+            if (productIds.contains(product.getId())) {
+                productsToRemove.add(product);
+            }
+        }
+
+        category.getProducts().removeAll(productsToRemove);
+        categoryRepository.save(category);
+    }
+
+     */
+
+
+
+    public void deleteProductsFromCategory(Long categoryId, List<Long> productIds) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundExceptionLong(categoryId));
+
+        List<Product> productsToRemove = new ArrayList<>();
+
+        for (Product product : category.getProducts()) {
+            if (productIds.contains(product.getId())) {
+                productsToRemove.add(product);
+                product.setCategory(null); // Eliminar la referencia de la categoría en el producto
+            }
+        }
+
+        category.getProducts().removeAll(productsToRemove);
+        categoryRepository.save(category);
+    }
+
+
+
 
 
 }

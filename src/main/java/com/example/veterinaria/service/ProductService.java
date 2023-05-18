@@ -156,14 +156,21 @@ public class ProductService {
         // busco el producto por id
         Product product = productRepository.findById(idProduct).orElseThrow(() -> new NotFoundExceptionLong(idProduct));
         // obtengo las imagenes del producto
-        List<Image> imagenes = product.getImages();
+        List<Image> images = product.getImages();
         //si la lista de imagenes no esta vacia, llamo al metodo removeIf
-        if(imagenes != null) {
+        if(images != null) {
             //indica que la función toma un parámetro i (que representa un objeto de la clase Image) y devuelve un valor booleano (true o false) según si el ID de la imagen está contenido en la lista de IDs de imágenes que se deben eliminar.
-            imagenes.removeIf(i -> imagesIds.contains(i.getId()));
-            product.setImages(imagenes);
+            images.removeIf(i -> imagesIds.contains(i.getId()));
+            product.setImages(images);
             productRepository.save(product);
         }
+    }
+
+    public void deleteCategoryFromProduct(Long idProduct, Long idCategory){
+        Product product = productRepository.findById(idProduct).orElseThrow(() -> new NotFoundExceptionLong(idProduct));
+        Category category = product.getCategory();
+
+
     }
 
 
