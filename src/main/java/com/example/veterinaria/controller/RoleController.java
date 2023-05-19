@@ -4,6 +4,7 @@ import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.RoleService;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -67,6 +68,15 @@ public class RoleController {
         return ResponseEntity.status(HttpStatus.OK).body("Role with the id " + id + "deleted");
     }
 
+    @GetMapping("/find/{id}")
+    public ResponseEntity<?> findById(@Validated @PathVariable Long id){
+        Optional<Role> roleOptional = roleService.findById(id);
+        if(roleOptional.isPresent()){
+            return ResponseEntity.ok(roleOptional);
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Role with the id  " + id + " does not exist on our registers");
+        }
+    }
 
 
 

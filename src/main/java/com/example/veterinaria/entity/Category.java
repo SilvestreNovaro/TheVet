@@ -33,7 +33,7 @@ public class Category {
         return  categoryName + "";
     }
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.DETACH)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Product> products;
 

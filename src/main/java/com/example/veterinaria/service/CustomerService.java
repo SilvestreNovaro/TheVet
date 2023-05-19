@@ -89,6 +89,7 @@ public class CustomerService {
 
     public void updateCustomer(CustomerDTO customerDTO, Long id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
+        System.out.println("optionalCustomer = " + optionalCustomer);
         if(optionalCustomer.isPresent()){
             // como no puedo setearle a un optional, guardo en una variable ya del tipo del objeto Customer para setearle los valores.
             Customer existingCustomer = optionalCustomer.get();
@@ -99,11 +100,14 @@ public class CustomerService {
             if(customerDTO.getEmail() !=null && !customerDTO.getEmail().isEmpty()) existingCustomer.setEmail(customerDTO.getEmail());
             if(customerDTO.getPets() !=null && !customerDTO.getPets().isEmpty()) existingCustomer.setPets(customerDTO.getPets());
             Optional<Role> optionalRole = roleService.findById(customerDTO.getRole_id());
+            System.out.println("optionalRole = " + optionalRole);
             if(optionalRole.isPresent()){
                 Role role = optionalRole.get();
                 if(customerDTO.getRole_id() !=null && !customerDTO.getRole_id().equals("")) existingCustomer.setRole(role);
 
             }
+
+
 
             if(customerDTO.getPassword() !=null && !customerDTO.getPassword().isEmpty()){
                 String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());

@@ -42,6 +42,7 @@ public class AppointmentService {
         Long appCustomerId = appointmentDTO.getCustomer_id();
         Long appVetId = appointmentDTO.getVet_id();
         List<Long> appPetIds = appointmentDTO.getPetIds();
+        // 1,2, 3.
 
 
 
@@ -61,12 +62,15 @@ public class AppointmentService {
         // customer.getPets(): Obtiene la lista de mascotas (pets) del objeto customer
         // .stream(): Convierte la lista de mascotas en un flujo de elementos, lo cual permite realizar operaciones de filtrado y transformación.
         List<Pet> selectedPets = customer.getPets().stream()
-                //.filter(pet -> appPetIds.contains(pet.getId())): Filtra el flujo de mascotas y mantiene solo aquellas cuyo ID se encuentra en la lista de appPetIds. Es decir, se seleccionan únicamente las mascotas que fueron elegidas por el cliente.
+                // .filter(pet -> appPetIds . Se aplica un filtro al flujo de mascotas para incluir solo aquellas mascotas cuyos identificadores (pet.getId()) están presentes en la lista de identificadores de mascotas proporcionada (appPetIds) por el cliente. La expresión appPetIds.contains(pet.getId()) comprueba si el identificador de la mascota está presente en la lista de identificadores.
+
                 .filter(pet -> appPetIds.contains(pet.getId()))
                 // .collect(Collectors.toList()): Recopila los elementos del flujo en una lista, devolviendo una lista de mascotas seleccionadas (selectedPets).
                 .collect(Collectors.toList());
         // if (selectedPets.size() != appPetIds.size()): Verifica si el tamaño de la lista de mascotas seleccionadas es diferente al tamaño de la lista de appPetIds. Si son diferentes, significa que uno o más IDs de mascotas no se encontraron en la lista de mascotas del cliente.
+        // Es decir, si yo en postman pongo ids 1,2,3 en appPetIds se guarda 1,2 y 3. Pero quizas en selectedPets no se encontraron todos los ids porque no son de ese cliente, entonces una lista puede quedar mas chica que la otra, significando que el id de la mascota no es de ese cliente.
         if (selectedPets.size() != appPetIds.size()) {
+            // 1 ,2                     //1,2,3
             //throw new NotFoundException("One or more petIds not found for the customer"): Lanza una excepción NotFoundException con un mensaje indicando que uno o más IDs de mascotas no se encontraron para el cliente.
             throw new NotFoundException("One or more petIds not found for the customer");
         }

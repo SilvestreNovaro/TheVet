@@ -70,7 +70,13 @@ public class ProductService {
         if(productOptional.isPresent()){
             Product product = productOptional.get();
             if(productDTO.getTitle() !=null && !productDTO.getTitle().isEmpty()) product.setTitle(productDTO.getTitle());
-            if(productDTO.getDescription() !=null && !productDTO.getTitle().isEmpty()) product.setTitle(productDTO.getTitle());
+            if(productDTO.getDescription() !=null && !productDTO.getDescription().isEmpty()) product.setDescription(productDTO.getDescription());
+            if(productDTO.getCategory_id() !=null && !productDTO.getCategory_id().equals("")){
+                Long categoryOptional = productDTO.getCategory_id();
+                Optional<Category> optionalCategory = categoryService.findById(categoryOptional);
+                Category category = optionalCategory.get();
+                product.setCategory(category);
+            };
             //Creo una lista savedImages que almacenara las instancias de Image guardadas en la base de datos.
             List<Image> savedImages = new ArrayList<>();
             if(productDTO.getImages() !=null && !productDTO.getImages().isEmpty()){

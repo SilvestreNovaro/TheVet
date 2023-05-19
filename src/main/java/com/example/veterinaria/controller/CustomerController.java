@@ -114,7 +114,7 @@ public class CustomerController {
                         "<tr>" +
                         "<th>Nombre</th>" +
                         "<th>Apellido</th>" +
-                        "<th>Ciudad</th>" +
+                        "<th>Horario</th>" +
                         "<th>Cancelada</th>" +
                         "</tr>" +
                         "<tr>" +
@@ -141,10 +141,13 @@ public class CustomerController {
     public ResponseEntity<?> update(@Validated @RequestBody CustomerDTO customerDTO, @PathVariable Long id) {
         Optional<Customer> sameEmailCustomer = customerService.findByEmail(customerDTO.getEmail());
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
+        System.out.println("customerOptional = " + customerOptional);
         Optional<Role> roleOptional = roleService.findById(customerDTO.getRole_id());
         if(roleOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The roleId " + customerDTO.getRole_id() + " doesnt exist");
         }
+
+
         if (sameEmailCustomer.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer with the email  " + customerDTO.getEmail() + " is already on our registers");
         }
