@@ -21,8 +21,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
 
 
-    @Query("SELECT c.pets FROM Customer c WHERE c.name = :name")
-    List<Pet> findPetsByCustomerName(@Param("name") String name);
+    @Query("SELECT c.pets FROM Customer c WHERE c.lastName = :lastName")
+    List<Pet> findPetsByCustomerName(@Param("lastName") String lastName);
 
 
     @Query("SELECT c.pets FROM Customer c WHERE c.lastName = :lastName")

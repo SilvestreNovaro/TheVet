@@ -65,7 +65,7 @@ public class RoleController {
 
         }
             roleService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Role with the id " + id + "deleted");
+        return ResponseEntity.status(HttpStatus.OK).body("Role with the id " + id + " deleted");
     }
 
     @GetMapping("/find/{id}")

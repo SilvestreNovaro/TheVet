@@ -87,7 +87,7 @@ public class AppointmentService {
 
 
 
-    public void updateAppointment(AppointmentDTO appointmentDTO, Long id) {
+    public void updateAppointmentDTO(AppointmentDTO appointmentDTO, Long id) {
 
 
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
@@ -103,10 +103,8 @@ public class AppointmentService {
         System.out.println("customer id " + customer);
         var vet = appointmentDTO.getVet_id();
 
-
         if (optionalAppointment.isPresent()) {
             Appointment appointment1 = optionalAppointment.get();
-            //System.out.println(appointment1.getAppointmentNotes().toString());
             if (appDateTime != null && !appDateTime.equals("")) appointment1.setAppointmentDateTime(appDateTime);
             if (appReason != null && !appReason.isEmpty()) appointment1.setAppointmentNotes(appReason);
             if (appNotes != null && !appNotes.isEmpty()) appointment1.setAppointmentReason(appNotes);
@@ -114,33 +112,16 @@ public class AppointmentService {
                 Optional<Customer> optionalCustomer = customerService.getCustomerById(customer);
                 if (optionalCustomer.isPresent()) {
                     Customer customerObj = optionalCustomer.get();
-                    //Optional<Customer> customerOptional = customerService.findPetsByCustomerName(customerObj.getName().equals(pet))
-                    System.out.println("customer name " + customerObj.getName().toString());
-                    // Verificar si las mascotas proporcionadas pertenecen al cliente
                     List<Pet> validPets = new ArrayList<>();
-                    System.out.println("valid pets array " + validPets);
                     for (Long petId : appPetIds) {
-                        System.out.println("pets ids on for " + petId);
                         Optional<Pet> optionalPet = petService.getPetById(petId);
-                        System.out.println("pet name " + optionalPet.get().getPetName().toString());
-                        //if (optionalPet.isPresent() && appointment1.getCustomer().equals(customerObj)) {
                         Pet pet = optionalPet.get();
-                        System.out.println("Pet pet " + pet.getPetName().toString());
-                        //List<Pet> customerPets = customerService.findPetsByCustomerName(customerObj.getName());
                         List<Pet> customerPets = customerService.findPetsByCustomerLastName(customerObj.getLastName());
-                        System.out.println("customer pets " + customerPets.toString());
                         for (Pet customerPet : customerPets) {
-                            System.out.println("pets en el for de customer " + customerPet.getPetName().toString());
-                            //no entra a este if
                             if (customerPet.getPetName().equals(pet.getPetName())) {
-                               // validPets.add(customerPet);
                                 validPets.add(customerPet);
-                                System.out.println("lo que guardo al final " + validPets);
                             }
                         }
-                            //validPets.add(customerPet);
-                            System.out.println("valid pets" + validPets);
-
                             appointment1.setPets(validPets);
                             appointment1.setCustomer(customerObj);
                         }
@@ -156,6 +137,15 @@ public class AppointmentService {
                 }
             }
         }
+
+
+    public void updateAppointment(Long appointmentId, Appointment appointment){
+        Appointment appointment1 = appointmentRepository.findById(appointmentId).get();
+        if(appointment.getAppointmentDateTime() !=null && !appointment.getAppointmentDateTime().equals("")) appointment1.setAppointmentDateTime(appointment.getAppointmentDateTime());
+        if(appointment.getAppointmentReason() !=null && !appointment.getAppointmentReason().isEmpty()) appointment1.setAppointmentReason(appointment.getAppointmentReason());
+        if(appointment.getAppointmentNotes() !=null && !appointment.getAppointmentNotes().isEmpty()) appointment1.setAppointmentNotes(appointment.getAppointmentNotes());
+        appointmentRepository.save(appointment1);
+    }
 
 
     public Optional<Appointment> getAppointmentById(Long id) {

@@ -191,13 +191,28 @@ public class AppointmentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The VetId " + appointmentDTO.getVet_id() + " doesnt exist");
         }
         if(appointmentOptional.isPresent()) {
-            appointmentService.updateAppointment(appointmentDTO, id);
+            appointmentService.updateAppointmentDTO(appointmentDTO, id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Appointment updated succesfully!!");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointment found for the id " + id);
     }
 
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateAppointment(@Validated @RequestBody Appointment appointment, @PathVariable Long id) {
+        Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
+        System.out.println("appointmentOptional = " + appointmentOptional);
+        if (appointmentOptional.isPresent()) {
+            LocalDateTime appoDateTime = appointment.getAppointmentDateTime();
+            Optional<Appointment> localDateTimeOptional = appointmentService.findByAppointmentDateTime(appoDateTime);
+            if (localDateTimeOptional.isPresent()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appoDateTime);
+            }
+            appointmentService.updateAppointment(id, appointment);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Appointment updated succesfully!!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointment found for the id " + id);
+    }
 
 
 

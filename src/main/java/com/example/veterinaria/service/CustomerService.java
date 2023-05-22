@@ -3,9 +3,11 @@ package com.example.veterinaria.service;
 import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.entity.Product;
 import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
+import com.example.veterinaria.repository.PetRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,7 @@ public class CustomerService {
 
     private RoleService roleService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
+    private final PetRepository petRepository;
 
 
     public Customer createCustomer(Customer customer) {
@@ -87,37 +89,56 @@ public class CustomerService {
 
 
 
-    public void updateCustomer(CustomerDTO customerDTO, Long id) {
+    public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
         System.out.println("optionalCustomer = " + optionalCustomer);
-        if(optionalCustomer.isPresent()){
+        if (optionalCustomer.isPresent()) {
             // como no puedo setearle a un optional, guardo en una variable ya del tipo del objeto Customer para setearle los valores.
             Customer existingCustomer = optionalCustomer.get();
-            if(customerDTO.getName() !=null && !customerDTO.getName().isEmpty()) existingCustomer.setName(customerDTO.getName());
-            if(customerDTO.getLastName() !=null && !customerDTO.getLastName().isEmpty()) existingCustomer.setLastName(customerDTO.getLastName());
-            if(customerDTO.getAddress() !=null && !customerDTO.getAddress().isEmpty()) existingCustomer.setAddress(customerDTO.getAddress());
-            if(customerDTO.getContactNumber() !=null && !customerDTO.getContactNumber().equals("")) existingCustomer.setContactNumber(customerDTO.getContactNumber());
-            if(customerDTO.getEmail() !=null && !customerDTO.getEmail().isEmpty()) existingCustomer.setEmail(customerDTO.getEmail());
-            if(customerDTO.getPets() !=null && !customerDTO.getPets().isEmpty()) existingCustomer.setPets(customerDTO.getPets());
-            Optional<Role> optionalRole = roleService.findById(customerDTO.getRole_id());
-            System.out.println("optionalRole = " + optionalRole);
-            if(optionalRole.isPresent()){
-                Role role = optionalRole.get();
-                if(customerDTO.getRole_id() !=null && !customerDTO.getRole_id().equals("")) existingCustomer.setRole(role);
+            if (customerDTO.getName() != null && !customerDTO.getName().isEmpty())
+                existingCustomer.setName(customerDTO.getName());
+            if (customerDTO.getLastName() != null && !customerDTO.getLastName().isEmpty())
+                existingCustomer.setLastName(customerDTO.getLastName());
+            if (customerDTO.getAddress() != null && !customerDTO.getAddress().isEmpty())
+                existingCustomer.setAddress(customerDTO.getAddress());
+            if (customerDTO.getContactNumber() != null && !customerDTO.getContactNumber().equals(""))
+                existingCustomer.setContactNumber(customerDTO.getContactNumber());
+            if (customerDTO.getEmail() != null && !customerDTO.getEmail().isEmpty())
+                existingCustomer.setEmail(customerDTO.getEmail());
+            if (customerDTO.getPets() != null && !customerDTO.getPets().isEmpty())
+                existingCustomer.setPets(customerDTO.getPets());
+            if (customerDTO.getRole_id() != null && !customerDTO.getRole_id().equals("")) {
+                Optional<Role> optionalRole = roleService.findById(customerDTO.getRole_id());
+                if (optionalRole.isPresent()) {
+                    Role role = optionalRole.get();
+                    existingCustomer.setRole(role);
+                }
+            }
+                if (customerDTO.getPassword() != null && !customerDTO.getPassword().isEmpty()) {
+                    String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
+                    existingCustomer.setPassword(encodedPassword);
+                }
 
+                customerRepository.save(existingCustomer);
             }
 
-
-
-            if(customerDTO.getPassword() !=null && !customerDTO.getPassword().isEmpty()){
-                String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
-                existingCustomer.setPassword(encodedPassword);
-            }
-
-            customerRepository.save(existingCustomer);
         }
 
-    }
+
+     public void updateCustomer(Long id, Customer customer){
+        Customer customer1 = customerRepository.findById(id).get();
+        if(customer.getName()!=null && !customer.getName().isEmpty()) customer1.setName(customer.getName());
+        if(customer.getLastName() != null && !customer.getLastName().isEmpty()) customer1.setLastName(customer1.getLastName());
+        if(customer.getAddress() != null && !customer.getAddress().isEmpty()) customer1.setAddress(customer.getAddress());
+        if(customer.getEmail() != null && !customer.getEmail().isEmpty()) customer1.setEmail(customer.getEmail());
+        if(customer.getContactNumber() != null && !customer.getContactNumber().equals("")) customer1.setContactNumber(customer1.getContactNumber());
+        if(customer.getPassword() != null && !customer.getPassword().isEmpty()){
+            String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
+            customer1.setPassword(encodedPassword);
+        }
+        customerRepository.save(customer1);
+      }
+
 
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
@@ -200,6 +221,28 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
+
+    public void addAnimalToCustomer(Long customerId, Pet pet){
+        Customer customer = customerRepository.findById(customerId).get();
+        customer.getPets().add(pet);
+        customerRepository.save(customer);
+    }
+
+    public void addMultiplePetsToCustomer(Long customerId, List<Pet> pets){
+        Customer customer = customerRepository.findById(customerId).get();
+        List<Pet> petList = customer.getPets();
+        List<Pet> petList1 = new ArrayList<>();
+        for(Pet pet: pets){
+            if(pets.size()>0){
+                petList1.add(pet);
+                petList.addAll(petList1);
+                customer.setPets(petList);
+            }
+        }
+        customerRepository.save(customer);
+
+    }
+
     public void addRoleToCustomer(Long customerId, Role role){
         Customer customer = customerRepository.findById(customerId).get();
         //if(customer.getRole() == null || customer.getRole().equals(""))
@@ -207,9 +250,32 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
-    public void addAnimalToCustomer(Long customerId, Pet pet){
+
+
+
+    public void deletePetsById(Long customerId, List<Long> petIds){
         Customer customer = customerRepository.findById(customerId).get();
-        customer.getPets().add(pet);
+        List<Pet> pets = customer.getPets();
+        System.out.println("customer.getPets() = " + pets);
+        List<Pet> petsToRemove = new ArrayList<>();
+        for(Long petId : petIds){
+            System.out.println("petId = " + petId);
+            System.out.println("petIds = " + petIds);
+
+            // La variable pet se sobreescribe en cada vuelta, guardando el objeto Pet que contenga el id proporcionado en petIds.
+            Pet pet = pets.stream().filter(p-> p.getId().equals(petId)).findFirst().orElse(null);
+            System.out.println("pet = " + pet);
+            if(pet !=null){
+               petsToRemove.add(pet);
+
+            }
+            pets.removeAll(petsToRemove);
+            customer.setPets(pets);
+
+        }
+
+
+
         customerRepository.save(customer);
     }
 

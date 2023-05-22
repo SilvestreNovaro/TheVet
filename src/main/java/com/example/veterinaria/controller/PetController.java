@@ -87,12 +87,13 @@ public class PetController {
 
 
 
+
     @GetMapping("/getSpecies/{petSpecies}")
     public ResponseEntity<?> getSpecies(@PathVariable String petSpecies) {
         List<Pet> petList = petService.getAllPets();
         List<Pet> petList1 = new ArrayList<>();
         for (Pet pet : petList) {
-            if (pet.getPetSpecies().equals(petSpecies)) {
+            if (pet.getPetSpecies() !=null && pet.getPetSpecies().equals(petSpecies)) {
                 petList1.add(pet);
                 System.out.println("Pet species: " + pet.getPetSpecies() + " " + pet.getPetName());
                 }

@@ -64,8 +64,23 @@ public class ProductService {
 
     }
 
+    public void updateProduct(Long id, Product product){
 
-    public void updateProduct(ProductDTO productDTO, Long id){
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        if(optionalProduct.isPresent()){
+            Product product1 = optionalProduct.get();
+            System.out.println("product1 = " + product1);
+            System.out.println("product = " + product);
+            if(product.getTitle() != null && !product.getTitle().equals("")) product1.setTitle(product.getTitle());
+            if(product.getDescription() !=null && !product.equals("")) product1.setDescription(product.getDescription());
+            productRepository.save(product1);
+        }
+
+
+    }
+
+
+    public void updateProductDTO(ProductDTO productDTO, Long id){
         Optional<Product> productOptional = productRepository.findById(id);
         if(productOptional.isPresent()){
             Product product = productOptional.get();
@@ -87,13 +102,62 @@ public class ProductService {
                     //La instancia guardada de Image se agrega a la lista savedImages, que almacenara las intancias guardadas.
                     savedImages.add(savedImage);
                 }
+
             }
-            //Despues de terminar el bucle, se establece la liosta de imagenes guardadas (savedImages) en la entidad product. Esto actualiza la lista de imagenes en la entidad Product con las instancias de Image guardadas en la base de datos.
+            List<Image> currentImages = product.getImages();
+            savedImages.addAll(currentImages);
+            product.setImages(savedImages);
+            productRepository.save(product);
+            //Despues de terminar el bucle, se establece la lista de imagenes guardadas (savedImages) en la entidad product. Esto actualiza la lista de imagenes en la entidad Product con las instancias de Image guardadas en la base de datos.
+        }
+    }
+
+
+
+
+
+
+    public void updatxeProductDTO(ProductDTO productDTO, Long id) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            if (productDTO.getTitle() != null && !productDTO.getTitle().isEmpty()) {
+                product.setTitle(productDTO.getTitle());
+            }
+            if (productDTO.getDescription() != null && !productDTO.getDescription().isEmpty()) {
+                product.setDescription(productDTO.getDescription());
+            }
+            if (productDTO.getCategory_id() != null && !productDTO.getCategory_id().equals("")) {
+                Long categoryOptional = productDTO.getCategory_id();
+                Optional<Category> optionalCategory = categoryService.findById(categoryOptional);
+                Category category = optionalCategory.get();
+                product.setCategory(category);
+            }
+
+            // Actualizar la lista de imágenes
+            List<Image> savedImages = new ArrayList<>();
+            if (productDTO.getImages() != null && !productDTO.getImages().isEmpty()) {
+                for (Image image : productDTO.getImages()) {
+                    Image savedImage = imageRepository.save(image);
+                    savedImages.add(savedImage);
+                }
+            }
+
+            // Agregar las imágenes existentes en el producto
+            List<Image> currentImages = product.getImages();
+                savedImages.addAll(currentImages);
+
+            // Establecer la lista de imágenes actualizada en el producto
             product.setImages(savedImages);
 
+            // Guardar el producto actualizado
             productRepository.save(product);
         }
     }
+
+
+
+
 
     public void deleteProduct(Long id){
         productRepository.deleteById(id);
@@ -157,6 +221,25 @@ public class ProductService {
         // Guardo el objeto Product, que contiene la lista de imágenes, en el repositorio
         productRepository.save(product);
     }
+
+
+    public void addImagesToProduct(Long productId, List<Image> images){
+        Product product = productRepository.findById(productId).get();
+        List<Image> imageList = product.getImages();
+        List<Image> updatedList = new ArrayList<>();
+        for(Image image : images){
+            imageRepository.save(image);
+            if(image != null){
+                updatedList.add(image);
+            }
+            updatedList.addAll(imageList);
+            product.setImages(updatedList);
+            productRepository.save(product);
+            System.out.println("product = " + product);
+        }
+    }
+
+
 
     public void deleteImagesFromproduct(Long idProduct, List<Long> imagesIds) {
         // busco el producto por id

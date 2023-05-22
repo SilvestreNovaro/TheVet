@@ -94,8 +94,19 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + id);
     }
 
+    @PostMapping("/addManyImages/{productId}")
+    public ResponseEntity<?> addImagesToProduct(@Validated @PathVariable Long productId, @RequestBody List<Image> images){
+        Optional<Product> productOptional = productService.findById(productId);
+        if(productOptional.isPresent()){
+            Product product = productOptional.get();
+            productService.addImagesToProduct(productId, images);
+            return ResponseEntity.status(HttpStatus.CREATED).body("images added succesfully!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + productId);
+    }
 
-    @PutMapping("/modify/{id}")
+
+    @PutMapping("/modifyDTO/{id}")
     public ResponseEntity<?> update(@Validated @RequestBody ProductDTO productDTO, @PathVariable Long id){
         Optional<Product> optionalProduct = productRepository.findById(id);
         Optional<Product> productOptional = productService.findByTitle(productDTO.getTitle());
@@ -107,7 +118,21 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No category for the id " + productDTO.getCategory_id());
         }
         if(optionalProduct.isPresent()){
-            productService.updateProduct(productDTO, id);
+            productService.updatxeProductDTO(productDTO, id);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Product updated succesfully!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + id);
+    }
+
+    @PatchMapping("/modifyProduct/{id}")
+    public ResponseEntity<?> updatxeProduct(@Validated @PathVariable Long id, @RequestBody Product product){
+        Optional<Product> productOptional = productService.findById(id);
+        Optional<Product> optionalProduct = productService.findByTitle(product.getTitle());
+        if(optionalProduct.isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The title " + product.getTitle() + " alredy exists on another product");
+        }
+        if(productOptional.isPresent()){
+            productService.updateProduct(id, product);
             return ResponseEntity.status(HttpStatus.CREATED).body("Product updated succesfully!");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + id);

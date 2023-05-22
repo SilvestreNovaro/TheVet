@@ -69,4 +69,6 @@ public class VetService {
         vetRepository.deleteByName(name);
     }
 
+
+
 }

@@ -92,6 +92,14 @@ public class VetController {
                 : ResponseEntity.ok(vetOptional);
     }
 
+    @GetMapping("/findById/{id}")
+    public ResponseEntity<?> findById(@Validated @PathVariable Long id){
+        Optional<Vet> vetOptional = vetService.getVetById(id);
+        return vetOptional.isPresent()
+                ? ResponseEntity.ok(vetOptional)
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("The vet with id : " + id + " doesnt belong to any Vet on this vet");
+    }
+
     @DeleteMapping("/deleteByName/{name}")
     public ResponseEntity<?> deleteByName (@PathVariable String name){
         Optional<Vet> optionalVet = vetService.findByName(name);
