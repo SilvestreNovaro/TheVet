@@ -20,10 +20,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
 @Service
+
 public class AppointmentService {
 
 
@@ -79,8 +81,6 @@ public class AppointmentService {
         appointment.setAppointmentReason(appReason);
         appointment.setAppointmentDateTime(appLocalDate);
         appointment.setPets(selectedPets);
-        //appointment.setPets(pets);
-
 
         return appointmentRepository.save(appointment);
     }

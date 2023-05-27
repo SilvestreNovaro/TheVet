@@ -50,9 +50,13 @@ public class Appointment {
 
 
 
-    public void setPets(List<Pet> pets) {
+    /*public void setPets(List<Pet> pets) {
         this.pets = pets;
     }
+    
+     */
+
+
 
 
 }

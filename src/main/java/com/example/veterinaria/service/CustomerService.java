@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,14 +23,15 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Service
+
 public class CustomerService {
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
-    private PetService petService;
+    private final PetService petService;
 
-    private RoleService roleService;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final PetRepository petRepository;
 
@@ -213,7 +215,6 @@ public class CustomerService {
         Pet newPet = new Pet();
         newPet.setId(pet.getId());
         newPet.setPetName(pet.getPetName());
-        newPet.setMedicalHistory(pet.getMedicalHistory());
         newPet.setAge(pet.getAge());
         newPet.setGender(pet.getGender());
         newPet.setPetSpecies(pet.getPetSpecies());
@@ -274,8 +275,6 @@ public class CustomerService {
 
         }
 
-
-
         customerRepository.save(customer);
     }
 
@@ -304,7 +303,7 @@ public class CustomerService {
     public List<Customer> findCustomerByRoleId(Long id){
         return customerRepository.findCustomerByRoleId(id);
     }
-        // otros métodos del servicio de Customer
+
 
     public void deleteRoleById(Long customerId, Long roleId){
         Optional<Customer> optionalCustomer = customerRepository.findById(customerId);

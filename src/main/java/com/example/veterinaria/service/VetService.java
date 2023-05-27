@@ -3,16 +3,18 @@ import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.repository.VetRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
 @Service
+
 public class VetService {
 
     @Autowired
-    private VetRepository vetRepository;
+    private final VetRepository vetRepository;
 
     public Vet createVet(Vet vet) {
         Vet vet1 = new Vet();

@@ -1,10 +1,14 @@
 package com.example.veterinaria.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,8 +24,6 @@ public class Pet {
     @Column
     private String petName;
     @Column
-    private String medicalHistory;
-    @Column
     private Integer age;
     @Column
     private String gender;
@@ -29,8 +31,7 @@ public class Pet {
     private String petSpecies;
 
 
-
-
-
-
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
+    private List<MedicalRecord> medicalRecords = new ArrayList<>();
 }
+

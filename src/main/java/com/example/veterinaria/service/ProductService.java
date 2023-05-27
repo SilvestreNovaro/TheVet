@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,9 +21,10 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Service
+
 public class ProductService {
 
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
     private final ProductRepository productRepository;
 
     private final CategoryService categoryService;

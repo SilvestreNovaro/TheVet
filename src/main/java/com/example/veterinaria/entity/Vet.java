@@ -1,7 +1,9 @@
 package com.example.veterinaria.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,6 +26,9 @@ public class Vet {
     private Long phone;
     private String license;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "vet", cascade = CascadeType.ALL)
+    private List<MedicalRecord> medicalRecords = new ArrayList<>();
 
 
 

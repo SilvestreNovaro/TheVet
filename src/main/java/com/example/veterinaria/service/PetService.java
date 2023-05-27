@@ -5,15 +5,17 @@ import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.repository.PetRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 @AllArgsConstructor
 @Service
+
 public class PetService {
 
     @Autowired
-    private PetRepository petRepository;
+    private final PetRepository petRepository;
 
     public Pet createPet(Pet pet) {
         return petRepository.save(pet);
@@ -24,7 +26,6 @@ public class PetService {
         if(optionalPet.isPresent()){
             Pet existingPet = optionalPet.get();
             if(pet.getPetName() !=null && !pet.getPetName().isEmpty()) existingPet.setPetName(pet.getPetName());
-            if(pet.getMedicalHistory() !=null && !pet.getMedicalHistory().isEmpty()) existingPet.setMedicalHistory(pet.getMedicalHistory());
             if(pet.getAge() !=null && !pet.getAge().equals("")) existingPet.setAge(pet.getAge());
             if(pet.getGender() !=null && !pet.getGender().isEmpty()) existingPet.setGender(pet.getGender());
             if(pet.getPetSpecies() !=null && !pet.getPetSpecies().isEmpty()) existingPet.setPetSpecies(pet.getPetSpecies());

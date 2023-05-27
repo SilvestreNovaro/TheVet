@@ -4,6 +4,7 @@ import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.repository.RoleRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+
 public class RoleService {
 
     private final RoleRepository roleRepository;

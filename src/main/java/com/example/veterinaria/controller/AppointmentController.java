@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/appointment")
 public class AppointmentController {
 
-    @Autowired
+
     private final AppointmentService appointmentService;
 
     private final CustomerService customerService;
@@ -97,7 +97,7 @@ public class AppointmentController {
             String formattedDateTime = now.format(formatter);
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setTo(optionalCustomer.get().getEmail());
+            helper.setTo(customer.getEmail());
             helper.setSubject("¡Appointment confirmation!");
             String htmlMsg =
                     "<html>" +
@@ -169,7 +169,7 @@ public class AppointmentController {
      */
 
 
-    @PatchMapping("/updateApp/{id}")
+    @PutMapping("/updateApp/{id}")
     public ResponseEntity<?> update(@Validated @RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id) {
 
         Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
@@ -198,7 +198,7 @@ public class AppointmentController {
     }
 
 
-    @PutMapping("/update/{id}")
+    @PatchMapping ("/update/{id}")
     public ResponseEntity<?> updateAppointment(@Validated @RequestBody Appointment appointment, @PathVariable Long id) {
         Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
         System.out.println("appointmentOptional = " + appointmentOptional);

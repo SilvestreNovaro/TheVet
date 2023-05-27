@@ -6,6 +6,7 @@ import com.example.veterinaria.entity.Product;
 import com.example.veterinaria.exception.NotFoundExceptionLong;
 import com.example.veterinaria.repository.CategoryRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
+
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;

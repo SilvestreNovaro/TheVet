@@ -6,6 +6,7 @@ import com.example.veterinaria.repository.CustomerRepository;
 import com.example.veterinaria.repository.ImageRepository;
 import lombok.AllArgsConstructor;
 import org.aspectj.apache.bcel.classfile.Module;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,11 +14,12 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Service
+
 public class ImageService {
 
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 
-    private CustomerService customerService;
+    private final CustomerService customerService;
     private final CustomerRepository customerRepository;
 
     public List<Image> findAll(){
