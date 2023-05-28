@@ -57,8 +57,7 @@ public class MedicalRecord {
 
 
 
-
-
+    private Long customerId;
 
 
 }

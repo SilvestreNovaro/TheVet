@@ -47,6 +47,10 @@ public class MedicalRecordController {
     @PostMapping("/add")
     public ResponseEntity<?> createMR(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO){
 
+        Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findByRecordDate(medicalRecordDTO.getRecordDate());
+        if(medicalRecordOptional.isPresent())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is an exact same date time and hour for a medicalRecord");
+
         Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVet_id());
         if(vetOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("vetId " + medicalRecordDTO.getVet_id() + " not found");
@@ -93,6 +97,11 @@ public class MedicalRecordController {
             return ResponseEntity.ok("Medical Record with id " + id + " succesfully deleted");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Medical Record found with the given id " + id);
+    }
+
+    @DeleteMapping("/deleteByIds")
+    public ResponseEntity<?> deleteMedicalRecordsByIds(@RequestParam Long[] medicalRecordIds){
+        return medicalRecordService.deleteMedicalRecordByIds(medicalRecordIds);
     }
 
 }
