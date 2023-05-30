@@ -31,7 +31,7 @@ public class MedicalRecordService {
     private final PetService petService;
     private final VetRepository vetService;
     private final AppointmentRepository appointmentRepository;
-
+    private final CustomerService customerService;
 
     public List<MedicalRecord> findAll(){
         return medicalRecordRepository.findAll();
@@ -45,11 +45,7 @@ public class MedicalRecordService {
         return medicalRecordRepository.findByRecordDate(recordDate);
     };
 
-    public MedicalRecord createMR(MedicalRecordDTO medicalRecordDTO) {
-        Optional<MedicalRecord> existingRecord = medicalRecordRepository.findByRecordDate(medicalRecordDTO.getRecordDate());
-        if (existingRecord.isPresent()) {
-            throw new RuntimeException("A MedicalRecord already exists with the same date and time.");
-        }
+    public MedicalRecord createMR(MedicalRecordDTO medicalRecordDTO, Long customerId) {
 
         MedicalRecord medicalRecord = new MedicalRecord();
 
@@ -60,11 +56,25 @@ public class MedicalRecordService {
         medicalRecord.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
         medicalRecord.setSurgeries(medicalRecordDTO.getSurgeries());
         medicalRecord.setRecordDate(medicalRecordDTO.getRecordDate());
+        medicalRecord.setCustomerId(customerId);
 
+        Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
+        if(customerOptional.isPresent()){
+            Customer customer = customerOptional.get();
+            List<Pet> petList = customer.getPets();
+            for(Pet petId : petList){
+                if(petId.getId().equals(medicalRecordDTO.getPet_id())){
+                    medicalRecord.setPet(petId);
+                    break;
+                }else{
+                    throw new NotFoundException("Pet not found with id: " + petId);
+                }
+            }
+        }
 
-        medicalRecord.setPet(petService.getPetById(medicalRecordDTO.getPet_id())
+       /* medicalRecord.setPet(petService.getPetById(medicalRecordDTO.getPet_id())
                 .orElseThrow(() -> new NotFoundException("Pet not found with id: " + medicalRecordDTO.getPet_id())));
-
+        */
         medicalRecord.setVet(vetService.findById(medicalRecordDTO.getVet_id())
                 .orElseThrow(() -> new NotFoundException("Vet not found with id: " + medicalRecordDTO.getVet_id())));
 
@@ -74,7 +84,7 @@ public class MedicalRecordService {
 
 
 
-    public void updateMR(MedicalRecordDTO medicalRecordDTO, Long id) {
+    public void updateMR(MedicalRecordDTO medicalRecordDTO, Long id, Long customerId) {
         MedicalRecord medicalRecord = medicalRecordRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("MedicalRecord not found with id: " + id));
 
@@ -90,6 +100,12 @@ public class MedicalRecordService {
         if (medicalRecordDTO.getVet_id() != null && !medicalRecordDTO.getVet_id().equals("")) {
             Optional<Vet> vetOptional = vetService.findById(medicalRecordDTO.getVet_id());
             vetOptional.ifPresent(medicalRecord::setVet);
+        }
+
+        if (customerId != null && customerId != 0){
+            Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
+            customerOptional.ifPresent(customer -> medicalRecord.setCustomerId(customer.getId()));
+
         }
 
         medicalRecordRepository.save(medicalRecord);

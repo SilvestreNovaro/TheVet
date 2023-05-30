@@ -55,8 +55,6 @@ public class MedicalRecord {
    private Vet vet;
 
 
-
-
     private Long customerId;
 
 

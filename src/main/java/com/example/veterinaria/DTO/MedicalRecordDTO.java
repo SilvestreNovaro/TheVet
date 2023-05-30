@@ -25,7 +25,7 @@ public class MedicalRecordDTO {
 
     private Long pet_id;
 
-    //private Long customer_id;
+    private Long customer_id;
 
     private Long vet_id;
 

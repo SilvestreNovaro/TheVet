@@ -1,8 +1,7 @@
 package com.example.veterinaria.controller;
 
 
-import com.example.veterinaria.entity.Customer;
-import com.example.veterinaria.entity.Pet;
+
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.VetService;
 import lombok.AllArgsConstructor;
@@ -65,10 +64,10 @@ public class VetController {
 
     @GetMapping("/vetByLicense/{license}")
     public ResponseEntity<?> findVetByLicense(@PathVariable String license) {
-        Optional vett = vetService.findByLicense(license);{
-            return vett.isEmpty()
+        Optional <Vet> vet = vetService.findByLicense(license);{
+            return vet.isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vet with license " + license + " doesnt exist")
-                    : ResponseEntity.ok(vett);
+                    : ResponseEntity.ok(vet);
         }
     }
 

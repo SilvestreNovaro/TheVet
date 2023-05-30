@@ -40,7 +40,7 @@ public class ImageController {
         Optional<Image> optionalImage = imageService.findById(id);
         if(optionalImage.isPresent()){
             imageService.updateImage(image, id);
-            return ResponseEntity.status(HttpStatus.OK).body("Image " + id + " updated succesfully");
+            return ResponseEntity.status(HttpStatus.OK).body("Image " + id + " updated successfully");
         } return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No image found with the id " + id);
     }
 
@@ -50,7 +50,7 @@ public class ImageController {
         Optional<Image> imageOptional = imageService.findById(id);
 
         return imageOptional.isEmpty()
-                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id: " + id + " doesnt belong to a Product")
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id: " + id + " doesn't belong to a Product")
                 : ResponseEntity.ok(imageOptional);
     }
 
@@ -60,7 +60,7 @@ public class ImageController {
         Optional<Image> imageOptional = imageService.findByUrl(url);
 
         return imageOptional.isEmpty()
-                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id: " + url + " doesnt belong to a Product")
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id: " + url + " doesn't belong to a Product")
                 : ResponseEntity.ok(imageOptional);
     }
 

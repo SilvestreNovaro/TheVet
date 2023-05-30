@@ -1,8 +1,7 @@
 package com.example.veterinaria.controller;
 
-import com.example.veterinaria.entity.Customer;
+
 import com.example.veterinaria.entity.Pet;
-import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.PetService;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.Optional;
 public class PetController {
 
     private final PetService petService;
-    private final CustomerService customerService;
 
 
     @GetMapping("/list")
@@ -38,7 +36,7 @@ public class PetController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pet  " + pet.getPetName() + " is already on our registers");
         }
         petService.createPet(pet);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Pet added succesfully!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Pet added successfully!");
     }
 
     @PutMapping("/modify/{id}")
@@ -50,7 +48,7 @@ public class PetController {
         }
         if(optionalPet.isPresent()){
             petService.updatePet(pet, id);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Pet updated succesfully!");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Pet updated successfully!");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet with the id  " + id + " does not exist on our registers");
     }
@@ -71,7 +69,7 @@ public class PetController {
         Optional<Pet> petOptional= petService.findByName(name);
 
         return petOptional.isEmpty()
-                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The name : " + name + " doesnt belong to any Pet on this vet")
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The name : " + name + " doesn't belong to any Pet on this vet")
                 : ResponseEntity.ok(petOptional);
     }
 

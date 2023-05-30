@@ -5,7 +5,6 @@ import com.example.veterinaria.DTO.ProductDTO;
 import com.example.veterinaria.entity.Category;
 import com.example.veterinaria.entity.Image;
 import com.example.veterinaria.entity.Product;
-import com.example.veterinaria.exception.NotFoundExceptionLong;
 import com.example.veterinaria.repository.ProductRepository;
 import com.example.veterinaria.service.CategoryService;
 import com.example.veterinaria.service.ImageService;
@@ -86,7 +85,7 @@ public class ProductController {
     public ResponseEntity<?> addImage(@Validated @RequestBody Image image, @PathVariable Long id) {
         Optional<Product> productOptional = productService.findById(id);
         if (productOptional.isPresent()) {
-            Product product = productOptional.get();
+            // Product product = productOptional.get();
             productService.addImageToProduct(id, image);
             return ResponseEntity.status(HttpStatus.CREATED).body("image added succesfully!");
         }

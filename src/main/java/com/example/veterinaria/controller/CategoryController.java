@@ -21,7 +21,6 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    private final ProductService productService;
 
 
     @GetMapping("list")

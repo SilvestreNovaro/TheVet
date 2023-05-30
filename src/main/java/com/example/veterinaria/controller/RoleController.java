@@ -4,7 +4,6 @@ import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.RoleService;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
