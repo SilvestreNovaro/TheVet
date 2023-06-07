@@ -72,9 +72,6 @@ public class MedicalRecordService {
             }
         }
 
-       /* medicalRecord.setPet(petService.getPetById(medicalRecordDTO.getPet_id())
-                .orElseThrow(() -> new NotFoundException("Pet not found with id: " + medicalRecordDTO.getPet_id())));
-        */
         medicalRecord.setVet(vetService.findById(medicalRecordDTO.getVet_id())
                 .orElseThrow(() -> new NotFoundException("Vet not found with id: " + medicalRecordDTO.getVet_id())));
 

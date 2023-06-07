@@ -39,7 +39,7 @@ public class Appointment {
 
 
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.DETACH)
     @JoinTable(
             name = "appointment_pet",
             joinColumns = @JoinColumn(name = "appointment_id"),
@@ -50,11 +50,6 @@ public class Appointment {
 
 
 
-    /*public void setPets(List<Pet> pets) {
-        this.pets = pets;
-    }
-    
-     */
 
 
 

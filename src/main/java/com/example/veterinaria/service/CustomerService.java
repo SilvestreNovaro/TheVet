@@ -9,6 +9,8 @@ import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
 import com.example.veterinaria.repository.PetRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @AllArgsConstructor
 @Service
@@ -36,6 +40,8 @@ public class CustomerService {
     private final PetRepository petRepository;
 
 
+
+    // YA NO SE USA.
     public Customer createCustomer(Customer customer) {
 
         Customer customer1 = new Customer();
@@ -57,30 +63,16 @@ public class CustomerService {
 
         Customer customer1 = new Customer();
 
-        Long role = customerDTO.getRole_id();
-        String name = customerDTO.getName();
-        String lastName = customerDTO.getLastName();
-        String address = customerDTO.getAddress();
-        String email = customerDTO.getEmail();
-        Long contactNumber = customerDTO.getContactNumber();
-
-
-
         customer1.setName(customerDTO.getName());
         customer1.setLastName(customerDTO.getLastName());
         customer1.setAddress(customerDTO.getAddress());
         customer1.setEmail(customerDTO.getEmail());
         customer1.setContactNumber(customerDTO.getContactNumber());
         customer1.setPets(customerDTO.getPets());
-        /*List<Pet> pets = new ArrayList<>();
-        for (Pet pet : customerDTO.getPets()) {
-            pets.add(petService.ge.orElseThrow(() -> new RuntimeException("Pet not found with ID: " + petId)));
-        }
 
-         */
+        Long role = customerDTO.getRole_id();
         Optional<Role> roleOptional = roleService.findById(role);
         roleOptional.ifPresent(customer1::setRole);
-        //customer1.setRole(roleService.findById(customerDTO.getRole_id()).get());
 
 
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
@@ -91,11 +83,10 @@ public class CustomerService {
 
 
 
-    public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {
+    /*public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
         System.out.println("optionalCustomer = " + optionalCustomer);
         if (optionalCustomer.isPresent()) {
-            // como no puedo setearle a un optional, guardo en una variable ya del tipo del objeto Customer para setearle los valores.
             Customer existingCustomer = optionalCustomer.get();
             if (customerDTO.getName() != null && !customerDTO.getName().isEmpty())
                 existingCustomer.setName(customerDTO.getName());
@@ -126,8 +117,33 @@ public class CustomerService {
 
         }
 
+     */
 
-     public void updateCustomer(Long id, Customer customer){
+
+
+    public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {
+        Optional<Customer> optionalCustomer = customerRepository.findById(id);
+        if (optionalCustomer.isPresent()) {
+            Customer existingCustomer = optionalCustomer.get();
+
+            ModelMapper modelMapper = new ModelMapper();
+            modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+            modelMapper.map(customerDTO, existingCustomer);
+
+            if (isNotBlank(customerDTO.getPassword())) {
+                String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
+                existingCustomer.setPassword(encodedPassword);
+            }
+
+            customerRepository.save(existingCustomer);
+        }
+    }
+
+
+
+
+    // YA NO SE USA.
+    public void updateCustomer(Long id, Customer customer){
         Customer customer1 = customerRepository.findById(id).get();
         if(customer.getName()!=null && !customer.getName().isEmpty()) customer1.setName(customer.getName());
         if(customer.getLastName() != null && !customer.getLastName().isEmpty()) customer1.setLastName(customer1.getLastName());

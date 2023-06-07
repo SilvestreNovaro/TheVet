@@ -47,6 +47,8 @@ public class CustomerController {
     }
 
 
+
+    // YA NO SE USA
     @PostMapping("/add")
     public ResponseEntity<?> add(@Validated @RequestBody Customer customer) {
         Optional<Customer> customerOptional = customerService.findByEmail(customer.getEmail());
@@ -57,7 +59,6 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added succesfully!");
     }
 
-    // si quiero agregar un cliente, deberia buscarlo por email, no por nombre ya que no es un atributo unico, y lo que me interesa a mi es cuando doy de alta un cliente el email no exista en la DB.
 
 
     @PostMapping("/addCustomerDTO")
@@ -160,6 +161,8 @@ public class CustomerController {
     }
 
 
+    // YA NO SE USA.
+
     @PatchMapping("/modifyCustomer/{id}")
     public ResponseEntity<?> updateCustomer(@Validated @RequestBody Customer customer, @PathVariable Long id){
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
@@ -193,6 +196,14 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers");
     }
 
+    @GetMapping("/findByEmail/{email}")
+    ResponseEntity<?> findByEmail(@Validated @PathVariable String email){
+        Optional<Customer> optionalCustomer = customerService.findByEmail(email);
+        if(optionalCustomer.isPresent()){
+            return ResponseEntity.ok(optionalCustomer);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the email  " + email + " does not exist on our registers");
+    }
 
     @GetMapping("/petsByCustomersLastName/{lastName}")
     public ResponseEntity<?> findPetsFromCustomer(@PathVariable String lastName) {

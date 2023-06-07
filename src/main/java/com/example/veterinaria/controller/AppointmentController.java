@@ -46,49 +46,29 @@ public class AppointmentController {
     @PostMapping("/create")
     public ResponseEntity<?> createAppointment(@RequestBody AppointmentDTO appointmentDTO) throws MessagingException {
 
-        Long customerId = appointmentDTO.getCustomer_id();
-        Long vetId = appointmentDTO.getVet_id();
-        LocalDateTime localDateTime = appointmentDTO.getAppointmentDateTime();
-
-        List<Long> petIds = appointmentDTO.getPetIds(); // Obtén los IDs de las mascotas del DTO
-        /*List<Long> petsIds = appointmentDTO.getPets_ids();
-
-        if(petsIds.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("petsIds " + petsIds + " not found");
-        }
-
-         */
-        Optional<Customer> optionalCustomer = customerService.getCustomerById(customerId);
-        Optional<Vet> optionalVetId = vetService.getVetById(vetId);
-        Optional<Appointment> appointmentOptional = appointmentService.findByAppointmentDateTime(localDateTime);
+        Optional<Customer> optionalCustomer = customerService.getCustomerById(appointmentDTO.getCustomer_id());
+        Optional<Vet> optionalVetId = vetService.getVetById(appointmentDTO.getVet_id());
+        List<Long> petIds = appointmentDTO.getPetIds();
+        Optional<Appointment> appointmentOptional = appointmentService.findByAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
 
 
         if (optionalCustomer.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customerId " + customerId + " not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customerId " + appointmentDTO.getCustomer_id() + " not found");
         }
         if (optionalVetId.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("vetId " + vetId + " not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("vetId " + appointmentDTO.getVet_id() + " not found");
         }
         if (appointmentOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + localDateTime);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appointmentDTO.getAppointmentDateTime());
         }
-        if (localDateTime == null) {
+        if (appointmentOptional  == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Local date time cant be null");
         }
+        if(petIds.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No pets found with the ids: " + petIds);
+         }
 
         Customer customer = optionalCustomer.get();
-
-        // Verifica si hay mascotas seleccionadas
-        if (petIds != null && !petIds.isEmpty()) {
-            List<Pet> selectedPets = customer.getPets().stream()
-                    .filter(pet -> petIds.contains(pet.getId()))
-                    .collect(Collectors.toList());
-
-            if (selectedPets.size() != petIds.size()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("One or more petIds not found for the customer");
-            }
-
 
             // Crear el mensaje de correo electrónico
             LocalDateTime now = LocalDateTime.now();
@@ -145,11 +125,11 @@ public class AppointmentController {
             helper.setText(htmlMsg, true);
             javaMailSender.send(message);
 
-
-        }
         Appointment savedAppointment = appointmentService.createAppointment(appointmentDTO);
         return new ResponseEntity<>(savedAppointment, HttpStatus.CREATED);
-    }
+        }
+
+
 
     /*@PatchMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id){

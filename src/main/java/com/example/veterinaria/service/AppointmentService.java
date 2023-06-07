@@ -38,50 +38,45 @@ public class AppointmentService {
 
     public Appointment createAppointment(AppointmentDTO appointmentDTO) {
 
-        LocalDateTime appLocalDate = appointmentDTO.getAppointmentDateTime();
-        String appReason = appointmentDTO.getAppointmentReason();
-        String appNotes = appointmentDTO.getAppointmentNotes();
-        Long appCustomerId = appointmentDTO.getCustomer_id();
-        Long appVetId = appointmentDTO.getVet_id();
-        List<Long> appPetIds = appointmentDTO.getPetIds();
-        // 1,2, 3.
-
-
-
         Appointment appointment = new Appointment();
-        Optional<Customer> optionalCustomer = customerService.getCustomerById(appCustomerId);
+
+        List<Long> appPetIds = appointmentDTO.getPetIds();
+
+        Optional<Customer> optionalCustomer = customerService.getCustomerById(appointmentDTO.getCustomer_id());
         if(optionalCustomer.isEmpty()) {
-            throw new NotFoundException("customerId " + appCustomerId + " not found");
+            throw new NotFoundException("customerId " + optionalCustomer+ " not found");
 
         }
         Customer customer = optionalCustomer.get();
-
         optionalCustomer.ifPresent(appointment::setCustomer);
 
-        Optional<Vet> optionalVet = vetService.getVetById(appVetId);
+        Optional<Vet> optionalVet = vetService.getVetById(appointmentDTO.getVet_id());
         optionalVet.ifPresent(appointment::setVet);
 
-        // customer.getPets(): Obtiene la lista de mascotas (pets) del objeto customer
-        // .stream(): Convierte la lista de mascotas en un flujo de elementos, lo cual permite realizar operaciones de filtrado y transformación.
         List<Pet> selectedPets = customer.getPets().stream()
-                // .filter(pet -> appPetIds . Se aplica un filtro al flujo de mascotas para incluir solo aquellas mascotas cuyos identificadores (pet.getId()) están presentes en la lista de identificadores de mascotas proporcionada (appPetIds) por el cliente. La expresión appPetIds.contains(pet.getId()) comprueba si el identificador de la mascota está presente en la lista de identificadores.
-
                 .filter(pet -> appPetIds.contains(pet.getId()))
-                // .collect(Collectors.toList()): Recopila los elementos del flujo en una lista, devolviendo una lista de mascotas seleccionadas (selectedPets).
                 .collect(Collectors.toList());
-        // if (selectedPets.size() != appPetIds.size()): Verifica si el tamaño de la lista de mascotas seleccionadas es diferente al tamaño de la lista de appPetIds. Si son diferentes, significa que uno o más IDs de mascotas no se encontraron en la lista de mascotas del cliente.
-        // Es decir, si yo en postman pongo ids 1,2,3 en appPetIds se guarda 1,2 y 3. Pero quizas en selectedPets no se encontraron todos los ids porque no son de ese cliente, entonces una lista puede quedar mas chica que la otra, significando que el id de la mascota no es de ese cliente.
-        if (selectedPets.size() != appPetIds.size()) {
-            // 1 ,2                     //1,2,3
-            //throw new NotFoundException("One or more petIds not found for the customer"): Lanza una excepción NotFoundException con un mensaje indicando que uno o más IDs de mascotas no se encontraron para el cliente.
+        /*if (selectedPets.size() != appPetIds.size())
+            throw new NotFoundException("One or more petIds not found for the customer");
+
+         */
+        /*if (!customer.getPets().retainAll(selectedPets)) {
             throw new NotFoundException("One or more petIds not found for the customer");
         }
 
-        appointment.setAppointmentNotes(appNotes);
-        appointment.setAppointmentReason(appReason);
-        appointment.setAppointmentDateTime(appLocalDate);
-        appointment.setPets(selectedPets);
+         */
 
+
+
+
+        if (!customer.getPets().containsAll(appPetIds)) {
+            throw new NotFoundException("One or more petIds not found for the customer");
+        }
+
+        appointment.setAppointmentNotes(appointmentDTO.getAppointmentNotes());
+        appointment.setAppointmentReason(appointmentDTO.getAppointmentReason());
+        appointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
+        appointment.setPets(selectedPets);
         return appointmentRepository.save(appointment);
     }
 
