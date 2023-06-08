@@ -14,6 +14,7 @@ import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.AppointmentRepository;
+import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
@@ -36,6 +37,44 @@ public class AppointmentService {
 
     private final PetService petService;
 
+
+
+    // FIND(GET REQUESTS)
+    public Optional<Appointment> getAppointmentById(Long id) {
+        return appointmentRepository.findById(id);
+    }
+
+
+    public List<Appointment> getAllAppointments() {
+        return appointmentRepository.findAll();
+    }
+
+    public List<Appointment> getAppointmentsByCustomerId(Long customerId) {
+        return appointmentRepository.findByCustomerId(customerId);
+    }
+
+    public List<Appointment> findByVetId(Long vetId){
+        return appointmentRepository.findByVetId(vetId);
+    }
+
+    public List<Appointment> findByLicense(String license){
+        return appointmentRepository.findByVetLicense(license);
+    }
+
+    public Optional<Appointment> findByAppointmentDateTime(LocalDateTime appointmentDateTime) {
+        return appointmentRepository.findByAppointmentDateTime(appointmentDateTime);
+    }
+
+    public List<Appointment> findByPetsId(Long petsId){
+        return appointmentRepository.findByPetsId(petsId);
+    }
+
+
+
+
+    // CREATE (POST REQUEST)
+
+
     public Appointment createAppointment(AppointmentDTO appointmentDTO) {
 
         Appointment appointment = new Appointment();
@@ -56,20 +95,8 @@ public class AppointmentService {
         List<Pet> selectedPets = customer.getPets().stream()
                 .filter(pet -> appPetIds.contains(pet.getId()))
                 .collect(Collectors.toList());
-        /*if (selectedPets.size() != appPetIds.size())
-            throw new NotFoundException("One or more petIds not found for the customer");
 
-         */
-        /*if (!customer.getPets().retainAll(selectedPets)) {
-            throw new NotFoundException("One or more petIds not found for the customer");
-        }
-
-         */
-
-
-
-
-        if (!customer.getPets().containsAll(appPetIds)) {
+        if (selectedPets.containsAll(appPetIds)) {
             throw new NotFoundException("One or more petIds not found for the customer");
         }
 
@@ -80,82 +107,96 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
+    //UPDATE (PUT PATCH REQUESTS)
 
 
     public void updateAppointmentDTO(AppointmentDTO appointmentDTO, Long id) {
-
-
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
 
-        LocalDateTime appDateTime = appointmentDTO.getAppointmentDateTime();
-        String appReason = appointmentDTO.getAppointmentReason();
-        String appNotes = appointmentDTO.getAppointmentNotes();
-        List<Long> appPetIds = appointmentDTO.getPetIds();
-        System.out.println("pets ids " + appPetIds);
-
-
-        var customer = appointmentDTO.getCustomer_id();
-        System.out.println("customer id " + customer);
-        var vet = appointmentDTO.getVet_id();
-
         if (optionalAppointment.isPresent()) {
-            Appointment appointment1 = optionalAppointment.get();
-            if (appDateTime != null && !appDateTime.equals("")) appointment1.setAppointmentDateTime(appDateTime);
-            if (appReason != null && !appReason.isEmpty()) appointment1.setAppointmentNotes(appReason);
-            if (appNotes != null && !appNotes.isEmpty()) appointment1.setAppointmentReason(appNotes);
+            Appointment appointment = optionalAppointment.get();
+
+            LocalDateTime appDateTime = appointmentDTO.getAppointmentDateTime();
+            String appReason = appointmentDTO.getAppointmentReason();
+            String appNotes = appointmentDTO.getAppointmentNotes();
+            List<Long> appPetIds = appointmentDTO.getPetIds();
+            Long customer = appointmentDTO.getCustomer_id();
+            Long vet = appointmentDTO.getVet_id();
+
+            if (appDateTime != null && !appDateTime.equals("")) {
+                appointment.setAppointmentDateTime(appDateTime);
+            }
+
+            if (appReason != null && !appReason.isEmpty()) {
+                appointment.setAppointmentNotes(appReason);
+            }
+
+            if (appNotes != null && !appNotes.isEmpty()) {
+                appointment.setAppointmentReason(appNotes);
+            }
+
             if (customer != null && !customer.equals("")) {
                 Optional<Customer> optionalCustomer = customerService.getCustomerById(customer);
                 if (optionalCustomer.isPresent()) {
                     Customer customerObj = optionalCustomer.get();
                     List<Pet> validPets = new ArrayList<>();
+
                     for (Long petId : appPetIds) {
                         Optional<Pet> optionalPet = petService.getPetById(petId);
-                        Pet pet = optionalPet.get();
-                        List<Pet> customerPets = customerService.findPetsByCustomerLastName(customerObj.getLastName());
-                        for (Pet customerPet : customerPets) {
-                            if (customerPet.getPetName().equals(pet.getPetName())) {
-                                validPets.add(customerPet);
+                        if (optionalPet.isPresent()) {
+                            Pet pet = optionalPet.get();
+                            if (customerObj.getPets().contains(pet)) {
+                                validPets.add(pet);
+                            } else {
+                                throw new NotFoundException("PetId " + petId + " not found for the customer");
                             }
-                        }
-                            appointment1.setPets(validPets);
-                            appointment1.setCustomer(customerObj);
-                        }
-                    }
-                    if (vet != null && !vet.equals("")) {
-                        Optional<Vet> vetOptional = vetService.getVetById(vet);
-                        if (vetOptional.isPresent()) {
-                            Vet vetObj = vetOptional.get();
-                            appointment1.setVet(vetObj);
+                        } else {
+                            throw new NotFoundException("PetId " + petId + " not found");
                         }
                     }
-                    appointmentRepository.save(appointment1);
+
+                    appointment.setPets(validPets);
+                    appointment.setCustomer(customerObj);
                 }
             }
+
+            if (vet != null && !vet.equals("")) {
+                Optional<Vet> vetOptional = vetService.getVetById(vet);
+                if (vetOptional.isPresent()) {
+                    Vet vetObj = vetOptional.get();
+                    appointment.setVet(vetObj);
+                }
+            }
+
+            appointmentRepository.save(appointment);
         }
-
-
-    public void updateAppointment(Long appointmentId, Appointment appointment){
-        Appointment appointment1 = appointmentRepository.findById(appointmentId).get();
-        if(appointment.getAppointmentDateTime() !=null && !appointment.getAppointmentDateTime().equals("")) appointment1.setAppointmentDateTime(appointment.getAppointmentDateTime());
-        if(appointment.getAppointmentReason() !=null && !appointment.getAppointmentReason().isEmpty()) appointment1.setAppointmentReason(appointment.getAppointmentReason());
-        if(appointment.getAppointmentNotes() !=null && !appointment.getAppointmentNotes().isEmpty()) appointment1.setAppointmentNotes(appointment.getAppointmentNotes());
-        appointmentRepository.save(appointment1);
     }
 
 
-    public Optional<Appointment> getAppointmentById(Long id) {
-        return appointmentRepository.findById(id);
+    public void updateAppointment(Long appointmentId, Appointment appointment) {
+        Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
+        if (optionalAppointment.isPresent()) {
+            Appointment existingAppointment = optionalAppointment.get();
+
+            if(appointment.getAppointmentDateTime() !=null && !appointment.getAppointmentDateTime().equals(""))
+                existingAppointment.setAppointmentDateTime(appointment.getAppointmentDateTime());
+            if (StringUtils.isNotBlank(appointment.getAppointmentReason())) {
+                existingAppointment.setAppointmentReason(appointment.getAppointmentReason());
+            }
+            if (StringUtils.isNotBlank(appointment.getAppointmentNotes())) {
+                existingAppointment.setAppointmentNotes(appointment.getAppointmentNotes());
+            }
+
+            appointmentRepository.save(existingAppointment);
+        } else {
+            throw new NotFoundException("Appointment not found with ID: " + appointmentId);
+        }
     }
 
 
 
-    public List<Appointment> getAllAppointments() {
-        return appointmentRepository.findAll();
-    }
 
-    public List<Appointment> getAppointmentsByCustomerId(Long customerId) {
-        return appointmentRepository.findByCustomerId(customerId);
-    }
+    // DELETE REQUESTS
 
 
     public void deleteAppointmentId(Long id) {
@@ -163,45 +204,7 @@ public class AppointmentService {
     }
 
 
-    public List<Appointment> findByVetId(Long vetId){
-        return appointmentRepository.findByVetId(vetId);
-    }
 
-    public List<Appointment> findByLicense(String license){
-        return appointmentRepository.findByVetLicense(license);
-    }
-
-    /*
-    public Long[] deleteAppointmentsByIds(Long[] appointmentIds) {
-        // Recibe por parametro un array de ids de appointment.
-        //Creo una lista vacia para guardar los ids eliminados
-        List<Long> deletedIds = new ArrayList<>();
-        //Creo una lista vacia para guardaar los ids que no encontre.
-        List<Long> notFoundIds = new ArrayList<>();
-
-        //Recorro el array de appointment ids.
-        for (Long appointmentId : appointmentIds) {
-            //Dentro del for, se utiliza el método findById para buscar un appointmemnt con el ID actual en la lista de appointments.
-            Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
-            // Si encuentra el appointment, se elimina y se agrega el id del appointment a la lista de ids eliminados.
-            if (optionalAppointment.isPresent()) {
-                appointmentRepository.deleteById(optionalAppointment.get().getId());
-                deletedIds.add(appointmentId);
-            } else {
-                // Si no se encuentra se agrega el id a la lista de los no encontrados.
-                notFoundIds.add(appointmentId);
-            }
-        }
-        //Pregunto si la lista de ids no encontrados esta vacia. Si esta vacia, devuelve la lista de ids eliminados convertida a un array del tipo Long.
-        // Si la lista de ids no encontrados no esta vacia, devuelve la lista de ids no encontrados convertida a un array del tipo Long.
-        if (notFoundIds.isEmpty()) {
-            return deletedIds.toArray(new Long[0]);
-        } else {
-            return notFoundIds.toArray(new Long[0]);
-        }
-    }
-
-     */
     public ResponseEntity<?> deleteAppointmentsByIds(Long[] appointmentIds) {
         List<Long> deletedIds = new ArrayList<>();
         List<Long> notFoundIds = new ArrayList<>();
@@ -215,7 +218,6 @@ public class AppointmentService {
                 notFoundIds.add(appointmentId);
             }
         }
-
         if (!deletedIds.isEmpty()) {
             return ResponseEntity.ok("The following appointments have been deleted: " + deletedIds);
         } else {
@@ -224,6 +226,7 @@ public class AppointmentService {
     }
 
 
+    // ALSO DELETES MANY APPOINTEMTS
     @Transactional
     public List<Long> deleteAppointment(List<Long> appointmentIds) {
         List<Long> InexistentIds = new ArrayList<>();
@@ -240,13 +243,7 @@ public class AppointmentService {
         return InexistentIds;
     }
 
-   public Optional<Appointment> findByAppointmentDateTime(LocalDateTime appointmentDateTime) {
-       return appointmentRepository.findByAppointmentDateTime(appointmentDateTime);
-   }
 
-   public List<Appointment> findByPetsId(Long petsId){
-        return appointmentRepository.findByPetsId(petsId);
-   }
 
 }
 

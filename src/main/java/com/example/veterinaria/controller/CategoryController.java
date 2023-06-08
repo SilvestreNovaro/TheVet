@@ -1,8 +1,8 @@
 package com.example.veterinaria.controller;
 
 import com.example.veterinaria.entity.Category;
+import com.example.veterinaria.entity.Product;
 import com.example.veterinaria.service.CategoryService;
-import com.example.veterinaria.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +23,46 @@ public class CategoryController {
 
 
 
+    // GET REQUESTS
+
     @GetMapping("list")
     public List<Category> list(){
         return categoryService.findAll();
     }
+
+    @GetMapping("/findById/{id}")
+    public ResponseEntity<?> findById(@Validated @PathVariable Long id){
+        Optional<Category> categoryOptional = categoryService.findById(id);
+        if(categoryOptional.isPresent()){
+            return ResponseEntity.ok(categoryOptional);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with the id  " + id + " does not exist on our registers");
+    }
+
+    @GetMapping("/findByName/{name}")
+    public ResponseEntity<?> findByName(@Validated @PathVariable String name){
+        Optional<Category> categoryOptional = categoryService.findByCategoryName(name);
+        if(categoryOptional.isPresent()){
+            return ResponseEntity.ok(categoryOptional);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with the id  " + name + " does not exist on our registers");
+
+    }
+
+    @GetMapping("/getProductsFromCategory/{id}")
+    public ResponseEntity<?> getProductsCategory(@Validated @PathVariable Long id) {
+        Optional<Category> categoryOptional = categoryService.findById(id);
+        if (categoryOptional.isPresent()) {
+            Category category1 = categoryOptional.get();
+            List<Product> productList = category1.getProducts();
+            if (productList.isEmpty()) {
+                return ResponseEntity.ok().body("No products found in this category." + productList);
+            }
+            return ResponseEntity.ok().body(productList);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found.");
+    }
+    // CREATE REQUEST
 
     @PostMapping("/add")
     public ResponseEntity<?> add (@Validated @RequestBody Category category){
@@ -39,13 +75,13 @@ public class CategoryController {
 
     }
 
+    // UPDATE REQUEST
 
     @PutMapping("/modify/{id}")
     public ResponseEntity<?> update(@Validated @RequestBody Category category, @PathVariable Long id){
         Optional<Category> optionalCategory = categoryService.findByCategoryName(category.getCategoryName());
         if(optionalCategory.isPresent()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("a category with the name " + category.getCategoryName() + " already existes");
-
         }
         Optional<Category> categoryOptional = categoryService.findById(id);
         if(categoryOptional.isPresent()){
@@ -56,14 +92,8 @@ public class CategoryController {
     }
 
 
-    @GetMapping("/findById/{id}")
-    public ResponseEntity<?> findById(@Validated @PathVariable Long id){
-            Optional<Category> categoryOptional = categoryService.findById(id);
-            if(categoryOptional.isPresent()){
-                return ResponseEntity.ok(categoryOptional);
-            }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with the id  " + id + " does not exist on our registers");
-    }
+
+    //DELETE MAPPING:
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@Validated @PathVariable Long id){

@@ -38,10 +38,80 @@ public class AppointmentController {
     private JavaMailSender javaMailSender;
 
 
+
+
+
+
+    // GET MAPPING
+
+    @GetMapping("/findById/{id}")
+    public ResponseEntity<?> getAppointmentById(@PathVariable Long id) {
+        Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
+        if (appointment.isPresent()) {
+            return ResponseEntity.ok(appointment);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the id " + id);
+        }
+    }
+
+    @GetMapping("/findAllAppointments")
+    public ResponseEntity<List<Appointment>> getAllAppointments() {
+        List<Appointment> appointments = appointmentService.getAllAppointments();
+        if (appointments.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return new ResponseEntity<>(appointments, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<?> getAppointmentsByCustomerId(@PathVariable Long customerId) {
+        List<Appointment> appointments = appointmentService.getAppointmentsByCustomerId(customerId);
+        if(appointments.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Customer id " + customerId);
+        }
+        return new ResponseEntity<>(appointments, HttpStatus.OK);
+    }
+
+    @GetMapping("/vet/{vetId}")
+    public ResponseEntity<?> getAppointmentsByVetId(@PathVariable Long vetId){
+        List<Appointment> appointmentList = appointmentService.findByVetId(vetId);
+        if(appointmentList.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Vet id " + vetId);
+        }
+        return new ResponseEntity<>(appointmentList, HttpStatus.OK);
+    }
+    @GetMapping("/pet/{petsId}")
+    public ResponseEntity<?> findByPetId(@PathVariable Long petsId){
+        Optional<List<Appointment>> appointmentList = Optional.ofNullable(appointmentService.findByPetsId(petsId));
+        if(appointmentList.isPresent()){
+            List<Appointment> appointments = appointmentList.get();
+            return new ResponseEntity<>(appointmentList, HttpStatus.OK);
+        }else{
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No appointment found for the Pet id " + petsId);
+        }
+
+    }
+
+
+    @GetMapping("/vetLicense/{vetLicense}")
+    public ResponseEntity<?> getAppointmentsByLicense(@PathVariable String vetLicense){
+        List<Appointment> appointmentList = appointmentService.findByLicense(vetLicense);
+        if(appointmentList.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Vet license " + vetLicense);
+        }
+        return new ResponseEntity<>(appointmentList, HttpStatus.OK);
+    }
+
+
     @GetMapping("/list")
     public List<Appointment> list() {
         return appointmentService.getAllAppointments();
     }
+
+
+
+    //CREATE
 
     @PostMapping("/create")
     public ResponseEntity<?> createAppointment(@RequestBody AppointmentDTO appointmentDTO) throws MessagingException {
@@ -130,23 +200,7 @@ public class AppointmentController {
         }
 
 
-
-    /*@PatchMapping("/update/{id}")
-    public ResponseEntity<?> update(@RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id){
-        Optional<Appointment> optionalAppointment = appointmentService.getAppointmentById(id);
-        if(optionalAppointment.isPresent()){
-            appointmentService.updateAppointment(appointmentDTO, id);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Appointment updated succesfully!");
-
-        }
-
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No appointment for the id " + id);
-
-    }
-
-     */
-
+    //UPDATE (PUT PATCH MAPPING)
 
     @PutMapping("/updateApp/{id}")
     public ResponseEntity<?> update(@Validated @RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id) {
@@ -180,12 +234,10 @@ public class AppointmentController {
     @PatchMapping ("/update/{id}")
     public ResponseEntity<?> updateAppointment(@Validated @RequestBody Appointment appointment, @PathVariable Long id) {
         Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
-        System.out.println("appointmentOptional = " + appointmentOptional);
         if (appointmentOptional.isPresent()) {
-            LocalDateTime appoDateTime = appointment.getAppointmentDateTime();
-            Optional<Appointment> localDateTimeOptional = appointmentService.findByAppointmentDateTime(appoDateTime);
+            Optional<Appointment> localDateTimeOptional = appointmentService.findByAppointmentDateTime(appointment.getAppointmentDateTime());
             if (localDateTimeOptional.isPresent()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appoDateTime);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appointment.getAppointmentDateTime());
             }
             appointmentService.updateAppointment(id, appointment);
             return ResponseEntity.status(HttpStatus.CREATED).body("Appointment updated succesfully!!");
@@ -196,66 +248,8 @@ public class AppointmentController {
 
 
 
-    @GetMapping("/findById/{id}")
-    public ResponseEntity<?> getAppointmentById(@PathVariable Long id) {
-        Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
-        if (appointment.isPresent()) {
-            return ResponseEntity.ok(appointment);
-        } else {
+  //DELETE MAPPING
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the id " + id);
-        }
-    }
-
-    @GetMapping("/findAllAppointments")
-    public ResponseEntity<List<Appointment>> getAllAppointments() {
-        List<Appointment> appointments = appointmentService.getAllAppointments();
-        return new ResponseEntity<>(appointments, HttpStatus.OK);
-    }
-
-    @GetMapping("/customer/{customerId}")
-    public ResponseEntity<?> getAppointmentsByCustomerId(@PathVariable Long customerId) {
-        List<Appointment> appointments = appointmentService.getAppointmentsByCustomerId(customerId);
-        if(appointments.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Customer id " + customerId);
-        }
-        return new ResponseEntity<>(appointments, HttpStatus.OK);
-    }
-
-    @GetMapping("/vet/{vetId}")
-    public ResponseEntity<?> getAppointmentsByVetId(@PathVariable Long vetId){
-        List<Appointment> appointmentList = appointmentService.findByVetId(vetId);
-        if(appointmentList.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Vet id " + vetId);
-        }
-        return new ResponseEntity<>(appointmentList, HttpStatus.OK);
-    }
-    @GetMapping("/pet/{petsId}")
-    public ResponseEntity<?> findByPetId(@PathVariable Long petsId){
-        Optional<List<Appointment>> appointmentList = Optional.ofNullable(appointmentService.findByPetsId(petsId));
-        if(appointmentList.isPresent()){
-            List<Appointment> appointments = appointmentList.get();
-            return new ResponseEntity<>(appointmentList, HttpStatus.OK);
-        }else{
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No appointment found for the Pet id " + petsId);
-        }
-
-    }
-
-
-    //FOUND VET BY LICENSE.
-    @GetMapping("/vetLicense/{vetLicense}")
-    public ResponseEntity<?> getAppointmentsByLicense(@PathVariable String vetLicense){
-        List<Appointment> appointmentList = appointmentService.findByLicense(vetLicense);
-        if(appointmentList.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Vet license " + vetLicense);
-        }
-        return new ResponseEntity<>(appointmentList, HttpStatus.OK);
-    }
-
-
-
-    //DELTE 1 APPOINTMENT BY ID.
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteAppointment(@PathVariable Long id) {
@@ -282,18 +276,6 @@ public class AppointmentController {
 
     }
 
-    /*
-    @DeleteMapping("/deleteAppointmentByIds2")
-    public ResponseEntity<?> deleteAppointmentsByIds(@RequestParam Long[] appointmentIds) {
-        Long[] deletedIds = appointmentService.deleteAppointmentsByIds(appointmentIds);
-        if (deletedIds.length == 0) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron citas con los IDs proporcionados.");
-        } else {
-            return ResponseEntity.ok("Se eliminaron las citas con los siguientes IDs: " + Arrays.toString(deletedIds));
-        }
-    }
-
-     */
 
     // ALSO DELETES MANY APPOINTEMTS
     @DeleteMapping("/deleteAppointmentByIds2")
