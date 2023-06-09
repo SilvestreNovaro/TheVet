@@ -68,10 +68,10 @@ public class CategoryController {
     public ResponseEntity<?> add (@Validated @RequestBody Category category){
         Optional<Category> categoryOptional = categoryService.findByCategoryName(category.getCategoryName());
         if(categoryOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("a category with the name " + category.getCategoryName() + " already existes");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("a category with the name " + category.getCategoryName() + " already exists");
         }
         categoryService.createCategory(category);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Category " + category.toString() + " added succesfully!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Category " + category.toString() + " added successfully!");
 
     }
 
@@ -81,7 +81,7 @@ public class CategoryController {
     public ResponseEntity<?> update(@Validated @RequestBody Category category, @PathVariable Long id){
         Optional<Category> optionalCategory = categoryService.findByCategoryName(category.getCategoryName());
         if(optionalCategory.isPresent()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("a category with the name " + category.getCategoryName() + " already existes");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("a category with the name " + category.getCategoryName() + " already exists");
         }
         Optional<Category> categoryOptional = categoryService.findById(id);
         if(categoryOptional.isPresent()){
