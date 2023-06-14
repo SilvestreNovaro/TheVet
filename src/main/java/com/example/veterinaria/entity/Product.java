@@ -33,11 +33,11 @@ public class Product {
 
 
 
-    @OneToMany(cascade = CascadeType.DETACH) //, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL) //, orphanRemoval = true)
     @JoinColumn(name = "product_id")
     private List<Image> images;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "category_id")
     private Category category;
 }

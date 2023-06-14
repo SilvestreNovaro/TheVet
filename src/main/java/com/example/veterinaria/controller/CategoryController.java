@@ -120,8 +120,16 @@ public class CategoryController {
         }else {
 
         }return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with the id  " + categoryId + " does not exist on our registers");
+    }
 
-
+    @DeleteMapping("/deleteAllProducts/{categoryId}")
+    public ResponseEntity<?> deleteAllProducts(@PathVariable Long categoryId){
+        Optional<Category> categoryOptional = categoryService.findById(categoryId);
+        if(categoryOptional.isPresent()){
+            categoryService.deleteAllProducts(categoryId);
+            return ResponseEntity.status(HttpStatus.OK).body("Category " + categoryId + " had all the products deleted");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with the id  " + categoryId + " does not exist on our registers");
     }
 
 }
