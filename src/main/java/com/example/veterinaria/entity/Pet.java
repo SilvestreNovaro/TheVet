@@ -31,7 +31,8 @@ public class Pet {
     private String petSpecies;
 
 
-    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "pet_id")
     private List<MedicalRecord> medicalRecords = new ArrayList<>();
 
 

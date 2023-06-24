@@ -1,9 +1,11 @@
 package com.example.veterinaria.controller;
 
 
+import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
-import com.example.veterinaria.service.CustomerService;
+import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.PetService;
+import com.example.veterinaria.service.VetService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import java.util.Optional;
 public class PetController {
 
     private final PetService petService;
+    private final VetService vetService;
 
 
     @GetMapping("/list")
@@ -38,6 +41,24 @@ public class PetController {
         petService.createPet(pet);
         return ResponseEntity.status(HttpStatus.CREATED).body("Pet added successfully!");
     }
+
+    @PostMapping("/addMedicalRecord")
+    public ResponseEntity<?> addMR(@RequestBody MedicalRecord medicalRecord,@RequestParam Long petId,  Long vetId){
+        Optional<Pet> petOptional = petService.getPetById(petId);
+        if(petOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pet  id " + petId + " does not exist on our registers");
+        }
+        Optional<Vet> vetOptional = vetService.getVetById(vetId);
+        if(vetOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet  id " + vetId + " does not exist on our registers");
+        }
+        petService.createMedicalRecord(petId, medicalRecord, vetId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("MR added");
+    }
+
+
+
 
     @PutMapping("/modify/{id}")
     public ResponseEntity<?> update (@Validated @RequestBody Pet pet, @PathVariable Long id){

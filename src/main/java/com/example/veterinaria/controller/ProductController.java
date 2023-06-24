@@ -7,7 +7,6 @@ import com.example.veterinaria.entity.Image;
 import com.example.veterinaria.entity.Product;
 import com.example.veterinaria.repository.ProductRepository;
 import com.example.veterinaria.service.CategoryService;
-import com.example.veterinaria.service.ImageService;
 import com.example.veterinaria.service.ProductService;
 import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
@@ -33,8 +32,9 @@ public class ProductController {
 
     private final CategoryService categoryService;
 
-    private final ImageService imageService;
     private final ProductRepository productRepository;
+
+    private static final String PRODUCT_NOT_FOUND_ERROR = "No product found with the given id ";
 
 
     @GetMapping("list")
@@ -91,31 +91,30 @@ public class ProductController {
 
 
     @PostMapping("/addImage/{id}")
-    public ResponseEntity<?> addImage(@Validated @RequestBody Image image, @PathVariable Long id) {
+    public ResponseEntity<String> addImage(@Validated @RequestBody Image image, @PathVariable Long id) {
         Optional<Product> productOptional = productService.findById(id);
         if (productOptional.isPresent()) {
             productService.addImageToProduct(id, image);
             return ResponseEntity.status(HttpStatus.CREATED).body("image added successfully!");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + id);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(PRODUCT_NOT_FOUND_ERROR + id);
     }
 
 
 
     @PostMapping("/addManyImages/{productId}")
-    public ResponseEntity<?> addImagesToProduct(@Validated @PathVariable Long productId, @RequestBody List<Image> images) {
+    public ResponseEntity<String> addImagesToProduct(@Validated @PathVariable Long productId, @RequestBody List<Image> images) {
         Optional<Product> productOptional = productService.findById(productId);
         if (productOptional.isPresent()) {
-            Product product = productOptional.get();
             productService.addImagesToProduct(productId, images);
             return ResponseEntity.status(HttpStatus.CREATED).body("images added successfully!");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + productId);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(PRODUCT_NOT_FOUND_ERROR  + productId);
     }
 
 
     @PutMapping("/modifyDTO/{id}")
-    public ResponseEntity<?> update(@Validated @RequestBody ProductDTO productDTO, @PathVariable Long id) {
+    public ResponseEntity<String> update(@Validated @RequestBody ProductDTO productDTO, @PathVariable Long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
         Optional<Product> productOptional = productService.findByTitle(productDTO.getTitle());
         if (productOptional.isPresent()) {
@@ -130,11 +129,11 @@ public class ProductController {
             productService.updateProductDTO(productDTO, id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Product updated successfully!");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + id);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(PRODUCT_NOT_FOUND_ERROR + id);
     }
 
     @PatchMapping("/modifyProduct/{id}")
-    public ResponseEntity<?> updateProduct(@Validated @PathVariable Long id, @RequestBody Product product) {
+    public ResponseEntity<String> updateProduct(@Validated @PathVariable Long id, @RequestBody Product product) {
         Optional<Product> productOptional = productService.findById(id);
         Optional<Product> optionalProduct = productService.findByTitle(product.getTitle());
         if (optionalProduct.isPresent()) {
@@ -144,19 +143,19 @@ public class ProductController {
             productService.updateProduct(id, product);
             return ResponseEntity.status(HttpStatus.CREATED).body("Product updated successfully!");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + id);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(PRODUCT_NOT_FOUND_ERROR  + id);
     }
 
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@Validated @PathVariable Long id) {
+    public ResponseEntity<String> delete(@Validated @PathVariable Long id) {
         Optional<Product> productOptional = productService.findById(id);
         if (productOptional.isPresent()) {
             productService.deleteProduct(id);
             return ResponseEntity.ok("Appointment with id " + id + " deleted");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given id " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(PRODUCT_NOT_FOUND_ERROR  + id);
         }
     }
 
@@ -169,7 +168,7 @@ public class ProductController {
     @DeleteMapping("/deleteManyProducts")
     public ResponseEntity<Object> deleteProducts(@RequestParam List<Long> productIds) {
         List<Long> deletedIds = productService.deleteProducts(productIds);
-        if (deletedIds.size() > 0) {
+        if (deletedIds.isEmpty()) {
             return ResponseEntity.ok("non existent ids " + deletedIds);
         } else {
             return ResponseEntity.ok("Products deleted successfully " + productIds.toString());
@@ -216,7 +215,7 @@ public class ProductController {
      */
 
     @DeleteMapping("/deleteImages/{productId}/{imageIds}")
-    public ResponseEntity<?> deleteImagess(@Validated @PathVariable Long productId, @PathVariable List<Long> imageIds) {
+    public ResponseEntity<String> deleteImagess(@Validated @PathVariable Long productId, @PathVariable List<Long> imageIds) {
         Optional<Product> productOptional = productService.findById(productId);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
@@ -239,8 +238,19 @@ public class ProductController {
             }
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product found with the given ID " + productId);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(PRODUCT_NOT_FOUND_ERROR  + productId);
     }
+
+    @DeleteMapping("/deleteProductsFromCategory/{categoryId}")
+    public ResponseEntity<String> deleteProducts(@PathVariable Long categoryId, @RequestParam List<Long> productIds){
+        Optional<Category> categoryOptional = categoryService.findById(categoryId);
+        if(categoryOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Category found with the given id " + categoryId);
+        }
+        productService.deleteProductsFromCategory(categoryId, productIds);
+        return ResponseEntity.status(HttpStatus.CREATED).body("The following products have been removed from the Category: " + categoryId + " " + productIds);
+    }
+
 
 }
 

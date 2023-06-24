@@ -16,22 +16,13 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
     @Query("select p from Pet p where p.petName = ?1")
     public Optional<Pet> findByName(String name);
 
-
-
-
-
-
-
-
     List<Pet> findByAge(Integer age);
 
     List<Pet> findByGender(String gender);
 
     List<Pet> findByPetSpecies(String petSpecies);
 
-   /* List<Pet> findByIdInAndCustomer_Id(List<Long> petIds, Long customerId);
 
-    */
 
 
 

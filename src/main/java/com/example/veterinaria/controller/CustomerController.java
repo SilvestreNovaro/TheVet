@@ -163,7 +163,7 @@ public class CustomerController {
 
     // YA NO SE USA.
 
-    @PatchMapping("/modifyCustomer/{id}")
+    @PutMapping("/modifyCustomer/{id}")
     public ResponseEntity<?> updateCustomer(@Validated @RequestBody Customer customer, @PathVariable Long id){
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
         if(customerOptional.isPresent()){

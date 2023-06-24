@@ -1,16 +1,15 @@
 package com.example.veterinaria.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 @Getter
 @Setter
@@ -25,37 +24,27 @@ public class MedicalRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private String vaccinationStatus;
-
+    @NotNull
     private String medication;
-
+    @NotNull
     private Boolean isNeutered;
-
+    @NotNull
     private String allergies;
-
+    @NotNull
     private String existingPathologies;
-
+    @NotNull
     private String surgeries;
-
+    @NotNull
     private LocalDateTime recordDate;
 
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "pet_id")
-    private Pet pet;
-
-    @JsonProperty("petId")
-    public Long getPetId() {
-        return pet != null ? pet.getId() : null;
-    }
     @JsonIgnoreProperties({"name", "email", "phone", "license" })
-   @ManyToOne
+   @ManyToOne(cascade = CascadeType.DETACH)
    @JoinColumn(name = "vet_id")
    private Vet vet;
 
 
-    private Long customerId;
 
 
 }

@@ -142,11 +142,11 @@ public class CustomerService {
 
 
 
-    // YA NO SE USA.
-    public void updateCustomer(Long id, Customer customer){
+
+    /*public void updateCustomer(Long id, Customer customer){
         Customer customer1 = customerRepository.findById(id).get();
         if(customer.getName()!=null && !customer.getName().isEmpty()) customer1.setName(customer.getName());
-        if(customer.getLastName() != null && !customer.getLastName().isEmpty()) customer1.setLastName(customer1.getLastName());
+        if(customer.getLastName() != null && !customer.getLastName().isEmpty()) customer1.setLastName(customer.getLastName());
         if(customer.getAddress() != null && !customer.getAddress().isEmpty()) customer1.setAddress(customer.getAddress());
         if(customer.getEmail() != null && !customer.getEmail().isEmpty()) customer1.setEmail(customer.getEmail());
         if(customer.getContactNumber() != null && !customer.getContactNumber().equals("")) customer1.setContactNumber(customer1.getContactNumber());
@@ -156,6 +156,26 @@ public class CustomerService {
         }
         customerRepository.save(customer1);
       }
+
+     */
+
+    // QUEDA IRRELEVANTE, SOLO ME DA LA POSIBILIDAD DE NO PASAR EL ID DEL ROL COMO PARAMETRO A ACTUALIZAR.
+    public void updateCustomer(Long id, Customer customer) {
+        Customer customer1 = customerRepository.findById(id).orElse(null);
+        if (customer1 != null) {
+            ModelMapper modelMapper = new ModelMapper();
+            modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
+            modelMapper.map(customer, customer1);
+
+            if (customer.getPassword() != null && !customer.getPassword().isEmpty()) {
+                String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
+                customer1.setPassword(encodedPassword);
+            }
+
+            customerRepository.save(customer1);
+        }
+    }
+
 
 
     public List<Customer> getAllCustomers() {
@@ -174,7 +194,6 @@ public class CustomerService {
         return customerRepository.findByName(name);
     }
 
-    // add any additional methods here
 
     public List<Pet> findCustomersPets(Long Petid) {
         List<Pet> petList = new ArrayList<>();

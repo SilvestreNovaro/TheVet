@@ -1,12 +1,9 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.entity.Category;
-import com.example.veterinaria.entity.Product;
-import com.example.veterinaria.exception.NotFoundExceptionLong;
 import com.example.veterinaria.repository.CategoryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,7 +65,7 @@ public class CategoryService {
     }
 
 
-
+/*
     public void deleteProductsFromCategory(Long categoryId, List<Long> productIds) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundExceptionLong(categoryId));
@@ -93,6 +90,8 @@ public class CategoryService {
         category.getProducts().clear();
         categoryRepository.save(category);
     }
+
+ */
 
 
 

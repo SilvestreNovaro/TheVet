@@ -1,7 +1,6 @@
 package com.example.veterinaria.controller;
 
 import com.example.veterinaria.entity.Category;
-import com.example.veterinaria.entity.Product;
 import com.example.veterinaria.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,6 +48,7 @@ public class CategoryController {
 
     }
 
+    /*
     @GetMapping("/getProductsFromCategory/{id}")
     public ResponseEntity<?> getProductsCategory(@Validated @PathVariable Long id) {
         Optional<Category> categoryOptional = categoryService.findById(id);
@@ -62,6 +62,8 @@ public class CategoryController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found.");
     }
+
+     */
     // CREATE REQUEST
 
     @PostMapping("/add")
@@ -110,17 +112,19 @@ public class CategoryController {
 
     //DELETE PRODUCTS FROM CATEGORY
 
-    @DeleteMapping("/deleteProduct/{categoryId}/{productIds}")
+    /*@DeleteMapping("/deleteProduct/{categoryId}/{productIds}")
     public ResponseEntity<?> deleteProducts(@Validated @PathVariable Long categoryId, @PathVariable List<Long>productIds){
         Optional<Category> categoryOptional = categoryService.findById(categoryId);
         if(categoryOptional.isPresent()){
             categoryService.deleteProductsFromCategory(categoryId, productIds);
             return ResponseEntity.status(HttpStatus.OK).body("Category " + categoryId + " had the products " + productIds + " deleted");
 
-        }else {
+        }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with the id  " + categoryId + " does not exist on our registers");
+        }
 
-        }return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with the id  " + categoryId + " does not exist on our registers");
-    }
+
+
 
     @DeleteMapping("/deleteAllProducts/{categoryId}")
     public ResponseEntity<?> deleteAllProducts(@PathVariable Long categoryId){
@@ -131,5 +135,7 @@ public class CategoryController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with the id  " + categoryId + " does not exist on our registers");
     }
+
+     */
 
 }

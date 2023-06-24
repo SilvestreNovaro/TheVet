@@ -1,11 +1,8 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.MedicalRecordDTO;
-import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.MedicalRecord;
-import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
-import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.AppointmentRepository;
 import com.example.veterinaria.repository.MedicalRecordRepository;
 import com.example.veterinaria.repository.VetRepository;
@@ -43,9 +40,9 @@ public class MedicalRecordService {
 
     public Optional<MedicalRecord> findByRecordDate(LocalDateTime recordDate){
         return medicalRecordRepository.findByRecordDate(recordDate);
-    };
+    }
 
-    public MedicalRecord createMR(MedicalRecordDTO medicalRecordDTO, Long customerId) {
+    /*public MedicalRecord createMR(MedicalRecordDTO medicalRecordDTO, Long customerId) {
 
         MedicalRecord medicalRecord = new MedicalRecord();
 
@@ -57,6 +54,8 @@ public class MedicalRecordService {
         medicalRecord.setSurgeries(medicalRecordDTO.getSurgeries());
         medicalRecord.setRecordDate(medicalRecordDTO.getRecordDate());
         medicalRecord.setCustomerId(customerId);
+        Long petid = medicalRecordDTO.getPet_id();
+
 
         Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
         if(customerOptional.isPresent()){
@@ -106,6 +105,26 @@ public class MedicalRecordService {
         }
 
         medicalRecordRepository.save(medicalRecord);
+    }
+
+     */
+
+    public void updateMR(MedicalRecordDTO medicalRecordDTO, Long id){
+        Optional<MedicalRecord> medicalRecordOptional = medicalRecordRepository.findById(id);
+        if(medicalRecordOptional.isPresent()){
+            MedicalRecord medicalRecord = medicalRecordOptional.get();
+
+            ModelMapper modelMapper = new ModelMapper();
+            //modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+            modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
+            modelMapper.map(medicalRecordDTO, medicalRecord);
+
+
+            Optional<Vet> vetOptional = vetService.findById(medicalRecordDTO.getVet_id());
+               vetOptional.ifPresent(medicalRecord::setVet);
+
+            medicalRecordRepository.save(medicalRecord);
+        }
     }
 
 

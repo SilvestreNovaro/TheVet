@@ -16,7 +16,6 @@ import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -209,7 +208,7 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public ResponseEntity<?> deleteVariousProductsByIds(Long[] productIds) {
+    public ResponseEntity<String> deleteVariousProductsByIds(Long[] productIds) {
         List<Long> deletedIds = new ArrayList<>();
         List<Long> notFoundIds = new ArrayList<>();
 
@@ -229,6 +228,18 @@ public class ProductService {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Products not found fot the ids " + notFoundIds);
         }
+    }
+
+    public void deleteProductsFromCategory(Long categoryId, List<Long> productIds){
+
+        List<Product> productsToRemove = new ArrayList<>();
+
+        for(Product product : productRepository.findByCategoria_Id(categoryId)){
+            if(productIds.contains(product.getId())){
+                productsToRemove.add(product);
+            }
+        }
+            productRepository.deleteAll(productsToRemove);
     }
 
 

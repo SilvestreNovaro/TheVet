@@ -46,7 +46,7 @@ public class MedicalRecordController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical record exists with the id " + id);
     }
 
-    @PostMapping("/add")
+    /*@PostMapping("/add")
     public ResponseEntity<?> createMR(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO, @RequestParam Long customerId) {
 
         Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findByRecordDate(medicalRecordDTO.getRecordDate());
@@ -89,6 +89,30 @@ public class MedicalRecordController {
             medicalRecordService.updateMR(medicalRecordDTO, id, customerId);
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical record exists with the id " + id);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body("Medical Record updated successfully!");
+    }
+
+     */
+
+    @PutMapping("/modify/{id}")
+    public ResponseEntity<?> update(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO, @PathVariable Long id) {
+        Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findById(id);
+        if (medicalRecordOptional.isPresent()) {
+            /*Optional<Pet> petOptional = petService.getPetById(medicalRecordDTO.getPet_id());
+            if (petOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No pet found with the id " + medicalRecordDTO.getPet_id());
+            }
+
+             */
+            Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVet_id());
+            if (vetOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No vet found with the id " + medicalRecordDTO.getVet_id());
+            }
+            medicalRecordService.updateMR(medicalRecordDTO, id);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical record exists with the id " + id);
+
         }
         return ResponseEntity.status(HttpStatus.CREATED).body("Medical Record updated successfully!");
     }
