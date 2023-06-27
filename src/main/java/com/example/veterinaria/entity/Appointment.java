@@ -24,7 +24,6 @@ public class Appointment {
 
     private String appointmentReason;
 
-    private String appointmentNotes;
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "customer_id")
@@ -34,6 +33,7 @@ public class Appointment {
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "vet_id")
+    @JsonIgnoreProperties({"email", "license"})
     private Vet vet;
 
 

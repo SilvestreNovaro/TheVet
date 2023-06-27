@@ -2,7 +2,6 @@ package com.example.veterinaria.repository;
 
 import com.example.veterinaria.entity.Appointment;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -22,7 +21,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByVetId(Long vetId);
 
     List<Appointment> findByVetLicense(String license);
-
-    Optional<Appointment> findById(Long id);
 
 }

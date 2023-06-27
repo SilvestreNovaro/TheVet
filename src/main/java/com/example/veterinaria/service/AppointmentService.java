@@ -2,7 +2,6 @@ package com.example.veterinaria.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,9 +18,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -75,13 +72,13 @@ public class AppointmentService {
     // CREATE (POST REQUEST)
 
 
-    public Appointment createAppointment(AppointmentDTO appointmentDTO) {
+    public void createAppointment(AppointmentDTO appointmentDTO) {
 
         Appointment appointment = new Appointment();
 
         List<Long> appPetIds = appointmentDTO.getPetIds();
 
-        Optional<Customer> optionalCustomer = customerService.getCustomerById(appointmentDTO.getCustomer_id());
+        Optional<Customer> optionalCustomer = customerService.getCustomerById(appointmentDTO.getCustomerId());
         if(optionalCustomer.isEmpty()) {
             throw new NotFoundException("customerId " + optionalCustomer+ " not found");
 
@@ -89,22 +86,22 @@ public class AppointmentService {
         Customer customer = optionalCustomer.get();
         optionalCustomer.ifPresent(appointment::setCustomer);
 
-        Optional<Vet> optionalVet = vetService.getVetById(appointmentDTO.getVet_id());
+        Optional<Vet> optionalVet = vetService.getVetById(appointmentDTO.getVetId());
         optionalVet.ifPresent(appointment::setVet);
 
         List<Pet> selectedPets = customer.getPets().stream()
                 .filter(pet -> appPetIds.contains(pet.getId()))
                 .collect(Collectors.toList());
 
-        if (selectedPets.containsAll(appPetIds)) {
+        if (!selectedPets.stream().map(Pet::getId).collect(Collectors.toList()).containsAll(appPetIds)) {
             throw new NotFoundException("One or more petIds not found for the customer");
         }
 
-        appointment.setAppointmentNotes(appointmentDTO.getAppointmentNotes());
+
         appointment.setAppointmentReason(appointmentDTO.getAppointmentReason());
         appointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
         appointment.setPets(selectedPets);
-        return appointmentRepository.save(appointment);
+         appointmentRepository.save(appointment);
     }
 
     //UPDATE (PUT PATCH REQUESTS)
@@ -118,22 +115,18 @@ public class AppointmentService {
 
             LocalDateTime appDateTime = appointmentDTO.getAppointmentDateTime();
             String appReason = appointmentDTO.getAppointmentReason();
-            String appNotes = appointmentDTO.getAppointmentNotes();
             List<Long> appPetIds = appointmentDTO.getPetIds();
-            Long customer = appointmentDTO.getCustomer_id();
-            Long vet = appointmentDTO.getVet_id();
+            Long customer = appointmentDTO.getCustomerId();
+            Long vet = appointmentDTO.getVetId();
 
             if (appDateTime != null && !appDateTime.equals("")) {
                 appointment.setAppointmentDateTime(appDateTime);
             }
 
             if (appReason != null && !appReason.isEmpty()) {
-                appointment.setAppointmentNotes(appReason);
+                appointment.setAppointmentReason(appReason);
             }
 
-            if (appNotes != null && !appNotes.isEmpty()) {
-                appointment.setAppointmentReason(appNotes);
-            }
 
             if (customer != null && !customer.equals("")) {
                 Optional<Customer> optionalCustomer = customerService.getCustomerById(customer);
@@ -183,9 +176,6 @@ public class AppointmentService {
             if (StringUtils.isNotBlank(appointment.getAppointmentReason())) {
                 existingAppointment.setAppointmentReason(appointment.getAppointmentReason());
             }
-            if (StringUtils.isNotBlank(appointment.getAppointmentNotes())) {
-                existingAppointment.setAppointmentNotes(appointment.getAppointmentNotes());
-            }
 
             appointmentRepository.save(existingAppointment);
         } else {
@@ -229,18 +219,18 @@ public class AppointmentService {
     // ALSO DELETES MANY APPOINTEMTS
     @Transactional
     public List<Long> deleteAppointment(List<Long> appointmentIds) {
-        List<Long> InexistentIds = new ArrayList<>();
+        List<Long> inexistentIds = new ArrayList<>();
 
         for (Long idAppointment : appointmentIds) {
             Optional<Appointment> appointmentOptional = appointmentRepository.findById(idAppointment );
             if (appointmentOptional.isPresent()) {
                 appointmentRepository.delete(appointmentOptional.get());
             } else {
-                InexistentIds.add(idAppointment );
+                inexistentIds.add(idAppointment );
             }
         }
 
-        return InexistentIds;
+        return inexistentIds;
     }
 
 

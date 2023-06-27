@@ -2,7 +2,6 @@ package com.example.veterinaria.DTO;
 
 
 import com.example.veterinaria.entity.Pet;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,7 +24,7 @@ public class CustomerDTO {
 
     private String password;
 
-    private Long role_id;
+    private Long roleId;
 
     private List<Pet> pets;
 

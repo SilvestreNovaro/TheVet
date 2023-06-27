@@ -2,10 +2,8 @@ package com.example.veterinaria.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.example.veterinaria.DTO.AppointmentDTO;
 import com.example.veterinaria.entity.*;
@@ -35,6 +33,7 @@ public class AppointmentController {
     private final VetService vetService;
 
     private final PetService petService;
+
     private JavaMailSender javaMailSender;
 
 
@@ -45,7 +44,7 @@ public class AppointmentController {
     // GET MAPPING
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<?> getAppointmentById(@PathVariable Long id) {
+    public ResponseEntity<Object> getAppointmentById(@PathVariable Long id) {
         Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
         if (appointment.isPresent()) {
             return ResponseEntity.ok(appointment);
@@ -65,7 +64,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<?> getAppointmentsByCustomerId(@PathVariable Long customerId) {
+    public ResponseEntity<Object> getAppointmentsByCustomerId(@PathVariable Long customerId) {
         List<Appointment> appointments = appointmentService.getAppointmentsByCustomerId(customerId);
         if(appointments.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Customer id " + customerId);
@@ -73,8 +72,14 @@ public class AppointmentController {
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
+    @GetMapping("/myAppointments/{customerId}")
+    public ResponseEntity<Object> myAppointments(@PathVariable Long customerId){
+        Optional<List<Appointment>> appointmentList = Optional.ofNullable(appointmentService.getAppointmentsByCustomerId(customerId));
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentList);
+    }
+
     @GetMapping("/vet/{vetId}")
-    public ResponseEntity<?> getAppointmentsByVetId(@PathVariable Long vetId){
+    public ResponseEntity<Object> getAppointmentsByVetId(@PathVariable Long vetId){
         List<Appointment> appointmentList = appointmentService.findByVetId(vetId);
         if(appointmentList.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Vet id " + vetId);
@@ -82,10 +87,9 @@ public class AppointmentController {
         return new ResponseEntity<>(appointmentList, HttpStatus.OK);
     }
     @GetMapping("/pet/{petsId}")
-    public ResponseEntity<?> findByPetId(@PathVariable Long petsId){
+    public ResponseEntity<Object> findByPetId(@PathVariable Long petsId){
         Optional<List<Appointment>> appointmentList = Optional.ofNullable(appointmentService.findByPetsId(petsId));
         if(appointmentList.isPresent()){
-            List<Appointment> appointments = appointmentList.get();
             return new ResponseEntity<>(appointmentList, HttpStatus.OK);
         }else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No appointment found for the Pet id " + petsId);
@@ -95,7 +99,7 @@ public class AppointmentController {
 
 
     @GetMapping("/vetLicense/{vetLicense}")
-    public ResponseEntity<?> getAppointmentsByLicense(@PathVariable String vetLicense){
+    public ResponseEntity<Object> getAppointmentsByLicense(@PathVariable String vetLicense){
         List<Appointment> appointmentList = appointmentService.findByLicense(vetLicense);
         if(appointmentList.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the Vet license " + vetLicense);
@@ -114,19 +118,19 @@ public class AppointmentController {
     //CREATE
 
     @PostMapping("/create")
-    public ResponseEntity<?> createAppointment(@RequestBody AppointmentDTO appointmentDTO) throws MessagingException {
+    public ResponseEntity<Object> createAppointment(@RequestBody AppointmentDTO appointmentDTO) throws MessagingException {
 
-        Optional<Customer> optionalCustomer = customerService.getCustomerById(appointmentDTO.getCustomer_id());
-        Optional<Vet> optionalVetId = vetService.getVetById(appointmentDTO.getVet_id());
+        Optional<Customer> optionalCustomer = customerService.getCustomerById(appointmentDTO.getCustomerId());
+        Optional<Vet> optionalVetId = vetService.getVetById(appointmentDTO.getVetId());
         List<Long> petIds = appointmentDTO.getPetIds();
         Optional<Appointment> appointmentOptional = appointmentService.findByAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
 
 
         if (optionalCustomer.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customerId " + appointmentDTO.getCustomer_id() + " not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customerId " + appointmentDTO.getCustomerId() + " not found");
         }
         if (optionalVetId.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("vetId " + appointmentDTO.getVet_id() + " not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("vetId " + appointmentDTO.getVetId() + " not found");
         }
         if (appointmentOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appointmentDTO.getAppointmentDateTime());
@@ -180,8 +184,7 @@ public class AppointmentController {
                             "</tr>" +
                             "<tr>" +
                             "<td>" + optionalCustomer.get().getName() + "</td>" +
-                            "<td>" + appointmentDTO.getAppointmentReason().toString() + "</td>" +
-                            "<td>" + appointmentDTO.getAppointmentNotes().toString() + "</td>" +
+                            "<td>" + appointmentDTO.getAppointmentReason() + "</td>" +
                             "<td>" + optionalVetId.get().getName() + "</td>" +
                             "td>" + optionalCustomer.get().getPets().toString() + "</td>" +
                             "<td>" + formattedDateTime + "</td>" +
@@ -195,15 +198,15 @@ public class AppointmentController {
             helper.setText(htmlMsg, true);
             javaMailSender.send(message);
 
-        Appointment savedAppointment = appointmentService.createAppointment(appointmentDTO);
-        return new ResponseEntity<>(savedAppointment, HttpStatus.CREATED);
+        appointmentService.createAppointment(appointmentDTO);
+        return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
         }
 
 
     //UPDATE (PUT PATCH MAPPING)
 
     @PutMapping("/updateApp/{id}")
-    public ResponseEntity<?> update(@Validated @RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id) {
+    public ResponseEntity<String> update(@Validated @RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id) {
 
         Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
         LocalDateTime appoDateTime = appointmentDTO.getAppointmentDateTime();
@@ -211,17 +214,17 @@ public class AppointmentController {
         if(localDateTimeOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appoDateTime);
         }
-        Optional<Customer> optionalCustomer = customerService.findById(appointmentDTO.getCustomer_id());
-        Optional<Vet> vetOptional = vetService.getVetById(appointmentDTO.getVet_id());
+        Optional<Customer> optionalCustomer = customerService.findById(appointmentDTO.getCustomerId());
+        Optional<Vet> vetOptional = vetService.getVetById(appointmentDTO.getVetId());
         List<Pet> petIds = petService.getAllPetsIds(appointmentDTO.getPetIds());
         if (petIds.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The petIds " + appointmentDTO.getPetIds() + " cant be null");
         }
         if (optionalCustomer.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The CustomerId " + appointmentDTO.getCustomer_id() + " doesnt exist");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The CustomerId " + appointmentDTO.getCustomerId() + " doesnt exist");
         }
         if (vetOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The VetId " + appointmentDTO.getVet_id() + " doesnt exist");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The VetId " + appointmentDTO.getVetId() + " doesnt exist");
         }
         if(appointmentOptional.isPresent()) {
             appointmentService.updateAppointmentDTO(appointmentDTO, id);
@@ -232,7 +235,7 @@ public class AppointmentController {
 
 
     @PatchMapping ("/update/{id}")
-    public ResponseEntity<?> updateAppointment(@Validated @RequestBody Appointment appointment, @PathVariable Long id) {
+    public ResponseEntity<String> updateAppointment(@Validated @RequestBody Appointment appointment, @PathVariable Long id) {
         Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
         if (appointmentOptional.isPresent()) {
             Optional<Appointment> localDateTimeOptional = appointmentService.findByAppointmentDateTime(appointment.getAppointmentDateTime());
@@ -268,7 +271,7 @@ public class AppointmentController {
     @DeleteMapping("/deleteByIds")
     public ResponseEntity<Object> deleteAppointmentsByIds(@RequestParam List <Long> appointmentIds) {
         var deletedIds = appointmentService.deleteAppointment(appointmentIds);
-        if(deletedIds.size()>0){
+        if(deletedIds.isEmpty()){
             return ResponseEntity.ok("non existent ids " + deletedIds);
         }else{
             return ResponseEntity.ok("appointents deleted succesfully " + appointmentIds.toString());

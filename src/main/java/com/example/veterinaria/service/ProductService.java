@@ -59,7 +59,7 @@ public class ProductService {
             throw new IllegalArgumentException("Description is required");
         }
 
-        Long categoryId = productDTO.getCategory_id();
+        Long categoryId = productDTO.getCategoryId();
         Category category = categoryService.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Category not found"));
 
@@ -113,21 +113,6 @@ public class ProductService {
     }
 
 
-
-
-    /*public void addImageToProduct(Long productId, Image image) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new NotFoundExceptionLong(productId));
-        List<Image> images = product.getImages();
-        if(images == null) {
-            images = new ArrayList<>();
-        }
-        images.add(image);
-        product.setImages(images);
-        productRepository.save(product);
-    }
-
-     */
-
     public void addImageToProduct(Long productId, Image image) {
 
         Product product = productRepository.findById(productId)
@@ -141,7 +126,6 @@ public class ProductService {
         product.setImages(images);
         productRepository.save(product);
     }
-
 
 
 
@@ -190,18 +174,18 @@ public class ProductService {
 
     @Transactional
     public List<Long> deleteProducts(List<Long> productIds) {
-        List<Long> InexistentIds = new ArrayList<>();
+        List<Long> inexistentIds = new ArrayList<>();
 
         for (Long productId : productIds) {
             Optional<Product> productOptional = productRepository.findById(productId);
             if (productOptional.isPresent()) {
                 productRepository.delete(productOptional.get());
             } else {
-                InexistentIds.add(productId);
+                inexistentIds.add(productId);
             }
         }
 
-        return InexistentIds;
+        return inexistentIds;
     }
 
     public void deleteProduct(Long id){
@@ -234,7 +218,7 @@ public class ProductService {
 
         List<Product> productsToRemove = new ArrayList<>();
 
-        for(Product product : productRepository.findByCategoria_Id(categoryId)){
+        for(Product product : productRepository.findByCategoryId(categoryId)){
             if(productIds.contains(product.getId())){
                 productsToRemove.add(product);
             }

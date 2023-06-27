@@ -1,6 +1,5 @@
 package com.example.veterinaria.repository;
 
-import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Vet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

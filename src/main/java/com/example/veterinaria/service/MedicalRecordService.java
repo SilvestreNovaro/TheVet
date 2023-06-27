@@ -27,7 +27,6 @@ public class MedicalRecordService {
 
     private final PetService petService;
     private final VetRepository vetService;
-    private final AppointmentRepository appointmentRepository;
     private final CustomerService customerService;
 
     public List<MedicalRecord> findAll(){
@@ -120,7 +119,7 @@ public class MedicalRecordService {
             modelMapper.map(medicalRecordDTO, medicalRecord);
 
 
-            Optional<Vet> vetOptional = vetService.findById(medicalRecordDTO.getVet_id());
+            Optional<Vet> vetOptional = vetService.findById(medicalRecordDTO.getVetId());
                vetOptional.ifPresent(medicalRecord::setVet);
 
             medicalRecordRepository.save(medicalRecord);
@@ -132,7 +131,7 @@ public class MedicalRecordService {
             medicalRecordRepository.deleteById(id);
         }
 
-    public ResponseEntity<?> deleteMedicalRecordByIds(Long[] medicalRecordIds){
+    public ResponseEntity<String> deleteMedicalRecordByIds(Long[] medicalRecordIds){
         List<Long> deletedIds = new ArrayList<>();
         List<Long> notFoundIds = new ArrayList<>();
         for(Long medicalRecordId : medicalRecordIds){

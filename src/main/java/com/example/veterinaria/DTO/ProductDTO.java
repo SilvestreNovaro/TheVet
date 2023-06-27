@@ -18,11 +18,11 @@ public class ProductDTO {
 
     private String description;
     @NotNull(message = "Category ID cannot be null")
-    private Long category_id;
+    private Long categoryId;
     //@NotNull(message = "Image cannot be null")
     private List<Image> images;
 
-    public void setCategory_Id(@NotNull(message = "Category ID cannot be null") Long category_id) {
-        this.category_id = category_id;
+    public void setCategory_Id(@NotNull(message = "Category ID cannot be null") Long categoryId) {
+        this.categoryId = categoryId;
     }
 }

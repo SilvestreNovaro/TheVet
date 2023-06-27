@@ -23,11 +23,7 @@ public class MedicalRecordDTO {
 
     private LocalDateTime recordDate;
 
-    //private Long pet_id;
-
-   // private Long customer_id;
-
-    private Long vet_id;
+    private Long vetId;
 
 
 }

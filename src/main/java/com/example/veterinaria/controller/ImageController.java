@@ -32,7 +32,7 @@ public class ImageController {
     }
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> update (@Validated @RequestBody Image image, @PathVariable Long id){
+    public ResponseEntity<String> update (@Validated @RequestBody Image image, @PathVariable Long id){
         Optional<Image> imageOptional = imageService.findByUrl(image.getUrl());
         if(imageOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An exact same image is already on use");
@@ -45,7 +45,7 @@ public class ImageController {
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id){
+    public ResponseEntity<Object> findById(@PathVariable Long id){
 
         Optional<Image> imageOptional = imageService.findById(id);
 
@@ -55,7 +55,7 @@ public class ImageController {
     }
 
     @GetMapping("/findByUrl/{url}")
-    public ResponseEntity<?> buscarPorId(@PathVariable String url){
+    public ResponseEntity<Object> buscarPorId(@PathVariable String url){
 
         Optional<Image> imageOptional = imageService.findByUrl(url);
 

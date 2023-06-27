@@ -32,7 +32,6 @@ public class ProductController {
 
     private final CategoryService categoryService;
 
-    private final ProductRepository productRepository;
 
     private static final String PRODUCT_NOT_FOUND_ERROR = "No product found with the given id ";
 
@@ -44,7 +43,7 @@ public class ProductController {
 
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<?> findById(@Validated @PathVariable Long id) {
+    public ResponseEntity<Product> findById(@Validated @PathVariable Long id) {
         Optional<Product> optionalProduct = productService.findById(id);
         return optionalProduct.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -74,9 +73,9 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Description cannot be blank");
         }
 
-        Optional<Category> categoryOptional = categoryService.findById(productDTO.getCategory_id());
+        Optional<Category> categoryOptional = categoryService.findById(productDTO.getCategoryId());
         if (categoryOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with the ID " + productDTO.getCategory_id() + " does not exist");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with the ID " + productDTO.getCategoryId() + " does not exist");
         }
 
         List<Image> images = productDTO.getImages();
@@ -115,15 +114,15 @@ public class ProductController {
 
     @PutMapping("/modifyDTO/{id}")
     public ResponseEntity<String> update(@Validated @RequestBody ProductDTO productDTO, @PathVariable Long id) {
-        Optional<Product> optionalProduct = productRepository.findById(id);
+        Optional<Product> optionalProduct = productService.findById(id);
         Optional<Product> productOptional = productService.findByTitle(productDTO.getTitle());
         if (productOptional.isPresent()) {
             Product product1 = productOptional.get();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The title " + productDTO.getTitle() + " already exists on the product " + product1.getId());
         }
-        Optional<Category> categoryOptional = categoryService.findById(productDTO.getCategory_id());
+        Optional<Category> categoryOptional = categoryService.findById(productDTO.getCategoryId());
         if (categoryOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No category for the id " + productDTO.getCategory_id());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No category for the id " + productDTO.getCategoryId());
         }
         if (optionalProduct.isPresent()) {
             productService.updateProductDTO(productDTO, id);

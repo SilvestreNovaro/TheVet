@@ -2,8 +2,8 @@ package com.example.veterinaria.service;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.repository.VetRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -16,30 +16,31 @@ public class VetService {
     @Autowired
     private final VetRepository vetRepository;
 
-    public Vet createVet(Vet vet) {
+    public void createVet(Vet vet) {
         Vet vet1 = new Vet();
         vet1.setName(vet.getName());
         vet1.setSurname(vet.getSurname());
         vet1.setEmail(vet.getEmail());
-        vet1.setPhone(vet.getPhone());
         vet1.setLicense(vet.getLicense());
+        vet1.setImage(vet.getImage());
+        vet1.setSpecialty(vet.getSpecialty());
 
-        return vetRepository.save(vet1);
+        vetRepository.save(vet1);
     }
 
-    public void updateVet(Vet vet, Long id) {
-        Optional<Vet> optionalVet = vetRepository.findById(id);
-        if(optionalVet.isPresent()){
-            Vet existingVet = optionalVet.get();
-            if(vet.getName() !=null && !vet.getName().isEmpty()) existingVet.setName(vet.getName());
-            if(vet.getSurname() !=null && !vet.getSurname().isEmpty()) existingVet.setSurname(vet.getSurname());
-            if(vet.getEmail() !=null && !vet.getEmail().isEmpty()) existingVet.setEmail(vet.getEmail());
-            if(vet.getPhone() !=null && !vet.getPhone().equals("")) existingVet.setPhone(vet.getPhone());
-            if(vet.getLicense() !=null && !vet.getLicense().isEmpty()) existingVet.setLicense(vet.getLicense());
-            vetRepository.save(existingVet);
-        }
+   public void updateVet(Vet vet, Long id) {
+       Optional<Vet> optionalVet = vetRepository.findById(id);
+       if (optionalVet.isPresent()) {
+           Vet existingVet = optionalVet.get();
 
-    }
+           ModelMapper modelMapper = new ModelMapper();
+           modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
+           modelMapper.map(vet, existingVet);
+
+           vetRepository.save(existingVet);
+       }
+
+   }
 
     public List<Vet> getAllVets() {
         return vetRepository.findAll();
@@ -67,8 +68,8 @@ public class VetService {
         return vetRepository.findByName(name);
     }
 
-    public void deleteByName(String name){
-        vetRepository.deleteByName(name);
+    public void deleteBySurName(String surName){
+        vetRepository.deleteByName(surName);
     }
 
 

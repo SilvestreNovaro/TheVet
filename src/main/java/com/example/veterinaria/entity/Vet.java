@@ -20,10 +20,11 @@ public class Vet {
 
     private String email;
 
-    private Long phone;
-
     private String license;
 
+    private String image;
+
+    private String specialty;
 
 
 

@@ -39,7 +39,7 @@ public class MedicalRecord {
     @NotNull
     private LocalDateTime recordDate;
 
-    @JsonIgnoreProperties({"name", "email", "phone", "license" })
+    @JsonIgnoreProperties({"name", "email", "license" })
    @ManyToOne(cascade = CascadeType.DETACH)
    @JoinColumn(name = "vet_id")
    private Vet vet;

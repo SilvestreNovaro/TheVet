@@ -6,7 +6,6 @@ import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
-import com.example.veterinaria.service.PetService;
 import com.example.veterinaria.service.RoleService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -34,7 +33,6 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 public class CustomerController {
     private final CustomerService customerService;
 
-    private final PetService petService;
 
     private JavaMailSender javaMailSender;
 
@@ -50,7 +48,7 @@ public class CustomerController {
 
     // YA NO SE USA
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Validated @RequestBody Customer customer) {
+    public ResponseEntity<String > add(@Validated @RequestBody Customer customer) {
         Optional<Customer> customerOptional = customerService.findByEmail(customer.getEmail());
         if (customerOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer  " + customer.getEmail() + " is already on our registers");
@@ -62,32 +60,25 @@ public class CustomerController {
 
 
     @PostMapping("/addCustomerDTO")
-    public ResponseEntity<?> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) throws MessagingException {
+    public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) throws MessagingException {
         String email = customerDTO.getEmail();
         Optional<Customer> optionalCustomer = customerService.findByEmail(email);
         if(optionalCustomer.isPresent()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email : " + email + " already exists");
         }
-        Optional<Role> optionalRole = roleService.findById(customerDTO.getRole_id());
+        Optional<Role> optionalRole = roleService.findById(customerDTO.getRoleId());
         if(optionalRole.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Role with the id " + customerDTO.getRole_id());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Role with the id " + customerDTO.getRoleId());
         }
-        /*List<Pet> petOptional = petService.getPetById(customerDTO.getPet_id());
-        if(petOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet : " + customerDTO.getPet_id() + " doesnt exists");
-        }
-         */
-
         //Crear el mensaje de correo electronico
 
-        Customer newCustomer = customerService.createCustomerDTO(customerDTO);
 
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         String formattedDateTime = now.format(formatter);
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-        helper.setTo(newCustomer.getEmail());
+        helper.setTo(customerDTO.getEmail());
         helper.setSubject("¡Creacion de registro Exitosa!");
         String htmlMsg =
                 "<html>" +
@@ -109,7 +100,7 @@ public class CustomerController {
                         "</head>" +
                         "<body>" +
                         "<h1 style='color: #007bff;'>Confirmación de registro</h1>" +
-                        "<p>Estimado/a " + newCustomer.getName() + ",</p>" +
+                        "<p>Estimado/a " + customerDTO.getName() + ",</p>" +
                         "<p>Por favor, revise los detalles de su Registro en la siguiente tabla:</p>" +
                         "<table>" +
                         "<tr>" +
@@ -119,8 +110,8 @@ public class CustomerController {
                         "<th>Cancelada</th>" +
                         "</tr>" +
                         "<tr>" +
-                        "<td>" + newCustomer.getName() + "</td>" +
-                        "<td>" + newCustomer.getLastName() + "</td>" +
+                        "<td>" + customerDTO.getName() + "</td>" +
+                        "<td>" + customerDTO.getLastName() + "</td>" +
                         "<td>" + formattedDateTime+ "</td>" +
                         "</tr>" +
                         "</table>" +
@@ -132,20 +123,19 @@ public class CustomerController {
         helper.setText(htmlMsg, true);
         javaMailSender.send(message);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Customer added succesfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully");
     }
 
 
 
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> update(@Validated @RequestBody CustomerDTO customerDTO, @PathVariable Long id) {
+    public ResponseEntity<String> update(@Validated @RequestBody CustomerDTO customerDTO, @PathVariable Long id) {
         Optional<Customer> sameEmailCustomer = customerService.findByEmail(customerDTO.getEmail());
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
-        System.out.println("customerOptional = " + customerOptional);
-        Optional<Role> roleOptional = roleService.findById(customerDTO.getRole_id());
+        Optional<Role> roleOptional = roleService.findById(customerDTO.getRoleId());
         if(roleOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The roleId " + customerDTO.getRole_id() + " doesnt exist");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The roleId " + customerDTO.getRoleId() + " doesnt exist");
         }
 
 
@@ -164,11 +154,11 @@ public class CustomerController {
     // YA NO SE USA.
 
     @PutMapping("/modifyCustomer/{id}")
-    public ResponseEntity<?> updateCustomer(@Validated @RequestBody Customer customer, @PathVariable Long id){
+    public ResponseEntity<String> updateCustomer(@Validated @RequestBody Customer customer, @PathVariable Long id){
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
         if(customerOptional.isPresent()){
             customerService.updateCustomer(id, customer);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Customer updated succesfully!");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Customer updated successfully!");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers");
 
@@ -176,7 +166,7 @@ public class CustomerController {
 
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<?> findById(@Validated @PathVariable Long id){
+    public ResponseEntity<String> findById(@Validated @PathVariable Long id){
         Optional<Customer> customerOptional = customerService.findById(id);
         //customerOptional.map(...): Si el objeto customerOptional contiene un Customer, la función lambda dentro del map se ejecuta y crea un objeto ResponseEntity con un código de estado 200 (OK) y un mensaje que indica el nombre del Customer correspondiente al id. El map devuelve un Optional<ResponseEntity>.
         // .orElseGet(...): Si el objeto customerOptional está vacío, la función lambda dentro del orElseGet se ejecuta y crea un objeto ResponseEntity con un código de estado 404 (NOT FOUND) y un mensaje que indica que el Customer no existe en los registros. El orElseGet devuelve un ResponseEntity.
@@ -188,7 +178,7 @@ public class CustomerController {
 
     //SAME METHOD AS ABOVE.
     @GetMapping("/findCustomerById/{id}")
-    public ResponseEntity<?> findCustomerById(@Validated @PathVariable Long id){
+    public ResponseEntity<Object> findCustomerById(@Validated @PathVariable Long id){
         Optional<Customer> customerOptional = customerService.findById(id);
         if(customerOptional.isPresent()){
             return ResponseEntity.ok(customerOptional);
@@ -197,7 +187,7 @@ public class CustomerController {
     }
 
     @GetMapping("/findByEmail/{email}")
-    ResponseEntity<?> findByEmail(@Validated @PathVariable String email){
+    ResponseEntity<Object> findByEmail(@Validated @PathVariable String email){
         Optional<Customer> optionalCustomer = customerService.findByEmail(email);
         if(optionalCustomer.isPresent()){
             return ResponseEntity.ok(optionalCustomer);
@@ -206,26 +196,25 @@ public class CustomerController {
     }
 
     @GetMapping("/petsByCustomersLastName/{lastName}")
-    public ResponseEntity<?> findPetsFromCustomer(@PathVariable String lastName) {
+    public ResponseEntity<Object> findPetsFromCustomer(@PathVariable String lastName) {
         List<Pet> petList = customerService.findPetsByCustomerName(lastName);
-        {
             return petList.isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The customer with name " + lastName + ", doesnt have any pets")
                     : ResponseEntity.ok(petList);
-        }
+
     }
 
     @GetMapping("/findPetOwner/{name}")
-    public ResponseEntity<?> findOwner(@PathVariable String name) {
+    public ResponseEntity<Object> findOwner(@PathVariable String name) {
         List<Customer> optionalCustomer = customerService.findCustomersByPetName(name);
-        if (optionalCustomer.size() > 0) {
+        if (optionalCustomer.isEmpty()) {
             return ResponseEntity.ok(optionalCustomer);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet associated with that owner");
     }
 
     @DeleteMapping("/deleteManyPets/{customerId}")
-    public ResponseEntity<?> deletePetsById(@PathVariable  Long customerId, @RequestParam List <Long> petIds){
+    public ResponseEntity<String> deletePetsById(@PathVariable  Long customerId, @RequestParam List <Long> petIds){
         Optional<Customer> optionalCustomer = customerService.getCustomerById(customerId);
         if(optionalCustomer.isPresent()){
             customerService.deletePetsById(customerId,petIds);
@@ -245,7 +234,7 @@ public class CustomerController {
 
     //DELETE.
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         Optional<Customer> optionalCustomer = customerService.getCustomerById(id);
         if (optionalCustomer.isPresent()) {
             customerService.deleteCustomer(id);
@@ -255,14 +244,14 @@ public class CustomerController {
     }
 
     @DeleteMapping("/deleteRoleFromCustomer/{customerId}/{roleId}")
-    public ResponseEntity<?> deleteRoleFromCustomer (@PathVariable Long customerId, @PathVariable Long roleId){
+    public ResponseEntity<String> deleteRoleFromCustomer (@PathVariable Long customerId, @PathVariable Long roleId){
         customerService.deleteRoleById(customerId, roleId);
         return ResponseEntity.ok("Role with id " + roleId + " has been successfully deleted from Customer with id " + customerId);
 
     }
 
     @PostMapping("/addRoleToCustomer/{customerId}/{role}")
-    public ResponseEntity<?> addRole(@PathVariable Long customerId, @PathVariable Role role){
+    public ResponseEntity<String> addRole(@PathVariable Long customerId, @PathVariable Role role){
         customerService.addRoleToCustomer(customerId, role);
         return ResponseEntity.ok("Customer with id " + customerId + " has now the Role " + role.toString());
     }
@@ -271,14 +260,14 @@ public class CustomerController {
 
     //SAME METHODS TO ADD PET.
     @PostMapping("/{customerId}/Addpet")
-    public ResponseEntity<?> addPetToCustomer(@PathVariable Long customerId, @RequestBody Pet pet) {
+    public ResponseEntity<String> addPetToCustomer(@PathVariable Long customerId, @RequestBody Pet pet) {
         customerService.addPetToCustomer(customerId, pet);
 
         return ResponseEntity.ok("Added pet tu customer succesfully");
     }
 
     @PostMapping("/addAnimalToCustomer/{customerId}/animals")
-    public ResponseEntity<?> addAnimalToCustomer(@Validated @PathVariable Long customerId, @RequestBody Pet pet) {
+    public ResponseEntity<Object> addAnimalToCustomer(@Validated @PathVariable Long customerId, @RequestBody Pet pet) {
         Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
         if (customerOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customer found with the id " + id);
@@ -289,13 +278,13 @@ public class CustomerController {
     }
 
     @PostMapping("/addPetToCustomerByPetId/{customerId}/{petId}")
-    public ResponseEntity<?> addPetId(@PathVariable Long customerId, @PathVariable Long petId){
+    public ResponseEntity<String> addPetId(@PathVariable Long customerId, @PathVariable Long petId){
         customerService.addPetToCustomer(customerId, petId);
         return ResponseEntity.ok("Added pet tu customer succesfully");
     }
 
     @PostMapping("/addMultiplePets/{customerId}")
-    public ResponseEntity<?> addPetts(@PathVariable Long customerId,@RequestBody List<Pet> petIds){
+    public ResponseEntity<String> addPetts(@PathVariable Long customerId,@RequestBody List<Pet> petIds){
         Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
         if(customerOptional.isPresent()){
             customerService.addMultiplePetsToCustomer(customerId, petIds);

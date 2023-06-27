@@ -1,9 +1,7 @@
 package com.example.veterinaria.controller;
 
 import com.example.veterinaria.DTO.MedicalRecordDTO;
-import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.MedicalRecord;
-import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.MedicalRecordService;
@@ -38,7 +36,7 @@ public class MedicalRecordController {
 
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<?> findById(@Validated @PathVariable Long id){
+    public ResponseEntity<Object> findById(@Validated @PathVariable Long id){
         Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findById(id);
         if(medicalRecordOptional.isPresent()){
              return ResponseEntity.ok(medicalRecordOptional);
@@ -46,68 +44,14 @@ public class MedicalRecordController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical record exists with the id " + id);
     }
 
-    /*@PostMapping("/add")
-    public ResponseEntity<?> createMR(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO, @RequestParam Long customerId) {
-
-        Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findByRecordDate(medicalRecordDTO.getRecordDate());
-        if (medicalRecordOptional.isPresent())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is an exact same date time and hour for a medicalRecord");
-
-        Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVet_id());
-        if (vetOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("vetId " + medicalRecordDTO.getVet_id() + " not found");
-        }
-        Optional<Pet> petOptional = petService.getPetById(medicalRecordDTO.getPet_id());
-        if (petOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("petId " + medicalRecordDTO.getPet_id() + " not found");
-        }
-        Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
-        if(customerOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customerId " + customerId + " not found");
-        }
-
-
-        MedicalRecord medicalRecord = medicalRecordService.createMR(medicalRecordDTO, customerId);
-        return new ResponseEntity<>(medicalRecord, HttpStatus.CREATED);
-    }
-
-
-
-    @PutMapping("/modifyDTO/{id}")
-    public ResponseEntity<?> updateDTO(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO, @PathVariable Long id, @RequestParam Long customerId){
-        Optional<Pet> petOptional = petService.getPetById(medicalRecordDTO.getPet_id());
-        if(petOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No pet found with the id " + medicalRecordDTO.getPet_id());
-        }
-        Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVet_id());
-        if(vetOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No vet found with the id " + medicalRecordDTO.getVet_id());
-        }
-        Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findById(id);
-        System.out.println("medicalRecordOptional = " + medicalRecordOptional);
-        if(medicalRecordOptional.isPresent()){
-            medicalRecordService.updateMR(medicalRecordDTO, id, customerId);
-        }else{
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical record exists with the id " + id);
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body("Medical Record updated successfully!");
-    }
-
-     */
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> update(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO, @PathVariable Long id) {
+    public ResponseEntity<String> update(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO, @PathVariable Long id) {
         Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findById(id);
         if (medicalRecordOptional.isPresent()) {
-            /*Optional<Pet> petOptional = petService.getPetById(medicalRecordDTO.getPet_id());
-            if (petOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No pet found with the id " + medicalRecordDTO.getPet_id());
-            }
-
-             */
-            Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVet_id());
+            Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVetId());
             if (vetOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No vet found with the id " + medicalRecordDTO.getVet_id());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No vet found with the id " + medicalRecordDTO.getVetId());
             }
             medicalRecordService.updateMR(medicalRecordDTO, id);
         } else {
@@ -120,7 +64,7 @@ public class MedicalRecordController {
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id){
+    public ResponseEntity<String> delete(@PathVariable Long id){
         Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findById(id);
         if(medicalRecordOptional.isPresent()){
             medicalRecordService.delete(id);
@@ -130,7 +74,7 @@ public class MedicalRecordController {
     }
 
     @DeleteMapping("/deleteByIds")
-    public ResponseEntity<?> deleteMedicalRecordsByIds(@RequestParam Long[] medicalRecordIds){
+    public ResponseEntity<String> deleteMedicalRecordsByIds(@RequestParam Long[] medicalRecordIds){
         return medicalRecordService.deleteMedicalRecordByIds(medicalRecordIds);
     }
 

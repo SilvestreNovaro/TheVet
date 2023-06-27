@@ -1,16 +1,15 @@
 package com.example.veterinaria.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 
 @Getter
 @Setter
@@ -25,17 +24,23 @@ public class Customer {
     private Long id;
 
     @Column
+    @NotNull
     private String name;
     @Column
+    @NotNull
     private String lastName;
     @Column
+    @NotNull
     private String address;
     @Column
+    @NotNull
     private String email;
     @Column
+    @NotNull
     private Long contactNumber;
 
     @Column
+    @NotNull
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL)

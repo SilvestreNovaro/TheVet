@@ -28,7 +28,7 @@ public class VetController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Validated @RequestBody Vet vet) {
+    public ResponseEntity<String> add(@Validated @RequestBody Vet vet) {
         Optional<Vet> vetOptional = vetService.findByLicense(vet.getLicense());
         if (vetOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet  " + vet.getLicense() + " is already on our registers");
@@ -39,7 +39,7 @@ public class VetController {
 
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> update(@Validated @RequestBody Vet vet, @PathVariable Long id){
+    public ResponseEntity<String> update(@Validated @RequestBody Vet vet, @PathVariable Long id){
         Optional<Vet> sameLicenseVet = vetService.findByLicense(vet.getLicense());
         Optional<Vet> optionalVet = vetService.getVetById(id);
         if(sameLicenseVet.isPresent()){
@@ -53,7 +53,7 @@ public class VetController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete (@PathVariable Long id){
+    public ResponseEntity<String> delete (@PathVariable Long id){
         Optional<Vet> optionalVet = vetService.getVetById(id);
         if(optionalVet.isPresent()){
             vetService.deleteVet(id);
@@ -63,16 +63,16 @@ public class VetController {
     }
 
     @GetMapping("/vetByLicense/{license}")
-    public ResponseEntity<?> findVetByLicense(@PathVariable String license) {
-        Optional <Vet> vet = vetService.findByLicense(license);{
+    public ResponseEntity<Object> findVetByLicense(@PathVariable String license) {
+        Optional <Vet> vet = vetService.findByLicense(license);
             return vet.isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vet with license " + license + " doesnt exist")
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vet with license " + license + " doesn't exist")
                     : ResponseEntity.ok(vet);
-        }
+
     }
 
     @DeleteMapping("/deleteByLicense/{license}")
-    public ResponseEntity<?> deleteByLicense(@PathVariable String license){
+    public ResponseEntity<String> deleteByLicense(@PathVariable String license){
         Optional<Vet> optionalVet = vetService.findByLicense(license);
         if(optionalVet.isPresent()){
             vetService.deleteVet(optionalVet.get().getId());
@@ -82,7 +82,7 @@ public class VetController {
     }
 
     @GetMapping("/findVetByName/{name}")
-    public ResponseEntity<?> findByName(@PathVariable String name){
+    public ResponseEntity<Object> findByName(@PathVariable String name){
 
         Optional<Vet> vetOptional = vetService.findByName(name);
 
@@ -92,7 +92,7 @@ public class VetController {
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<?> findById(@Validated @PathVariable Long id){
+    public ResponseEntity<Object> findById(@Validated @PathVariable Long id){
         Optional<Vet> vetOptional = vetService.getVetById(id);
         return vetOptional.isPresent()
                 ? ResponseEntity.ok(vetOptional)
@@ -100,7 +100,7 @@ public class VetController {
     }
 
     @DeleteMapping("/deleteByName/{name}")
-    public ResponseEntity<?> deleteByName (@PathVariable String name){
+    public ResponseEntity<String> deleteByName (@PathVariable String name){
         Optional<Vet> optionalVet = vetService.findByName(name);
         if(optionalVet.isPresent()){
             vetService.deleteVet(optionalVet.get().getId());
@@ -110,7 +110,7 @@ public class VetController {
     }
 
     @DeleteMapping("/byLicense/{license}")
-    public ResponseEntity<?> byLicense (@PathVariable String license){
+    public ResponseEntity<Object> byLicense (@PathVariable String license){
         Optional<Vet> vetOptional = vetService.findByLicense(license);
         if(vetOptional.isPresent()){
             vetService.deleteByLicense(license);
@@ -119,7 +119,7 @@ public class VetController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no vet with de license " + license);
 
     }
-    // no logro que ejecute bien la query
+
 }
 
 

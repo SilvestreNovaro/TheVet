@@ -3,7 +3,6 @@ package com.example.veterinaria.service;
 import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
-import com.example.veterinaria.entity.Product;
 import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
@@ -12,11 +11,8 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,7 +38,7 @@ public class CustomerService {
 
 
     // YA NO SE USA.
-    public Customer createCustomer(Customer customer) {
+    public void createCustomer2(Customer customer) {
 
         Customer customer1 = new Customer();
         customer1.setName(customer.getName());
@@ -56,10 +52,22 @@ public class CustomerService {
         String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
         customer1.setPassword(encodedPassword);
 
-        return customerRepository.save(customer1);
+         customerRepository.save(customer1);
     }
 
-    public Customer createCustomerDTO(CustomerDTO customerDTO) {
+    public void createCustomer(Customer customer) {
+        ModelMapper modelMapper = new ModelMapper();
+        Customer customer1 = modelMapper.map(customer, Customer.class);
+
+
+        String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
+        customer1.setPassword(encodedPassword);
+
+        customerRepository.save(customer1);
+    }
+
+
+    public void createCustomerDTO(CustomerDTO customerDTO) {
 
         Customer customer1 = new Customer();
 
@@ -70,54 +78,16 @@ public class CustomerService {
         customer1.setContactNumber(customerDTO.getContactNumber());
         customer1.setPets(customerDTO.getPets());
 
-        Long role = customerDTO.getRole_id();
-        Optional<Role> roleOptional = roleService.findById(role);
+
+        Optional<Role> roleOptional = roleService.findById(customerDTO.getRoleId());
         roleOptional.ifPresent(customer1::setRole);
 
 
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
         customer1.setPassword(encodedPassword);
 
-        return customerRepository.save(customer1);
+         customerRepository.save(customer1);
     }
-
-
-
-    /*public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-        System.out.println("optionalCustomer = " + optionalCustomer);
-        if (optionalCustomer.isPresent()) {
-            Customer existingCustomer = optionalCustomer.get();
-            if (customerDTO.getName() != null && !customerDTO.getName().isEmpty())
-                existingCustomer.setName(customerDTO.getName());
-            if (customerDTO.getLastName() != null && !customerDTO.getLastName().isEmpty())
-                existingCustomer.setLastName(customerDTO.getLastName());
-            if (customerDTO.getAddress() != null && !customerDTO.getAddress().isEmpty())
-                existingCustomer.setAddress(customerDTO.getAddress());
-            if (customerDTO.getContactNumber() != null && !customerDTO.getContactNumber().equals(""))
-                existingCustomer.setContactNumber(customerDTO.getContactNumber());
-            if (customerDTO.getEmail() != null && !customerDTO.getEmail().isEmpty())
-                existingCustomer.setEmail(customerDTO.getEmail());
-            if (customerDTO.getPets() != null && !customerDTO.getPets().isEmpty())
-                existingCustomer.setPets(customerDTO.getPets());
-            if (customerDTO.getRole_id() != null && !customerDTO.getRole_id().equals("")) {
-                Optional<Role> optionalRole = roleService.findById(customerDTO.getRole_id());
-                if (optionalRole.isPresent()) {
-                    Role role = optionalRole.get();
-                    existingCustomer.setRole(role);
-                }
-            }
-                if (customerDTO.getPassword() != null && !customerDTO.getPassword().isEmpty()) {
-                    String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
-                    existingCustomer.setPassword(encodedPassword);
-                }
-
-                customerRepository.save(existingCustomer);
-            }
-
-        }
-
-     */
 
 
 
@@ -127,7 +97,7 @@ public class CustomerService {
             Customer existingCustomer = optionalCustomer.get();
 
             ModelMapper modelMapper = new ModelMapper();
-            modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+            modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
             modelMapper.map(customerDTO, existingCustomer);
 
             if (isNotBlank(customerDTO.getPassword())) {
@@ -140,24 +110,6 @@ public class CustomerService {
     }
 
 
-
-
-
-    /*public void updateCustomer(Long id, Customer customer){
-        Customer customer1 = customerRepository.findById(id).get();
-        if(customer.getName()!=null && !customer.getName().isEmpty()) customer1.setName(customer.getName());
-        if(customer.getLastName() != null && !customer.getLastName().isEmpty()) customer1.setLastName(customer.getLastName());
-        if(customer.getAddress() != null && !customer.getAddress().isEmpty()) customer1.setAddress(customer.getAddress());
-        if(customer.getEmail() != null && !customer.getEmail().isEmpty()) customer1.setEmail(customer.getEmail());
-        if(customer.getContactNumber() != null && !customer.getContactNumber().equals("")) customer1.setContactNumber(customer1.getContactNumber());
-        if(customer.getPassword() != null && !customer.getPassword().isEmpty()){
-            String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
-            customer1.setPassword(encodedPassword);
-        }
-        customerRepository.save(customer1);
-      }
-
-     */
 
     // QUEDA IRRELEVANTE, SOLO ME DA LA POSIBILIDAD DE NO PASAR EL ID DEL ROL COMO PARAMETRO A ACTUALIZAR.
     public void updateCustomer(Long id, Customer customer) {
@@ -195,19 +147,6 @@ public class CustomerService {
     }
 
 
-    public List<Pet> findCustomersPets(Long Petid) {
-        List<Pet> petList = new ArrayList<>();
-         List<Customer> customerList = customerRepository.findAll();
-        for (Customer customer : customerList) {
-            var petList1 = customer.getPets();
-            for (Pet pet : petList) {
-                if (pet.getId().equals(Petid))
-                   petList.add(pet);
-            }
-        }
-        return petList;
-    }
-
     public Optional<Customer> findByEmail(String email){
         return customerRepository.findByEmail(email);
     }
@@ -215,8 +154,6 @@ public class CustomerService {
     public Optional<Customer> findById(Long id){
         return customerRepository.findById(id);
     }
-
-
 
 
 
@@ -269,7 +206,7 @@ public class CustomerService {
         List<Pet> petList = customer.getPets();
         List<Pet> petList1 = new ArrayList<>();
         for(Pet pet: pets){
-            if(pets.size()>0){
+            if(pets.isEmpty()){
                 petList1.add(pet);
                 petList.addAll(petList1);
                 customer.setPets(petList);
@@ -281,7 +218,6 @@ public class CustomerService {
 
     public void addRoleToCustomer(Long customerId, Role role){
         Customer customer = customerRepository.findById(customerId).get();
-        //if(customer.getRole() == null || customer.getRole().equals(""))
         customer.setRole(role);
         customerRepository.save(customer);
     }
@@ -292,15 +228,11 @@ public class CustomerService {
     public void deletePetsById(Long customerId, List<Long> petIds){
         Customer customer = customerRepository.findById(customerId).get();
         List<Pet> pets = customer.getPets();
-        System.out.println("customer.getPets() = " + pets);
         List<Pet> petsToRemove = new ArrayList<>();
         for(Long petId : petIds){
-            System.out.println("petId = " + petId);
-            System.out.println("petIds = " + petIds);
 
             // La variable pet se sobreescribe en cada vuelta, guardando el objeto Pet que contenga el id proporcionado en petIds.
             Pet pet = pets.stream().filter(p-> p.getId().equals(petId)).findFirst().orElse(null);
-            System.out.println("pet = " + pet);
             if(pet !=null){
                petsToRemove.add(pet);
 

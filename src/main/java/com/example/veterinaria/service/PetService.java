@@ -1,5 +1,6 @@
 package com.example.veterinaria.service;
 
+import com.example.veterinaria.DTO.MedicalRecordDTO;
 import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
@@ -22,8 +23,8 @@ public class PetService {
     private final VetService vetService;
 
 
-    public Pet createPet(Pet pet) {
-        return petRepository.save(pet);
+    public void createPet(Pet pet) {
+        petRepository.save(pet);
     }
 
     public void updatePet(Pet pet, Long id) {
@@ -40,29 +41,7 @@ public class PetService {
 
     }
 
-   /* public Pet createMedicalRecord(Long petId, MedicalRecord medicalRecord, Long vetId){
-
-        MedicalRecord medicalRecord1 = new MedicalRecord();
-        medicalRecord1.setMedication(medicalRecord.getMedication());
-        medicalRecord1.setRecordDate(medicalRecord.getRecordDate());
-        medicalRecord1.setAllergies(medicalRecord.getAllergies());
-        medicalRecord1.setSurgeries(medicalRecord.getSurgeries());
-        medicalRecord1.setExistingPathologies(medicalRecord.getMedication());
-        medicalRecord1.setVaccinationStatus(medicalRecord.getVaccinationStatus());
-        medicalRecord1.setIsNeutered(medicalRecord.getIsNeutered());
-
-        Optional<Pet> petOptional = petRepository.findById(petId);
-        if(petOptional.isPresent()){
-            Pet pet = petOptional.get();
-            pet.setMedicalRecords(medicalRecord1);
-
-        }
-
-
-    }
-
-    */
-    public Pet createMedicalRecord(Long petId, MedicalRecord medicalRecord, Long vetId) {
+    public void createMedicalRecord(Long petId, MedicalRecord medicalRecord, Long vetId) {
         Optional<Pet> petOptional = petRepository.findById(petId);
             Pet pet = petOptional.get();
             Optional<Vet> vetOptional = vetService.getVetById(vetId);
@@ -74,8 +53,24 @@ public class PetService {
             pet.setMedicalRecords(medicalRecords);
 
             // Guardar los cambios en la base de datos
-            return petRepository.save(pet);
-        }
+        petRepository.save(pet);
+    }
+
+    public void createMR(Long petId, MedicalRecordDTO medicalRecordDTO){
+        MedicalRecord mr = new MedicalRecord();
+        mr.setIsNeutered(medicalRecordDTO.getIsNeutered());
+        mr.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
+        mr.setVaccinationStatus(medicalRecordDTO.getVaccinationStatus());
+        mr.setAllergies(medicalRecordDTO.getAllergies());
+        mr.setRecordDate(medicalRecordDTO.getRecordDate());
+        Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVetId());
+        vetOptional.ifPresent(mr::setVet);
+        Optional<Pet> petOptional = petRepository.findById(petId);
+        //petOptional.ifPresent(mr::setPet);
+
+
+
+    }
 
 
     public List<Pet> getAllPets() {
