@@ -1,12 +1,9 @@
 package com.example.veterinaria.service;
 
-import com.example.veterinaria.entity.Customer;
+
 import com.example.veterinaria.entity.Image;
-import com.example.veterinaria.repository.CustomerRepository;
 import com.example.veterinaria.repository.ImageRepository;
 import lombok.AllArgsConstructor;
-import org.aspectj.apache.bcel.classfile.Module;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +16,6 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
 
-    private final CustomerService customerService;
-    private final CustomerRepository customerRepository;
 
     public List<Image> findAll(){
         return imageRepository.findAll();

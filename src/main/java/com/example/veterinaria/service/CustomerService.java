@@ -37,8 +37,8 @@ public class CustomerService {
 
 
 
-    // YA NO SE USA.
-    public void createCustomer2(Customer customer) {
+    // NO ES EL QUE USO, FUNCIONA.
+    public void createCustomers(Customer customer) {
 
         Customer customer1 = new Customer();
         customer1.setName(customer.getName());
@@ -55,10 +55,11 @@ public class CustomerService {
          customerRepository.save(customer1);
     }
 
+    // FUNCIONA.
+
     public void createCustomer(Customer customer) {
         ModelMapper modelMapper = new ModelMapper();
         Customer customer1 = modelMapper.map(customer, Customer.class);
-
 
         String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
         customer1.setPassword(encodedPassword);
@@ -67,6 +68,7 @@ public class CustomerService {
     }
 
 
+    // Funciona.
     public void createCustomerDTO(CustomerDTO customerDTO) {
 
         Customer customer1 = new Customer();
@@ -91,13 +93,14 @@ public class CustomerService {
 
 
 
+
     public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
         if (optionalCustomer.isPresent()) {
             Customer existingCustomer = optionalCustomer.get();
 
             ModelMapper modelMapper = new ModelMapper();
-            modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
+            //modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
             modelMapper.map(customerDTO, existingCustomer);
 
             if (isNotBlank(customerDTO.getPassword())) {

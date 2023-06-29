@@ -114,7 +114,7 @@ public class MedicalRecordService {
             MedicalRecord medicalRecord = medicalRecordOptional.get();
 
             ModelMapper modelMapper = new ModelMapper();
-            //modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+
             modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
             modelMapper.map(medicalRecordDTO, medicalRecord);
 

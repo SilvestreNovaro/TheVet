@@ -2,6 +2,9 @@ package com.example.veterinaria.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,33 +27,35 @@ public class Customer {
     private Long id;
 
     @Column
-    @NotNull
+    @NotBlank
     private String name;
     @Column
-    @NotNull
+    @NotBlank
     private String lastName;
     @Column
-    @NotNull
+    @NotBlank
     private String address;
     @Column
-    @NotNull
+    @NotBlank
     private String email;
     @Column
     @NotNull
+    @Min(1)
     private Long contactNumber;
 
     @Column
-    @NotNull
+    @NotBlank
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
+    @NotEmpty
     private List<Pet> pets = new ArrayList<>();
 
     @ManyToOne(cascade = CascadeType.DETACH)
+    @NotNull
     @JoinColumn(name = "role_id")
     private Role role;
-
 
 
 

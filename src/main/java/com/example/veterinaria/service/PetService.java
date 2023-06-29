@@ -38,7 +38,6 @@ public class PetService {
             petRepository.save(existingPet);
         }
 
-
     }
 
     public void createMedicalRecord(Long petId, MedicalRecord medicalRecord, Long vetId) {

@@ -33,11 +33,11 @@ public class CategoryService {
 
     // CREATE
 
-    public Category createCategory(Category category){
+    public void createCategory(Category category){
         Category category1 = new Category();
         category1.setCategoryName(category.getCategoryName());
         category1.setDescription(category.getDescription());
-        return categoryRepository.save(category1);
+        categoryRepository.save(category1);
     }
 
 
@@ -65,33 +65,6 @@ public class CategoryService {
     }
 
 
-/*
-    public void deleteProductsFromCategory(Long categoryId, List<Long> productIds) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NotFoundExceptionLong(categoryId));
-
-        List<Product> productsToRemove = new ArrayList<>();
-
-        for (Product product : category.getProducts()) {
-            if (productIds.contains(product.getId())) {
-                productsToRemove.add(product);
-                product.setCategory(null); // Eliminar la referencia de la categoría en el producto
-            }
-        }
-
-        category.getProducts().removeAll(productsToRemove);
-        categoryRepository.save(category);
-    }
-
-    public void deleteAllProducts(Long categoryId){
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NotFoundExceptionLong(categoryId));
-
-        category.getProducts().clear();
-        categoryRepository.save(category);
-    }
-
- */
 
 
 

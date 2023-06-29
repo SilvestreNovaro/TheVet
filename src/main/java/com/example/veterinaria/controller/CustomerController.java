@@ -58,7 +58,6 @@ public class CustomerController {
     }
 
 
-
     @PostMapping("/addCustomerDTO")
     public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) throws MessagingException {
         String email = customerDTO.getEmail();
@@ -122,6 +121,8 @@ public class CustomerController {
                         "</html>";
         helper.setText(htmlMsg, true);
         javaMailSender.send(message);
+
+        customerService.createCustomerDTO(customerDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully");
     }

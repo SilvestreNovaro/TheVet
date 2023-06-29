@@ -79,12 +79,10 @@ public class AppointmentService {
         List<Long> appPetIds = appointmentDTO.getPetIds();
 
         Optional<Customer> optionalCustomer = customerService.getCustomerById(appointmentDTO.getCustomerId());
-        if(optionalCustomer.isEmpty()) {
-            throw new NotFoundException("customerId " + optionalCustomer+ " not found");
 
-        }
-        Customer customer = optionalCustomer.get();
+
         optionalCustomer.ifPresent(appointment::setCustomer);
+        Customer customer = optionalCustomer.get();
 
         Optional<Vet> optionalVet = vetService.getVetById(appointmentDTO.getVetId());
         optionalVet.ifPresent(appointment::setVet);
@@ -96,7 +94,6 @@ public class AppointmentService {
         if (!selectedPets.stream().map(Pet::getId).collect(Collectors.toList()).containsAll(appPetIds)) {
             throw new NotFoundException("One or more petIds not found for the customer");
         }
-
 
         appointment.setAppointmentReason(appointmentDTO.getAppointmentReason());
         appointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
@@ -195,7 +192,7 @@ public class AppointmentService {
 
 
 
-    public ResponseEntity<?> deleteAppointmentsByIds(Long[] appointmentIds) {
+    public ResponseEntity<String> deleteAppointmentsByIds(Long[] appointmentIds) {
         List<Long> deletedIds = new ArrayList<>();
         List<Long> notFoundIds = new ArrayList<>();
 
