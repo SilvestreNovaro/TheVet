@@ -8,12 +8,12 @@ import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
 import com.example.veterinaria.repository.PetRepository;
 import lombok.AllArgsConstructor;
-import org.modelmapper.Conditions;
-import org.modelmapper.ModelMapper;
+import org.modelmapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,7 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 public class CustomerService {
 
     @Autowired
+
     private final CustomerRepository customerRepository;
 
     private final PetService petService;
@@ -34,7 +35,6 @@ public class CustomerService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final PetRepository petRepository;
-
 
 
     // NO ES EL QUE USO, FUNCIONA.
@@ -93,24 +93,29 @@ public class CustomerService {
 
 
 
+    public void updateCustomerDTO(CustomerDTO customerDTO, Long id){
 
-    public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-        if (optionalCustomer.isPresent()) {
-            Customer existingCustomer = optionalCustomer.get();
+        Customer existingCustomer = customerRepository.findById(id).get();
 
-            ModelMapper modelMapper = new ModelMapper();
-            //modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
-            modelMapper.map(customerDTO, existingCustomer);
+        existingCustomer.setName(customerDTO.getName());
+        existingCustomer.setLastName(customerDTO.getLastName());
+        existingCustomer.setEmail(customerDTO.getEmail());
+        existingCustomer.setAddress(customerDTO.getAddress());
+        existingCustomer.setPets(customerDTO.getPets());
+        existingCustomer.setContactNumber(customerDTO.getContactNumber());
 
-            if (isNotBlank(customerDTO.getPassword())) {
-                String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
-                existingCustomer.setPassword(encodedPassword);
-            }
+        Optional<Role> roleOptional = roleService.findById(customerDTO.getRoleId());
+        roleOptional.ifPresent(existingCustomer::setRole);
 
-            customerRepository.save(existingCustomer);
+        if (isNotBlank(customerDTO.getPassword())) {
+            String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
+            existingCustomer.setPassword(encodedPassword);
         }
+
+        customerRepository.save(existingCustomer);
     }
+
+
 
 
 

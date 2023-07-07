@@ -38,6 +38,11 @@ public class CustomerController {
 
     private final RoleService roleService;
 
+    public static final String DELETE_SUCCESS_MESSAGE = " has been successfully deleted from Customer with id ";
+
+    public static final String NOT_FOUND_MESSAGE = "There is no Customer with the id: ";
+
+
 
     @GetMapping("list")
     public List<Customer> list() {
@@ -54,7 +59,7 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer  " + customer.getEmail() + " is already on our registers");
         }
         customerService.createCustomer(customer);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Customer added succesfully!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully!");
     }
 
 
@@ -136,32 +141,30 @@ public class CustomerController {
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
         Optional<Role> roleOptional = roleService.findById(customerDTO.getRoleId());
         if(roleOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The roleId " + customerDTO.getRoleId() + " doesnt exist");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The roleId " + customerDTO.getRoleId() + " doesn't exist");
         }
-
-
         if (sameEmailCustomer.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer with the email  " + customerDTO.getEmail() + " is already on our registers");
         }
         if (customerOptional.isPresent()) {
             customerService.updateCustomerDTO(customerDTO, id);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Customer updated succesfully!");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Customer updated successfully!");
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
     }
 
 
     // YA NO SE USA.
 
-    @PutMapping("/modifyCustomer/{id}")
+    @PatchMapping("/modifyCustomer/{id}")
     public ResponseEntity<String> updateCustomer(@Validated @RequestBody Customer customer, @PathVariable Long id){
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
         if(customerOptional.isPresent()){
             customerService.updateCustomer(id, customer);
             return ResponseEntity.status(HttpStatus.CREATED).body("Customer updated successfully!");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
 
     }
 
@@ -184,7 +187,7 @@ public class CustomerController {
         if(customerOptional.isPresent()){
             return ResponseEntity.ok(customerOptional);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
     }
 
     @GetMapping("/findByEmail/{email}")
@@ -193,14 +196,14 @@ public class CustomerController {
         if(optionalCustomer.isPresent()){
             return ResponseEntity.ok(optionalCustomer);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the email  " + email + " does not exist on our registers");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the email  " + email + " does not exists on our registers");
     }
 
     @GetMapping("/petsByCustomersLastName/{lastName}")
     public ResponseEntity<Object> findPetsFromCustomer(@PathVariable String lastName) {
         List<Pet> petList = customerService.findPetsByCustomerName(lastName);
             return petList.isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The customer with name " + lastName + ", doesnt have any pets")
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The customer with name " + lastName + ", doesn't have any pets")
                     : ResponseEntity.ok(petList);
 
     }
@@ -219,7 +222,7 @@ public class CustomerController {
         Optional<Customer> optionalCustomer = customerService.getCustomerById(customerId);
         if(optionalCustomer.isPresent()){
             customerService.deletePetsById(customerId,petIds);
-            return ResponseEntity.ok("Pet with id " + petIds + " has been successfully deleted from Customer with id " + customerId);
+            return ResponseEntity.ok("Pet with id " + petIds + DELETE_SUCCESS_MESSAGE + customerId);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet associated with that owner");
     }
@@ -228,7 +231,7 @@ public class CustomerController {
     @DeleteMapping("/deletePetById/{customerId}/{petId}")
     public ResponseEntity<String> deletePetById(@PathVariable Long customerId,@PathVariable Long petId){
        customerService.deletePetById(customerId, petId);
-        return ResponseEntity.ok("Pet with id " + petId + " has been successfully deleted from Customer with id " + customerId);
+        return ResponseEntity.ok("Pet with id " + petId + DELETE_SUCCESS_MESSAGE + customerId);
     }
 
 
@@ -241,13 +244,13 @@ public class CustomerController {
             customerService.deleteCustomer(id);
             return ResponseEntity.status(HttpStatus.OK).body("Customer with id " + id + " deleted");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Customer with the id " + id);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
     }
 
     @DeleteMapping("/deleteRoleFromCustomer/{customerId}/{roleId}")
     public ResponseEntity<String> deleteRoleFromCustomer (@PathVariable Long customerId, @PathVariable Long roleId){
         customerService.deleteRoleById(customerId, roleId);
-        return ResponseEntity.ok("Role with id " + roleId + " has been successfully deleted from Customer with id " + customerId);
+        return ResponseEntity.ok("Role with id " + roleId + DELETE_SUCCESS_MESSAGE + customerId);
 
     }
 
@@ -264,14 +267,14 @@ public class CustomerController {
     public ResponseEntity<String> addPetToCustomer(@PathVariable Long customerId, @RequestBody Pet pet) {
         customerService.addPetToCustomer(customerId, pet);
 
-        return ResponseEntity.ok("Added pet tu customer succesfully");
+        return ResponseEntity.ok("Added pet tu customer successfully");
     }
 
     @PostMapping("/addAnimalToCustomer/{customerId}/animals")
     public ResponseEntity<Object> addAnimalToCustomer(@Validated @PathVariable Long customerId, @RequestBody Pet pet) {
         Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
         if (customerOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customer found with the id " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
         }
         Customer customer = customerOptional.get();
         customerService.addAnimalToCustomer(customerId, pet);
@@ -281,17 +284,17 @@ public class CustomerController {
     @PostMapping("/addPetToCustomerByPetId/{customerId}/{petId}")
     public ResponseEntity<String> addPetId(@PathVariable Long customerId, @PathVariable Long petId){
         customerService.addPetToCustomer(customerId, petId);
-        return ResponseEntity.ok("Added pet tu customer succesfully");
+        return ResponseEntity.ok("Added pet tu customer successfully");
     }
 
     @PostMapping("/addMultiplePets/{customerId}")
-    public ResponseEntity<String> addPetts(@PathVariable Long customerId,@RequestBody List<Pet> petIds){
+    public ResponseEntity<String> addPets(@PathVariable Long customerId,@RequestBody List<Pet> petIds){
         Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
         if(customerOptional.isPresent()){
             customerService.addMultiplePetsToCustomer(customerId, petIds);
-            return ResponseEntity.ok("Added pets tu customer succesfully");
+            return ResponseEntity.ok("Added pets tu customer successfully");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customer found with the id " + id);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
     }
 
 

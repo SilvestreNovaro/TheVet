@@ -49,11 +49,9 @@ public class Customer {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
-    @NotEmpty
     private List<Pet> pets = new ArrayList<>();
 
     @ManyToOne(cascade = CascadeType.DETACH)
-    @NotNull
     @JoinColumn(name = "role_id")
     private Role role;
 

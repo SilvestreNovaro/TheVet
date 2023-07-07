@@ -49,6 +49,9 @@ public class MedicalRecordController {
     public ResponseEntity<String> update(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO, @PathVariable Long id) {
         Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findById(id);
         if (medicalRecordOptional.isPresent()) {
+            if(medicalRecordService.findByRecordDate(medicalRecordDTO.getRecordDate()).isPresent()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Theres already a medical record for the exact same date and time");
+            }
             Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVetId());
             if (vetOptional.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No vet found with the id " + medicalRecordDTO.getVetId());

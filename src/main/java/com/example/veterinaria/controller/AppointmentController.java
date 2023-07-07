@@ -209,10 +209,9 @@ public class AppointmentController {
     public ResponseEntity<String> update(@Validated @RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id) {
 
         Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
-        LocalDateTime appoDateTime = appointmentDTO.getAppointmentDateTime();
-        Optional<Appointment> localDateTimeOptional = appointmentService.findByAppointmentDateTime(appoDateTime);
+        Optional<Appointment> localDateTimeOptional = appointmentService.findByAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
         if(localDateTimeOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appoDateTime);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appointmentDTO.getAppointmentDateTime());
         }
         Optional<Customer> optionalCustomer = customerService.findById(appointmentDTO.getCustomerId());
         Optional<Vet> vetOptional = vetService.getVetById(appointmentDTO.getVetId());

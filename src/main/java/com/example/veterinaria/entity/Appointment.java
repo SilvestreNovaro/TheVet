@@ -20,7 +20,9 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     private LocalDateTime appointmentDateTime;
+
 
     private String appointmentReason;
 

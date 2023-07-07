@@ -2,6 +2,7 @@ package com.example.veterinaria.DTO;
 
 
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +28,8 @@ public class CustomerDTO {
     private Long roleId;
 
     private List<Pet> pets;
+
+
 
 
 }

@@ -113,14 +113,22 @@ public class MedicalRecordService {
         if(medicalRecordOptional.isPresent()){
             MedicalRecord medicalRecord = medicalRecordOptional.get();
 
-            ModelMapper modelMapper = new ModelMapper();
-
-            modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
-            modelMapper.map(medicalRecordDTO, medicalRecord);
-
+            medicalRecord.setVaccinationStatus(medicalRecordDTO.getVaccinationStatus());
+            medicalRecord.setMedication(medicalRecordDTO.getMedication());
+            medicalRecord.setIsNeutered(medicalRecordDTO.getIsNeutered());
+            medicalRecord.setAllergies(medicalRecordDTO.getAllergies());
+            medicalRecord.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
+            medicalRecord.setSurgeries(medicalRecordDTO.getSurgeries());
+            medicalRecord.setRecordDate(medicalRecordDTO.getRecordDate());
 
             Optional<Vet> vetOptional = vetService.findById(medicalRecordDTO.getVetId());
                vetOptional.ifPresent(medicalRecord::setVet);
+            if(vetOptional.isPresent()){
+                Vet vet = vetOptional.get();
+
+            }
+
+
 
             medicalRecordRepository.save(medicalRecord);
         }

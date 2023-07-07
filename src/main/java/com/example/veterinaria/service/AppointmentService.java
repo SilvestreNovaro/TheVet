@@ -104,6 +104,7 @@ public class AppointmentService {
     //UPDATE (PUT PATCH REQUESTS)
 
 
+    // Funciona. Quitar validaciones service? @NotBlank en entity.
     public void updateAppointmentDTO(AppointmentDTO appointmentDTO, Long id) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
 
@@ -163,6 +164,7 @@ public class AppointmentService {
     }
 
 
+    //Funciona.
     public void updateAppointment(Long appointmentId, Appointment appointment) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
         if (optionalAppointment.isPresent()) {
