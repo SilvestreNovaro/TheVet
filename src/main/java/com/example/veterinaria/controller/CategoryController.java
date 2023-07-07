@@ -58,7 +58,7 @@ public class CategoryController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("a category with the name " + category.getCategoryName() + " already exists");
         }
         categoryService.createCategory(category);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Category " + category.toString() + " added successfully!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Category " + category + " added successfully!");
 
     }
 
@@ -73,9 +73,9 @@ public class CategoryController {
         Optional<Category> categoryOptional = categoryService.findById(id);
         if(categoryOptional.isPresent()){
             categoryService.updateCategory(category, id);
-            return ResponseEntity.status(HttpStatus.OK).body("Category " + category.toString() + " updated!");
+            return ResponseEntity.status(HttpStatus.OK).body("Category " + category+ " updated!");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category " + category.toString() + " not found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category " + category + " not found");
     }
 
 

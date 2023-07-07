@@ -8,7 +8,8 @@ import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
 import com.example.veterinaria.repository.PetRepository;
 import lombok.AllArgsConstructor;
-import org.modelmapper.*;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,11 +35,12 @@ public class CustomerService {
 
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     private final PetRepository petRepository;
 
 
     // NO ES EL QUE USO, FUNCIONA.
-    public void createCustomers(Customer customer) {
+    public void createCustomerss(Customer customer) {
 
         Customer customer1 = new Customer();
         customer1.setName(customer.getName());
@@ -55,40 +57,41 @@ public class CustomerService {
          customerRepository.save(customer1);
     }
 
-    // FUNCIONA.
-
-    public void createCustomer(Customer customer) {
+    // FUNCIONA. ES EL QUE SE USA.
+    public void createCustomer(CustomerDTO customerDTO) {
         ModelMapper modelMapper = new ModelMapper();
-        Customer customer1 = modelMapper.map(customer, Customer.class);
+        Customer customer = modelMapper.map(customerDTO, Customer.class);
+        modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
 
         String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
-        customer1.setPassword(encodedPassword);
+        customer.setPassword(encodedPassword);
 
-        customerRepository.save(customer1);
+        customerRepository.save(customer);
     }
 
 
-    // Funciona.
+
+    // Funciona. No es el que uso.
     public void createCustomerDTO(CustomerDTO customerDTO) {
 
-        Customer customer1 = new Customer();
+        Customer customer = new Customer();
 
-        customer1.setName(customerDTO.getName());
-        customer1.setLastName(customerDTO.getLastName());
-        customer1.setAddress(customerDTO.getAddress());
-        customer1.setEmail(customerDTO.getEmail());
-        customer1.setContactNumber(customerDTO.getContactNumber());
-        customer1.setPets(customerDTO.getPets());
+        customer.setName(customerDTO.getName());
+        customer.setLastName(customerDTO.getLastName());
+        customer.setAddress(customerDTO.getAddress());
+        customer.setEmail(customerDTO.getEmail());
+        customer.setContactNumber(customerDTO.getContactNumber());
+        customer.setPets(customerDTO.getPets());
 
 
         Optional<Role> roleOptional = roleService.findById(customerDTO.getRoleId());
-        roleOptional.ifPresent(customer1::setRole);
+        roleOptional.ifPresent(customer::setRole);
 
 
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
-        customer1.setPassword(encodedPassword);
+        customer.setPassword(encodedPassword);
 
-         customerRepository.save(customer1);
+         customerRepository.save(customer);
     }
 
 

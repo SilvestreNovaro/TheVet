@@ -22,7 +22,4 @@ public class ProductDTO {
     //@NotNull(message = "Image cannot be null")
     private List<Image> images;
 
-    public void setCategory_Id(@NotNull(message = "Category ID cannot be null") Long categoryId) {
-        this.categoryId = categoryId;
-    }
 }

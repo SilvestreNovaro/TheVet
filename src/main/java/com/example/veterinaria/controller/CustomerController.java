@@ -51,19 +51,19 @@ public class CustomerController {
 
 
 
-    // YA NO SE USA
+    // YA NO SE USA.
     @PostMapping("/add")
-    public ResponseEntity<String > add(@Validated @RequestBody Customer customer) {
-        Optional<Customer> customerOptional = customerService.findByEmail(customer.getEmail());
+    public ResponseEntity<String > add(@Validated @RequestBody CustomerDTO customerDTO) {
+        Optional<Customer> customerOptional = customerService.findByEmail(customerDTO.getEmail());
         if (customerOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer  " + customer.getEmail() + " is already on our registers");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer  " + customerDTO.getEmail() + " is already on our registers");
         }
-        customerService.createCustomer(customer);
+        customerService.createCustomerDTO(customerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully!");
     }
 
 
-    @PostMapping("/addCustomerDTO")
+    @PostMapping("/create")
     public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) throws MessagingException {
         String email = customerDTO.getEmail();
         Optional<Customer> optionalCustomer = customerService.findByEmail(email);
@@ -127,7 +127,7 @@ public class CustomerController {
         helper.setText(htmlMsg, true);
         javaMailSender.send(message);
 
-        customerService.createCustomerDTO(customerDTO);
+        customerService.createCustomer(customerDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully");
     }
@@ -135,7 +135,7 @@ public class CustomerController {
 
 
 
-    @PutMapping("/modify/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<String> update(@Validated @RequestBody CustomerDTO customerDTO, @PathVariable Long id) {
         Optional<Customer> sameEmailCustomer = customerService.findByEmail(customerDTO.getEmail());
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
