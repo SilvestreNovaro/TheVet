@@ -157,7 +157,7 @@ public class CustomerController {
 
     // YA NO SE USA.
 
-    @PatchMapping("/modifyCustomer/{id}")
+    @PatchMapping("/updateCustomer/{id}")
     public ResponseEntity<String> updateCustomer(@Validated @RequestBody Customer customer, @PathVariable Long id){
         Optional<Customer> customerOptional = customerService.getCustomerById(id);
         if(customerOptional.isPresent()){
@@ -212,9 +212,9 @@ public class CustomerController {
     public ResponseEntity<Object> findOwner(@PathVariable String name) {
         List<Customer> optionalCustomer = customerService.findCustomersByPetName(name);
         if (optionalCustomer.isEmpty()) {
-            return ResponseEntity.ok(optionalCustomer);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet associated with that owner");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet associated with that owner");
+        return ResponseEntity.ok(optionalCustomer);
     }
 
     @DeleteMapping("/deleteManyPets/{customerId}")
