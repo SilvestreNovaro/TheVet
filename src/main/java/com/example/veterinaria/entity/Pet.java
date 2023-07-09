@@ -2,6 +2,8 @@ package com.example.veterinaria.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,12 +24,16 @@ public class Pet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
+    @NotBlank
     private String petName;
     @Column
+    @NotNull
     private Integer age;
     @Column
+    @NotBlank
     private String gender;
     @Column
+    @NotBlank
     private String petSpecies;
 
 

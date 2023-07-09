@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("select c from Customer c where c.name = ?1")
-    public Optional<Customer> findByName(String name);
+    Optional<Customer> findByName(String name);
 
     //@Query("select c FROM Pet c where c.pet.id = ?1")
     //@Query("SELECT c FROM Customer c JOIN c.pets p WHERE p.id = ?1")
@@ -30,6 +30,11 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("SELECT c FROM Customer c JOIN c.pets p WHERE p.petName = :petName")
     List<Customer> findCustomersByPetName(@Param("petName") String petName);
+
+
+    @Query("SELECT c FROM Customer c WHERE c.lastName = :lastName and c.address = :address")
+    Optional<Customer> findByLastNameAndAddress(@Param("lastName") String lastName, @Param("address") String address);
+
 
 
 

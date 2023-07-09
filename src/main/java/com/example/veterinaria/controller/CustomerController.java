@@ -10,6 +10,7 @@ import com.example.veterinaria.service.RoleService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -190,6 +191,26 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
     }
 
+    @GetMapping("/findCustomerByLastName/{lastName}")
+    public ResponseEntity<Object> findByLastName(@Validated @PathVariable String lastName){
+        Optional<Customer> customerOptional = customerService.findByLastName(lastName);
+        if(customerOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customer found with lastName: " + lastName);
+        }
+        return ResponseEntity.ok(customerOptional);
+    }
+
+    @GetMapping("/findCustomerByLastNameAndAddress")
+    public ResponseEntity<Object> findByLastNameAndAddress(@Validated @RequestParam String lastName, @RequestParam String address){
+        Optional<Customer> customerOptional = customerService.findByLastNameAndAnddress(lastName, address);
+        if(customerOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customer found with lastName: " + lastName + " and address: " + address);
+        }
+        return  ResponseEntity.ok(customerOptional);
+    }
+
+
+
     @GetMapping("/findByEmail/{email}")
     ResponseEntity<Object> findByEmail(@Validated @PathVariable String email){
         Optional<Customer> optionalCustomer = customerService.findByEmail(email);
@@ -262,15 +283,7 @@ public class CustomerController {
 
 
 
-    //SAME METHODS TO ADD PET.
-    @PostMapping("/{customerId}/Addpet")
-    public ResponseEntity<String> addPetToCustomer(@PathVariable Long customerId, @RequestBody Pet pet) {
-        customerService.addPetToCustomer(customerId, pet);
-
-        return ResponseEntity.ok("Added pet tu customer successfully");
-    }
-
-    @PostMapping("/addAnimalToCustomer/{customerId}/animals")
+    @PostMapping("/addPetToCustomer/{customerId}")
     public ResponseEntity<Object> addAnimalToCustomer(@Validated @PathVariable Long customerId, @RequestBody Pet pet) {
         Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
         if (customerOptional.isEmpty()) {

@@ -180,13 +180,18 @@ public class CustomerService {
         return customerRepository.findByLastName(lastName);
     }
 
+    public Optional<Customer> findByLastNameAndAnddress(String lastName, String address){
+        return customerRepository.findByLastNameAndAddress(lastName, address);
+    }
+
     public List<Customer> findCustomersByPetName(String petName) {
         return customerRepository.findCustomersByPetName(petName);
     }
 
     // otros métodos del servicio de Customer
 
-    public void addPetToCustomer(Long customerId, Pet pet) {
+
+    public void addAnimalToCustomer(Long customerId, Pet pet){
         Customer customer = customerRepository.findById(customerId).get();
         customer.getPets().add(pet);
         customerRepository.save(customer);
@@ -206,11 +211,6 @@ public class CustomerService {
     }
 
 
-    public void addAnimalToCustomer(Long customerId, Pet pet){
-        Customer customer = customerRepository.findById(customerId).get();
-        customer.getPets().add(pet);
-        customerRepository.save(customer);
-    }
 
     public void addMultiplePetsToCustomer(Long customerId, List<Pet> pets){
         Customer customer = customerRepository.findById(customerId).get();
