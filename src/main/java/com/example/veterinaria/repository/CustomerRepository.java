@@ -37,6 +37,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT COUNT(*) c FROM Customer c")
     Long countCustomers();
 
+
+    @Query("SELECT COUNT(*) FROM Customer c JOIN c.pets p WHERE p.petSpecies = :petSpecie")
+    Long countDogCustomers(@Param("petSpecie") String petSpecie);
+
     Optional<Customer> findByEmail(String email);
 
     List<Customer> findCustomerByRoleId(Long idRol);

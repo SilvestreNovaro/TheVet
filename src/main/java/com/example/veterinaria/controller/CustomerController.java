@@ -59,6 +59,11 @@ public class CustomerController {
         return customerService.countCustomers();
     }
 
+    @GetMapping("/dogCustomers")
+    public Long countDogCustomers(){
+        return customerService.countDogCustomers();
+    }
+
 
     // YA NO SE USA.
     @PostMapping("/add")
