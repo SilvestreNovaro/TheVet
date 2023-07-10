@@ -166,6 +166,9 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
+    public List<Customer> findAllAsc(){
+        return customerRepository.findAllAsc();
+    }
 
 
     public List<Pet> findPetsByCustomerName(String name) {
@@ -187,8 +190,6 @@ public class CustomerService {
     public List<Customer> findCustomersByPetName(String petName) {
         return customerRepository.findCustomersByPetName(petName);
     }
-
-    // otros métodos del servicio de Customer
 
 
     public void addAnimalToCustomer(Long customerId, Pet pet){

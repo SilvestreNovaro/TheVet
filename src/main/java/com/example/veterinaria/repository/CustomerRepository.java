@@ -16,10 +16,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("select c from Customer c where c.name = ?1")
     Optional<Customer> findByName(String name);
 
-    //@Query("select c FROM Pet c where c.pet.id = ?1")
-    //@Query("SELECT c FROM Customer c JOIN c.pets p WHERE p.id = ?1")
-
-
 
     @Query("SELECT c.pets FROM Customer c WHERE c.lastName = :lastName")
     List<Pet> findPetsByCustomerName(@Param("lastName") String lastName);
@@ -35,8 +31,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT c FROM Customer c WHERE c.lastName = :lastName and c.address = :address")
     Optional<Customer> findByLastNameAndAddress(@Param("lastName") String lastName, @Param("address") String address);
 
-
-
+    @Query("SELECT c FROM Customer c ORDER BY c.lastName ASC")
+    List<Customer> findAllAsc();
 
     public Optional<Customer> findByEmail(String email);
 
