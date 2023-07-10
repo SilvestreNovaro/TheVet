@@ -170,6 +170,10 @@ public class CustomerService {
         return customerRepository.findAllAsc();
     }
 
+    public Long countCustomers(){
+        return customerRepository.countCustomers();
+    }
+
 
     public List<Pet> findPetsByCustomerName(String name) {
         return customerRepository.findPetsByCustomerName(name);

@@ -34,11 +34,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT c FROM Customer c ORDER BY c.lastName ASC")
     List<Customer> findAllAsc();
 
-    public Optional<Customer> findByEmail(String email);
+    @Query("SELECT COUNT(*) c FROM Customer c")
+    Long countCustomers();
 
-    public List<Customer> findCustomerByRoleId(Long idRol);
+    Optional<Customer> findByEmail(String email);
 
-    public Optional<Customer> findByLastName(String lastName);
+    List<Customer> findCustomerByRoleId(Long idRol);
+
+    Optional<Customer> findByLastName(String lastName);
 
 
 

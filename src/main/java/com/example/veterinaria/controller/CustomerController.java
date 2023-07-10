@@ -54,6 +54,11 @@ public class CustomerController {
         return customerService.findAllAsc();
     }
 
+    @GetMapping("/totalCustomers")
+    public Long countCustomers(){
+        return customerService.countCustomers();
+    }
+
 
     // YA NO SE USA.
     @PostMapping("/add")
