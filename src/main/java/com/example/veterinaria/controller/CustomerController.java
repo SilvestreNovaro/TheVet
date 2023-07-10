@@ -59,10 +59,12 @@ public class CustomerController {
         return customerService.countCustomers();
     }
 
-    @GetMapping("/dogCustomers")
-    public Long countDogCustomers(){
-        return customerService.countDogCustomers();
+
+    @GetMapping("/{petSpecies}/count")
+    public Long countCustomersByPetSpecies(@PathVariable("petSpecies") String petSpecies) {
+        return customerService.countCustomersByPetSpecies(petSpecies);
     }
+
 
 
     // YA NO SE USA.

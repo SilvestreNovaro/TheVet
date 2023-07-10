@@ -174,9 +174,9 @@ public class CustomerService {
         return customerRepository.countCustomers();
     }
 
-    public Long countDogCustomers() {
-        String petSpecies = "dog";
-        return customerRepository.countDogCustomers(petSpecies);
+
+    public Long countCustomersByPetSpecies(String petSpecies) {
+        return customerRepository.countCustomersByPetSpecies(petSpecies);
     }
 
     public List<Pet> findPetsByCustomerName(String name) {
