@@ -72,7 +72,6 @@ public class PetService {
         petRepository.deleteById(id);
     }
 
-    // add any additional methods here
 
     public Optional<Pet> findByName(String name) {
         return petRepository.findByName(name);

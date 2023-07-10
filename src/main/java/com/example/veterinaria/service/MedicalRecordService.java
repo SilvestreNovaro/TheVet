@@ -63,8 +63,6 @@ public class MedicalRecordService {
 
             }
 
-
-
             medicalRecordRepository.save(medicalRecord);
         }
     }

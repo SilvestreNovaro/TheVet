@@ -27,5 +27,9 @@ public class MedicalRecordDTO {
 
     private Long vetId;
 
+    public MedicalRecordDTO() {
+        this.recordDate = LocalDateTime.now();
+    }
+
 
 }
