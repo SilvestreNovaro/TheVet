@@ -66,6 +66,10 @@ public class CustomerController {
     }
 
 
+    @GetMapping("/seniorPets")
+    public List<Customer> listCustomersBySeniorPets(){
+        return customerService.listCustomersWithSeniorPets();
+    }
 
     // YA NO SE USA.
     @PostMapping("/add")

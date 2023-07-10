@@ -179,6 +179,10 @@ public class CustomerService {
         return customerRepository.countCustomersByPetSpecies(petSpecies);
     }
 
+    public List<Customer> listCustomersWithSeniorPets(){
+        return customerRepository.findOldPets();
+    }
+
     public List<Pet> findPetsByCustomerName(String name) {
         return customerRepository.findPetsByCustomerName(name);
     }
