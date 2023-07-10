@@ -7,6 +7,7 @@ import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.repository.PetRepository;
 import lombok.AllArgsConstructor;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -40,35 +41,17 @@ public class PetService {
 
     }
 
-    public void createMedicalRecord(Long petId, MedicalRecord medicalRecord, Long vetId) {
-        Optional<Pet> petOptional = petRepository.findById(petId);
-            Pet pet = petOptional.get();
-            Optional<Vet> vetOptional = vetService.getVetById(vetId);
-                Vet vet = vetOptional.get();
-                medicalRecord.setVet(vet);
-            // Agregar el registro médico a la lista de registros médicos de la mascota
-            List<MedicalRecord> medicalRecords = pet.getMedicalRecords();
-            medicalRecords.add(medicalRecord);
-            pet.setMedicalRecords(medicalRecords);
 
-            // Guardar los cambios en la base de datos
+    public void createMedicalRecord(Long petId, MedicalRecordDTO medicalRecordDTO){
+        ModelMapper modelMapper = new ModelMapper();
+        MedicalRecord medicalRecord = modelMapper.map(medicalRecordDTO, MedicalRecord.class);
+        modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
+        Optional<Pet> petOptional = petRepository.findById(petId);
+        Pet pet = petOptional.get();
+        List<MedicalRecord> medicalRecords = pet.getMedicalRecords();
+        medicalRecords.add(medicalRecord);
+        pet.setMedicalRecords(medicalRecords);
         petRepository.save(pet);
-    }
-
-    public void createMR(Long petId, MedicalRecordDTO medicalRecordDTO){
-        MedicalRecord mr = new MedicalRecord();
-        mr.setIsNeutered(medicalRecordDTO.getIsNeutered());
-        mr.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
-        mr.setVaccinationStatus(medicalRecordDTO.getVaccinationStatus());
-        mr.setAllergies(medicalRecordDTO.getAllergies());
-        mr.setRecordDate(medicalRecordDTO.getRecordDate());
-        Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVetId());
-        vetOptional.ifPresent(mr::setVet);
-        Optional<Pet> petOptional = petRepository.findById(petId);
-        //petOptional.ifPresent(mr::setPet);
-
-
-
     }
 
 

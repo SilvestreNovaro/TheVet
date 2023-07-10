@@ -11,6 +11,8 @@ public class MedicalRecordDTO {
 
     private String vaccinationStatus;
 
+    private LocalDateTime vaccineDates;
+
     private String medication;
 
     private Boolean isNeutered;

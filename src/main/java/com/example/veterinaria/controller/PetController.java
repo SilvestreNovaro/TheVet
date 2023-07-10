@@ -1,6 +1,7 @@
 package com.example.veterinaria.controller;
 
 
+import com.example.veterinaria.DTO.MedicalRecordDTO;
 import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -42,21 +44,20 @@ public class PetController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Pet added successfully!");
     }
 
+
     @PostMapping("/addMedicalRecord")
-    public ResponseEntity<?> addMR(@RequestBody MedicalRecord medicalRecord,@RequestParam Long petId,  Long vetId){
+    public ResponseEntity<Object> addMCR(@RequestBody MedicalRecordDTO medicalRecordDTO, @RequestParam Long petId){
         Optional<Pet> petOptional = petService.getPetById(petId);
         if(petOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pet  id " + petId + " does not exist on our registers");
         }
-        Optional<Vet> vetOptional = vetService.getVetById(vetId);
+        Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVetId());
         if(vetOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet  id " + vetId + " does not exist on our registers");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet  id " + (medicalRecordDTO.getVetId() + " does not exist on our registers"));
         }
-        petService.createMedicalRecord(petId, medicalRecord, vetId);
-
+        petService.createMedicalRecord(petId, medicalRecordDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("MR added");
     }
-
 
 
 
@@ -75,7 +76,7 @@ public class PetController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id){
+    public ResponseEntity<String> delete(@PathVariable Long id){
         Optional<Pet> petOptional = petService.getPetById(id);
         if(petOptional.isPresent()){
             petService.deletePet(id);
@@ -85,7 +86,7 @@ public class PetController {
     }
 
     @GetMapping("/findPetByName/{name}")
-    public ResponseEntity<?> findByName(@PathVariable String name){
+    public ResponseEntity<Object> findByName(@PathVariable String name){
 
         Optional<Pet> petOptional= petService.findByName(name);
 
@@ -95,7 +96,7 @@ public class PetController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<?> find (@PathVariable Long id){
+    public ResponseEntity<Object> find (@PathVariable Long id){
         Optional<Pet> petOptional = petService.getPetById(id);
         if(petOptional.isPresent()){
            return ResponseEntity.ok(petOptional);
@@ -108,7 +109,7 @@ public class PetController {
 
 
     @GetMapping("/getSpecies/{petSpecies}")
-    public ResponseEntity<?> getSpecies(@PathVariable String petSpecies) {
+    public ResponseEntity<Object> getSpecies(@PathVariable String petSpecies) {
         List<Pet> petList = petService.getAllPets();
         List<Pet> petList1 = new ArrayList<>();
         for (Pet pet : petList) {

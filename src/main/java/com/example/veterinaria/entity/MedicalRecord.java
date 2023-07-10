@@ -27,6 +27,8 @@ public class MedicalRecord {
     @NotNull
     private String vaccinationStatus;
     @NotNull
+    private LocalDateTime vaccineDates;
+    @NotNull
     private String medication;
     @NotNull
     private Boolean isNeutered;
