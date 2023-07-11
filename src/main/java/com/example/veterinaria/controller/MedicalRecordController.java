@@ -47,18 +47,6 @@ public class MedicalRecordController {
     }
 
 
-    @PostMapping("/addVaccine/{medicalRecordId}")
-    public ResponseEntity<String> addVaccine(@Validated @PathVariable Long medicalRecordId, @RequestParam String vaccineName, LocalDateTime date){
-        Optional<MedicalRecord> medicalRecord = medicalRecordService.findById(medicalRecordId);
-        if(medicalRecord.isPresent()){
-            medicalRecordService.addVaccineToMedicalRecord(medicalRecordId, vaccineName, date);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Vaccine added successfully!!");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical record exists with the id " + medicalRecordId);
-    }
-
-
-
 
 
     @PutMapping("/modify/{id}")

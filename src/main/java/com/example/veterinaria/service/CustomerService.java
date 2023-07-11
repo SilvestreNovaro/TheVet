@@ -49,7 +49,10 @@ public class CustomerService {
         customer1.setEmail(customer.getEmail());
         customer1.setContactNumber(customer.getContactNumber());
         customer1.setPets(customer.getPets());
-        customer1.setRole(customer.getRole());
+
+
+        Optional<Role> role = roleService.findById(1L);
+        role.ifPresent(customer1::setRole);
 
         String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
         customer1.setPassword(encodedPassword);

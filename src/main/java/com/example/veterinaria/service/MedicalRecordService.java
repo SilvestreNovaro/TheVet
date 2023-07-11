@@ -42,19 +42,6 @@ public class MedicalRecordService {
         return medicalRecordRepository.findByRecordDate(recordDate);
     }
 
-    public void addVaccineToMedicalRecord(Long medicalRecordId, String vaccineName, LocalDateTime date) {
-        Optional<MedicalRecord> medicalRecordOptional = medicalRecordRepository.findById(medicalRecordId);
-        if (medicalRecordOptional.isPresent()) {
-            MedicalRecord medicalRecord = medicalRecordOptional.get();
-            Map<String, LocalDateTime> vaccinesMap = medicalRecord.getVaccinesMap();
-            if (medicalRecord.getVaccinesJson() == null) {
-                medicalRecord.setVaccinesJson("{}");
-            }
-            vaccinesMap.put(vaccineName, date);
-            medicalRecord.setVaccinesMap(vaccinesMap);
-            medicalRecordRepository.save(medicalRecord);
-        }
-    }
 
 
     public void updateMR(MedicalRecordDTO medicalRecordDTO, Long id){
