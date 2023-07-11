@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -26,6 +27,8 @@ public class MedicalRecordDTO {
     private LocalDateTime recordDate;
 
     private Long vetId;
+
+    private String vaccinesJson;
 
     public MedicalRecordDTO() {
         this.recordDate = LocalDateTime.now();

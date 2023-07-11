@@ -1,6 +1,7 @@
 package com.example.veterinaria.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -50,6 +51,7 @@ public class Customer {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
     private List<Pet> pets = new ArrayList<>();
+
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "role_id")

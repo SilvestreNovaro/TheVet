@@ -8,11 +8,13 @@ import com.example.veterinaria.service.MedicalRecordService;
 import com.example.veterinaria.service.PetService;
 import com.example.veterinaria.service.VetService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +45,20 @@ public class MedicalRecordController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical record exists with the id " + id);
     }
+
+
+    @PostMapping("/addVaccine/{medicalRecordId}")
+    public ResponseEntity<String> addVaccine(@Validated @PathVariable Long medicalRecordId, @RequestParam String vaccineName, LocalDateTime date){
+        Optional<MedicalRecord> medicalRecord = medicalRecordService.findById(medicalRecordId);
+        if(medicalRecord.isPresent()){
+            medicalRecordService.addVaccineToMedicalRecord(medicalRecordId, vaccineName, date);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Vaccine added successfully!!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical record exists with the id " + medicalRecordId);
+    }
+
+
+
 
 
     @PutMapping("/modify/{id}")

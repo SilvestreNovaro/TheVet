@@ -82,6 +82,17 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully!");
     }
 
+    @PostMapping("/addCustomer")
+        public ResponseEntity<String > adding(@RequestBody Customer customer){
+        Optional<Customer> customerOptional = customerService.findByEmail(customer.getEmail());
+        if (customerOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer  " + customer.getEmail() + " is already on our registers");
+        }
+        customerService.createCustomerss(customer);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully!");
+        }
+
+
 
     @PostMapping("/create")
     public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) throws MessagingException {

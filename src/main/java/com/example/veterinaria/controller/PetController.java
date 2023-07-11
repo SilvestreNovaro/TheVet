@@ -2,7 +2,6 @@ package com.example.veterinaria.controller;
 
 
 import com.example.veterinaria.DTO.MedicalRecordDTO;
-import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.PetService;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -35,7 +33,7 @@ public class PetController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add (@Validated @RequestBody Pet pet){
+    public ResponseEntity<String> add (@Validated @RequestBody Pet pet){
         Optional<Pet> petOptional = petService.findByName(pet.getPetName());
         if(petOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pet  " + pet.getPetName() + " is already on our registers");
@@ -62,7 +60,7 @@ public class PetController {
 
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> update (@Validated @RequestBody Pet pet, @PathVariable Long id){
+    public ResponseEntity<String> update (@Validated @RequestBody Pet pet, @PathVariable Long id){
         Optional<Pet> sameNamePet= petService.findByName(pet.getPetName());
         Optional<Pet> optionalPet = petService.getPetById(id);
         if(sameNamePet.isPresent()){
@@ -115,11 +113,10 @@ public class PetController {
         for (Pet pet : petList) {
             if (pet.getPetSpecies() !=null && pet.getPetSpecies().equals(petSpecies)) {
                 petList1.add(pet);
-                System.out.println("Pet species: " + pet.getPetSpecies() + " " + pet.getPetName());
                 }
 
         }
-        if (petList1.size() < 1) {
+        if (petList1.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There are no " + petSpecies + " on our register");
 
         }

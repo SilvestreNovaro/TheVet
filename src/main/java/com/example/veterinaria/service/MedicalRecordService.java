@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -39,6 +40,20 @@ public class MedicalRecordService {
 
     public Optional<MedicalRecord> findByRecordDate(LocalDateTime recordDate){
         return medicalRecordRepository.findByRecordDate(recordDate);
+    }
+
+    public void addVaccineToMedicalRecord(Long medicalRecordId, String vaccineName, LocalDateTime date) {
+        Optional<MedicalRecord> medicalRecordOptional = medicalRecordRepository.findById(medicalRecordId);
+        if (medicalRecordOptional.isPresent()) {
+            MedicalRecord medicalRecord = medicalRecordOptional.get();
+            Map<String, LocalDateTime> vaccinesMap = medicalRecord.getVaccinesMap();
+            if (medicalRecord.getVaccinesJson() == null) {
+                medicalRecord.setVaccinesJson("{}");
+            }
+            vaccinesMap.put(vaccineName, date);
+            medicalRecord.setVaccinesMap(vaccinesMap);
+            medicalRecordRepository.save(medicalRecord);
+        }
     }
 
 

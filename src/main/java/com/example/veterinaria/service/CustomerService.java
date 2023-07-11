@@ -40,7 +40,7 @@ public class CustomerService {
 
 
     // NO ES EL QUE USO, FUNCIONA.
-    public void createCustomerss(Customer customer) {
+    public Customer createCustomerss(Customer customer) {
 
         Customer customer1 = new Customer();
         customer1.setName(customer.getName());
@@ -54,7 +54,7 @@ public class CustomerService {
         String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
         customer1.setPassword(encodedPassword);
 
-         customerRepository.save(customer1);
+         return customerRepository.save(customer1);
     }
 
     // FUNCIONA. ES EL QUE SE USA.

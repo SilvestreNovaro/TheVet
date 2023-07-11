@@ -3,7 +3,6 @@ package com.example.veterinaria.service;
 import com.example.veterinaria.DTO.MedicalRecordDTO;
 import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
-import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.repository.PetRepository;
 import lombok.AllArgsConstructor;
 
@@ -40,6 +39,7 @@ public class PetService {
         }
 
     }
+
 
 
     public void createMedicalRecord(Long petId, MedicalRecordDTO medicalRecordDTO){
