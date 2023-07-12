@@ -7,13 +7,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface VetRepository extends JpaRepository <Vet, Long> {
 
     @Query("select v from Vet v where v.license = ?1")
-    public Optional<Vet> findByLicense(String license);
+    Optional<Vet> findByLicense(String license);
 
 
     @Modifying
@@ -21,8 +22,15 @@ public interface VetRepository extends JpaRepository <Vet, Long> {
     void deleteByLicense(@Param("license") String license);
 
     @Query("select v from Vet v where v.name = ?1")
-    public Optional<Vet> findByName(String name);
+    Optional<Vet> findByName(String name);
 
     @Query("DELETE FROM Vet v WHERE v.name=?1")
-    public void deleteByName(String name);
+    void deleteByName(String name);
+
+    @Query("SELECT v FROM Vet v WHERE v.specialty = :specialty")
+
+    List<Vet> findBySpecialty(@Param("specialty") String specialty);
+
+
+
 }

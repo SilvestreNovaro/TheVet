@@ -27,6 +27,11 @@ public class VetController {
         return vetService.getAllVets();
     }
 
+    @GetMapping("/findBySpecialty/{specialty}")
+    public List<Vet> listBySpecialty(@PathVariable String specialty){
+        return vetService.listOfVetsBySpecialty(specialty);
+    }
+
     @PostMapping("/add")
     public ResponseEntity<String> add(@Validated @RequestBody Vet vet) {
         Optional<Vet> vetOptional = vetService.findByLicense(vet.getLicense());

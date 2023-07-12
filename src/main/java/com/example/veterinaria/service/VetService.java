@@ -72,6 +72,10 @@ public class VetService {
         vetRepository.deleteByName(surName);
     }
 
+    public List<Vet> listOfVetsBySpecialty(String specialty){
+        return vetRepository.findBySpecialty(specialty);
+    }
+
 
 
 }
