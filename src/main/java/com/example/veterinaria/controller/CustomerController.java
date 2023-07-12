@@ -44,6 +44,7 @@ public class CustomerController {
 
 
 
+
     @GetMapping("list")
     public List<Customer> list() {
         return customerService.getAllCustomers();
@@ -63,6 +64,11 @@ public class CustomerController {
     @GetMapping("/{petSpecies}/count")
     public Long countCustomersByPetSpecies(@PathVariable("petSpecies") String petSpecies) {
         return customerService.countCustomersByPetSpecies(petSpecies);
+    }
+
+    @GetMapping("/customersWithSpecie/{petSpecies}")
+    public List<Customer> findAllCustomersWithTheSpecie(@PathVariable String petSpecies){
+        return customerService.listOfCustomersByPetSpecies(petSpecies);
     }
 
 
@@ -203,10 +209,6 @@ public class CustomerController {
     @GetMapping("/find/{id}")
     public ResponseEntity<String> findById(@Validated @PathVariable Long id){
         Optional<Customer> customerOptional = customerService.findById(id);
-        //customerOptional.map(...): Si el objeto customerOptional contiene un Customer, la función lambda dentro del map se ejecuta y crea un objeto ResponseEntity con un código de estado 200 (OK) y un mensaje que indica el nombre del Customer correspondiente al id. El map devuelve un Optional<ResponseEntity>.
-        // .orElseGet(...): Si el objeto customerOptional está vacío, la función lambda dentro del orElseGet se ejecuta y crea un objeto ResponseEntity con un código de estado 404 (NOT FOUND) y un mensaje que indica que el Customer no existe en los registros. El orElseGet devuelve un ResponseEntity.
-        //Una función lambda es una función anónima que se puede utilizar para representar un bloque de código que se puede pasar como argumento a otro método o función. En el caso del método map de Optional, la función lambda se utiliza para transformar el valor contenido en el objeto Optional en otro valor.
-        // En este caso La función lambda toma un objeto Customer como parámetro y devuelve un objeto ResponseEntity<String> que contiene un mensaje personalizado basado en el Customer encontrado. En otras palabras, la función lambda utiliza el Customer encontrado para construir la respuesta HTTP que se devuelve al cliente.
         return customerOptional.map(customer -> ResponseEntity.status(HttpStatus.OK).body("The id " + id + " belongs to the customer " + customer.getName())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers"));
     }
 

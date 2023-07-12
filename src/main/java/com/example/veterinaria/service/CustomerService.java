@@ -182,6 +182,10 @@ public class CustomerService {
         return customerRepository.countCustomersByPetSpecies(petSpecies);
     }
 
+    public List<Customer> listOfCustomersByPetSpecies(String petSpecies){
+        return customerRepository.findTheCustomersByPetSpecies(petSpecies);
+    }
+
     public List<Customer> listCustomersWithSeniorPets(){
         return customerRepository.findOldPets();
     }

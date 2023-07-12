@@ -37,12 +37,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT COUNT(*) c FROM Customer c")
     Long countCustomers();
 
-
     @Query("SELECT COUNT(*) FROM Customer c JOIN c.pets p WHERE p.petSpecies = :petSpecies")
     Long countCustomersByPetSpecies(@Param("petSpecies") String petSpecies);
 
     @Query("SELECT c FROM Customer c JOIN c.pets p WHERE p.age > 10")
     List<Customer> findOldPets();
+
+    @Query("SELECT c FROM Customer c JOIN c.pets p WHERE p.petSpecies = :petSpecies")
+    List<Customer> findTheCustomersByPetSpecies(@Param("petSpecies") String petSpecies);
 
     Optional<Customer> findByEmail(String email);
 
