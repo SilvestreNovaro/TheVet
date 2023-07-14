@@ -6,6 +6,7 @@ import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
+import com.example.veterinaria.service.MailService;
 import com.example.veterinaria.service.RoleService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -34,9 +35,11 @@ public class CustomerController {
     private final CustomerService customerService;
 
 
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
 
     private final RoleService roleService;
+
+    private final MailService mailService;
 
     public static final String DELETE_SUCCESS_MESSAGE = " has been successfully deleted from Customer with id ";
 
@@ -111,60 +114,9 @@ public class CustomerController {
         if(optionalRole.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Role with the id " + customerDTO.getRoleId());
         }
-        //Crear el mensaje de correo electronico
-
-
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        String formattedDateTime = now.format(formatter);
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-        helper.setTo(customerDTO.getEmail());
-        helper.setSubject("¡Creacion de registro Exitosa!");
-        String htmlMsg =
-                "<html>" +
-                        "<head>" +
-                        "<style>" +
-                        "table {" +
-                        "  border-collapse: collapse;" +
-                        "  width: 100%;" +
-                        "}" +
-                        "th, td {" +
-                        "  text-align: left;" +
-                        "  padding: 8px;" +
-                        "}" +
-                        "th {" +
-                        "  background-color: #dddddd;" +
-                        "  color: #333333;" +
-                        "}" +
-                        "</style>" +
-                        "</head>" +
-                        "<body>" +
-                        "<h1 style='color: #007bff;'>Confirmación de registro</h1>" +
-                        "<p>Estimado/a " + customerDTO.getName() + ",</p>" +
-                        "<p>Por favor, revise los detalles de su Registro en la siguiente tabla:</p>" +
-                        "<table>" +
-                        "<tr>" +
-                        "<th>Nombre</th>" +
-                        "<th>Apellido</th>" +
-                        "<th>Horario</th>" +
-                        "<th>Cancelada</th>" +
-                        "</tr>" +
-                        "<tr>" +
-                        "<td>" + customerDTO.getName() + "</td>" +
-                        "<td>" + customerDTO.getLastName() + "</td>" +
-                        "<td>" + formattedDateTime+ "</td>" +
-                        "</tr>" +
-                        "</table>" +
-                        "<p>You have successfully registered.</p>" +
-                        "<p>Sincerely</p>" +
-                        "<p>The vet</p>" +
-                        "</body>" +
-                        "</html>";
-        helper.setText(htmlMsg, true);
-        javaMailSender.send(message);
 
         customerService.createCustomer(customerDTO);
+
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully");
     }

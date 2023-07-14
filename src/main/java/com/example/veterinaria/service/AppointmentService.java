@@ -1,6 +1,8 @@
 package com.example.veterinaria.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +19,11 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -33,6 +38,12 @@ public class AppointmentService {
     private final CustomerService customerService;
 
     private final PetService petService;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+
+    private final MailService mailService;
 
 
 
@@ -232,7 +243,48 @@ public class AppointmentService {
         return inexistentIds;
     }
 
+    public void sendAppointmentNotifications() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        LocalDateTime startOfDay = tomorrow.atStartOfDay();
+        LocalDateTime endOfDay = tomorrow.plusDays(1).atStartOfDay();
 
+        List<Appointment> appointments = appointmentRepository.findAppointmentsForTomorrow(startOfDay, endOfDay);
 
+        if (!appointments.isEmpty()) {
+            for (Appointment appointment : appointments) {
+
+                Customer customer = appointment.getCustomer();
+                String email = customer.getEmail();
+
+                // Construye el contenido del correo electrónico con los detalles del Appointment
+                String subject = "Recordatorio de Appointment";
+                String message = "Estimado " + customer.getName() + ",\n\n"
+                        + "Este es un recordatorio amable de que tienes un Appointment programado para mañana.\n"
+                        + "Fecha y Hora: " + appointment.getAppointmentDateTime() + "\n"
+                        + "Lugar: VETHOME"  + "\n\n"
+                        + "¡Esperamos verte allí!\n\n"
+                        + "Saludos,\n"
+                        + "El equipo de tu clínica veterinaria";
+
+                // Envía el correo electrónico al cliente
+                sendEmail(email, subject, message);
+            }
+        }
+        else{
+            throw new NotFoundException("No se encontraron citas programadas para mañana.");
+        }
+    }
+
+    private void sendEmail(String to, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        javaMailSender.send(message);
+    }
+
+    public Optional<List<Appointment>> appodate(LocalDateTime appointmentDateTime){
+        return appointmentRepository.findAppointmentsByAppointmentDateTime(appointmentDateTime);
+    }
 }
 

@@ -284,6 +284,15 @@ public class AppointmentController {
     public ResponseEntity<?> deleteAppointmentsByIds(@RequestParam  Long[] appointmentIds) {
         return appointmentService.deleteAppointmentsByIds(appointmentIds);
     }
+    @GetMapping("/appo/{appointmentDateTime}")
+    public ResponseEntity<Object> findByApo(@PathVariable LocalDateTime appointmentDateTime){
+        Optional<List<Appointment>> appointmentOptional = appointmentService.appodate(appointmentDateTime);
+        if(appointmentOptional.isEmpty() || appointmentOptional.get().isEmpty()){
+            return ResponseEntity.badRequest().body("No se encontraron citas para la fecha y hora especificadas.");
+        }
+        List<Appointment> appointments = appointmentOptional.get();
+        return ResponseEntity.ok(appointments);
+    }
 
 
 

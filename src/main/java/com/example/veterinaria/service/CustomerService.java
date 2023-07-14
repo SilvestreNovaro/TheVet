@@ -38,6 +38,8 @@ public class CustomerService {
 
     private final PetRepository petRepository;
 
+    private final MailService mailService;
+
 
     // NO ES EL QUE USO, FUNCIONA.
     public Customer createCustomerss(Customer customer) {
@@ -68,6 +70,7 @@ public class CustomerService {
 
         String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
         customer.setPassword(encodedPassword);
+        mailService.sendRegistrationEmail(customer);
 
         customerRepository.save(customer);
     }
@@ -93,6 +96,7 @@ public class CustomerService {
 
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
         customer.setPassword(encodedPassword);
+
 
          customerRepository.save(customer);
     }

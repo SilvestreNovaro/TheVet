@@ -39,9 +39,7 @@ public class Appointment {
     private Vet vet;
 
 
-
-
-    @ManyToMany(cascade = CascadeType.DETACH)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     @JoinTable(
             name = "appointment_pet",
             joinColumns = @JoinColumn(name = "appointment_id"),
