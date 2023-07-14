@@ -29,13 +29,13 @@ public class Appointment {
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "customer_id")
-    @JsonIgnoreProperties({"pets"})
+    @JsonIgnoreProperties({"pets", "role", "password", "contactNumber", "email", "address"})
     private Customer customer;
 
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "vet_id")
-    @JsonIgnoreProperties({"email", "license"})
+    @JsonIgnoreProperties({"email", "license", "image"})
     private Vet vet;
 
 
@@ -45,6 +45,7 @@ public class Appointment {
             joinColumns = @JoinColumn(name = "appointment_id"),
             inverseJoinColumns = @JoinColumn(name = "pet_id")
     )
+    @JsonIgnoreProperties("medicalRecords")
     private List<Pet> pets = new ArrayList<>();
 
 

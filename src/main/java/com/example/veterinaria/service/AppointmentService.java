@@ -287,7 +287,6 @@ public class AppointmentService {
                         + "Saludos,\n"
                         + "El equipo de tu clínica veterinaria";
 
-
                 // Envía el correo electrónico al cliente
                 sendEmail(email, subject, message);
             }
