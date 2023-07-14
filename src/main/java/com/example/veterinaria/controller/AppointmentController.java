@@ -290,7 +290,7 @@ public class AppointmentController {
     //DELETE MANY APPOINTMENTS.
     @DeleteMapping("/deleteByIds")
     public ResponseEntity<Object> deleteAppointmentsByIds(@RequestParam List <Long> appointmentIds) {
-        var deletedIds = appointmentService.deleteAppointment(appointmentIds);
+        List<Long> deletedIds = appointmentService.deleteAppointment(appointmentIds);
         if(deletedIds.isEmpty()){
             return ResponseEntity.ok("non existent ids " + deletedIds);
         }else{

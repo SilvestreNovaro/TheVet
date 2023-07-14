@@ -255,15 +255,38 @@ public class AppointmentService {
                 Customer customer = appointment.getCustomer();
                 String email = customer.getEmail();
 
-                // Construye el contenido del correo electrónico con los detalles del Appointment
+                StringBuilder petsText = new StringBuilder();
+                List<Pet> pets = appointment.getPets();
+                int numPets = pets.size();
+
+                for (int i = 0; i < numPets; i++) {
+                    Pet pet = pets.get(i);
+                    // Agregar el nombre de la mascota
+                    petsText.append(pet.getPetName());
+
+                    if (numPets > 1) {
+                        // Más de una mascota, manejar casos especiales de separación
+                        if (i < numPets - 2) {
+                            // No es la última mascota, agregar coma y espacio
+                            petsText.append(", ");
+                        } else if (i == numPets - 2) {
+                            // Penúltima mascota, agregar coma y "y"
+                            petsText.append(" y ");
+                        }
+                    }
+                }
+
+// Construir el mensaje del correo electrónico
                 String subject = "Recordatorio de Appointment";
                 String message = "Estimado " + customer.getName() + ",\n\n"
                         + "Este es un recordatorio amable de que tienes un Appointment programado para mañana.\n"
                         + "Fecha y Hora: " + appointment.getAppointmentDateTime() + "\n"
                         + "Lugar: VETHOME"  + "\n\n"
+                        + "Con tu/s mascotas: " + petsText.toString() + "\n\n"
                         + "¡Esperamos verte allí!\n\n"
                         + "Saludos,\n"
                         + "El equipo de tu clínica veterinaria";
+
 
                 // Envía el correo electrónico al cliente
                 sendEmail(email, subject, message);
