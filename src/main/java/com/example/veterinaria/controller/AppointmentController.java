@@ -1,5 +1,6 @@
 package com.example.veterinaria.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -62,6 +63,17 @@ public class AppointmentController {
             return new ResponseEntity<>(appointments, HttpStatus.OK);
         }
     }
+
+
+    @GetMapping("/listOfAppointmentsByDate/{date}")
+    public ResponseEntity<Object> findListOfAppointmentsInParticularDate(@PathVariable LocalDate date){
+        List<Appointment> appointmentOptional = appointmentService.allAppointmentsByXDate(date);
+        if(appointmentOptional.isEmpty()){
+            return ResponseEntity.badRequest().body("No se encontraron citas para la fecha y hora especificadas.");
+        }
+        return ResponseEntity.ok(appointmentOptional);
+    }
+
 
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<Object> getAppointmentsByCustomerId(@PathVariable Long customerId) {
@@ -284,15 +296,7 @@ public class AppointmentController {
     public ResponseEntity<?> deleteAppointmentsByIds(@RequestParam  Long[] appointmentIds) {
         return appointmentService.deleteAppointmentsByIds(appointmentIds);
     }
-    @GetMapping("/appo/{appointmentDateTime}")
-    public ResponseEntity<Object> findByApo(@PathVariable LocalDateTime appointmentDateTime){
-        Optional<List<Appointment>> appointmentOptional = appointmentService.appodate(appointmentDateTime);
-        if(appointmentOptional.isEmpty() || appointmentOptional.get().isEmpty()){
-            return ResponseEntity.badRequest().body("No se encontraron citas para la fecha y hora especificadas.");
-        }
-        List<Appointment> appointments = appointmentOptional.get();
-        return ResponseEntity.ok(appointments);
-    }
+
 
 
 

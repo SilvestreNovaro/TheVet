@@ -2,7 +2,6 @@ package com.example.veterinaria.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -283,8 +282,8 @@ public class AppointmentService {
         javaMailSender.send(message);
     }
 
-    public Optional<List<Appointment>> appodate(LocalDateTime appointmentDateTime){
-        return appointmentRepository.findAppointmentsByAppointmentDateTime(appointmentDateTime);
+    public List<Appointment> allAppointmentsByXDate(LocalDate date){
+        return appointmentRepository.findAppointmentsByDate(date);
     }
 }
 
