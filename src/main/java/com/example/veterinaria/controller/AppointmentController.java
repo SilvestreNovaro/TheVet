@@ -69,7 +69,16 @@ public class AppointmentController {
     public ResponseEntity<Object> findListOfAppointmentsInParticularDate(@PathVariable LocalDate date){
         List<Appointment> appointmentOptional = appointmentService.allAppointmentsByXDate(date);
         if(appointmentOptional.isEmpty()){
-            return ResponseEntity.badRequest().body("No se encontraron citas para la fecha y hora especificadas.");
+            return ResponseEntity.badRequest().body("No appointments found for the specified date and time.");
+        }
+        return ResponseEntity.ok(appointmentOptional);
+    }
+
+    @GetMapping("/findAppointmentByDateAndTime/{appointmentDateTime}")
+    public ResponseEntity<?> findAppointmentByLocalDateTime(@PathVariable LocalDateTime appointmentDateTime){
+        Optional<Appointment> appointmentOptional = appointmentService.findByAppointmentDateTime(appointmentDateTime);
+        if(appointmentOptional.isEmpty()){
+            return ResponseEntity.badRequest().body("No appointments found for the specified date and time.");
         }
         return ResponseEntity.ok(appointmentOptional);
     }
