@@ -1,18 +1,20 @@
 package com.example.veterinaria.entity;
 
 import com.example.veterinaria.service.AppointmentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
+import java.time.LocalDate;
 
 @Component
 public class AppointmentScheduler {
+
+    public static final Logger logger = LoggerFactory.getLogger(AppointmentScheduler.class);
 
     private final AppointmentService appointmentService;
     @Autowired
@@ -21,18 +23,15 @@ public class AppointmentScheduler {
     }
 
 
-    @Scheduled(cron = "0 43 16 * * ?") // Se ejecuta todos los días a las 9:50 AM
+    @Scheduled(cron = "0 29 13 * * ?") // Se ejecuta todos los días a las 9:50 AM
 
     public void sendAppointmentReminders() {
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        LocalDateTime tomorrowStart = tomorrow.atStartOfDay();
-        LocalDateTime tomorrowEnd = tomorrow.atTime(LocalTime.MAX);
-
-
 
         appointmentService.sendAppointmentNotifications();
 
-        System.out.println("Se envían recordatorios de citas para el día: " + tomorrow);
+        logger.info("Se envían recordatorios de citas para el día: {}", tomorrow);
+
     }
 }

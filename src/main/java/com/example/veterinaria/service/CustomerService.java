@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -156,6 +157,7 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
+
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
     }
@@ -188,6 +190,10 @@ public class CustomerService {
 
     public List<Customer> listOfCustomersByPetSpecies(String petSpecies){
         return customerRepository.findTheCustomersByPetSpecies(petSpecies);
+    }
+
+    public List<Customer> listOfCustomersRole(){
+        return customerRepository.findAllCustomerByRole();
     }
 
     public List<Customer> listCustomersWithSeniorPets(){

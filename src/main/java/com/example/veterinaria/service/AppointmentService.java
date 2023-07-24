@@ -18,6 +18,7 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,7 @@ public class AppointmentService {
 
 
 
+
     // FIND(GET REQUESTS)
     public Optional<Appointment> getAppointmentById(Long id) {
         return appointmentRepository.findById(id);
@@ -58,6 +60,9 @@ public class AppointmentService {
 
     public List<Appointment> getAppointmentsByCustomerId(Long customerId) {
         return appointmentRepository.findByCustomerId(customerId);
+    }
+    public List<Customer> listOfCustomersWithAppointments(LocalDateTime startDate, LocalDateTime endDate){
+        return appointmentRepository.findCustomersWithAppointmentsBetween(startDate, endDate);
     }
 
     public List<Appointment> findByVetId(Long vetId){
@@ -242,6 +247,7 @@ public class AppointmentService {
         return inexistentIds;
     }
 
+    @Transactional
     public void sendAppointmentNotifications() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         LocalDateTime startOfDay = tomorrow.atStartOfDay();
@@ -256,6 +262,9 @@ public class AppointmentService {
                 String email = customer.getEmail();
 
                 StringBuilder petsText = new StringBuilder();
+                // Forzar la inicialización de la colección pets
+               // Hibernate.initialize(appointment.getPets());
+
                 List<Pet> pets = appointment.getPets();
                 int numPets = pets.size();
 

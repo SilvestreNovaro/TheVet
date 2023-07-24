@@ -42,6 +42,8 @@ public class PetService {
 
 
 
+
+
     public void createMedicalRecord(Long petId, MedicalRecordDTO medicalRecordDTO){
         ModelMapper modelMapper = new ModelMapper();
         MedicalRecord medicalRecord = modelMapper.map(medicalRecordDTO, MedicalRecord.class);

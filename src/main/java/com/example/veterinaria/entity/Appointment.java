@@ -39,7 +39,7 @@ public class Appointment {
     private Vet vet;
 
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "appointment_pet",
             joinColumns = @JoinColumn(name = "appointment_id"),
@@ -47,13 +47,6 @@ public class Appointment {
     )
     @JsonIgnoreProperties("medicalRecords")
     private List<Pet> pets = new ArrayList<>();
-
-
-
-
-
-
-
 
 }
 

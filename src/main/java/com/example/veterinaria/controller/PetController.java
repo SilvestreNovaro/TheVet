@@ -2,6 +2,7 @@ package com.example.veterinaria.controller;
 
 
 import com.example.veterinaria.DTO.MedicalRecordDTO;
+import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.PetService;
@@ -31,6 +32,7 @@ public class PetController {
     public List<Pet> list(){
         return petService.getAllPets();
     }
+
 
     @PostMapping("/add")
     public ResponseEntity<String> add (@Validated @RequestBody Pet pet){

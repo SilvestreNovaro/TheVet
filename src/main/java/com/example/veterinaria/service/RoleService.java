@@ -1,5 +1,6 @@
 package com.example.veterinaria.service;
 
+import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.repository.RoleRepository;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public class RoleService {
 
     private final RoleRepository roleRepository;
+
 
 
     public List<Role> list(){

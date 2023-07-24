@@ -2,11 +2,17 @@ package com.example.veterinaria.repository;
 
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,16 +51,16 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("SELECT c FROM Customer c JOIN c.pets p WHERE p.petSpecies = :petSpecies")
     List<Customer> findTheCustomersByPetSpecies(@Param("petSpecies") String petSpecies);
-    
+
+    @Query("SELECT c FROM Customer c WHERE c.role.roleName = 'Customer'")
+    List<Customer> findAllCustomerByRole();
+
 
     Optional<Customer> findByEmail(String email);
 
     List<Customer> findCustomerByRoleId(Long idRol);
 
     Optional<Customer> findByLastName(String lastName);
-
-
-
 
 
 }

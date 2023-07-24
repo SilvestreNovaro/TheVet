@@ -8,19 +8,15 @@ import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.MailService;
 import com.example.veterinaria.service.RoleService;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,7 +100,7 @@ public class CustomerController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) throws MessagingException {
+    public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) {
         String email = customerDTO.getEmail();
         Optional<Customer> optionalCustomer = customerService.findByEmail(email);
         if(optionalCustomer.isPresent()){
@@ -191,6 +187,15 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customer found with lastName: " + lastName + " and address: " + address);
         }
         return  ResponseEntity.ok(customerOptional);
+    }
+
+    @GetMapping("/findRoleCustomers")
+    public ResponseEntity<Object> findCustomersByCustomersRole(){
+        List<Customer> customers = customerService.listOfCustomersRole();
+        if(customers.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There are no Customers");
+        }
+        return  ResponseEntity.ok(customers);
     }
 
 

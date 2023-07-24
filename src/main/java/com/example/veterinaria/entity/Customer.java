@@ -46,7 +46,7 @@ public class Customer {
     @NotBlank
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "customer_id")
     private List<Pet> pets = new ArrayList<>();
 

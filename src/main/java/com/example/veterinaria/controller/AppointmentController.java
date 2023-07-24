@@ -53,6 +53,10 @@ public class AppointmentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no appointment found for the id " + id);
         }
     }
+    @GetMapping("/CustomersWithNextsAppointments")
+    public List<Customer> findAllCustomersWithAppointmentsNear(@RequestParam LocalDateTime startDate, LocalDateTime endDate){
+        return appointmentService.listOfCustomersWithAppointments(startDate, endDate);
+    }
 
     @GetMapping("/findAllAppointments")
     public ResponseEntity<List<Appointment>> getAllAppointments() {
