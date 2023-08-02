@@ -7,8 +7,10 @@ import com.example.veterinaria.repository.PetRepository;
 import lombok.AllArgsConstructor;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 @AllArgsConstructor
 @Service
@@ -18,9 +20,8 @@ public class PetService {
 
     private final PetRepository petRepository;
 
-
-
-    private final VetService vetService;
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     public void createPet(Pet pet) {
@@ -42,19 +43,25 @@ public class PetService {
 
 
 
+    public void createMedicalRecord(Long petId, MedicalRecordDTO medicalRecordDTO) {
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
+        mapper.typeMap(MedicalRecordDTO.class, MedicalRecord.class).setProvider(request -> new MedicalRecord());
 
+        MedicalRecord medicalRecord = mapper.map(medicalRecordDTO, MedicalRecord.class);
 
-    public void createMedicalRecord(Long petId, MedicalRecordDTO medicalRecordDTO){
-        ModelMapper modelMapper = new ModelMapper();
-        MedicalRecord medicalRecord = modelMapper.map(medicalRecordDTO, MedicalRecord.class);
-        modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
         Optional<Pet> petOptional = petRepository.findById(petId);
-        Pet pet = petOptional.get();
+        Pet pet = petOptional.orElseThrow(() -> new NoSuchElementException("Pet not found"));
+
         List<MedicalRecord> medicalRecords = pet.getMedicalRecords();
         medicalRecords.add(medicalRecord);
         pet.setMedicalRecords(medicalRecords);
+
         petRepository.save(pet);
     }
+
+
+
 
 
     public List<Pet> getAllPets() {

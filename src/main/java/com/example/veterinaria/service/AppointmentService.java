@@ -262,8 +262,6 @@ public class AppointmentService {
                 String email = customer.getEmail();
 
                 StringBuilder petsText = new StringBuilder();
-                // Forzar la inicialización de la colección pets
-               // Hibernate.initialize(appointment.getPets());
 
                 List<Pet> pets = appointment.getPets();
                 int numPets = pets.size();

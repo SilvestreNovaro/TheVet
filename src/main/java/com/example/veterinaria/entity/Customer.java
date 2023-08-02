@@ -21,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Customer {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,7 +47,7 @@ public class Customer {
     @NotBlank
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
     private List<Pet> pets = new ArrayList<>();
 

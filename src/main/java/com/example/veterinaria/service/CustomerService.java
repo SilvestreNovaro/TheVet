@@ -16,9 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
@@ -42,28 +43,8 @@ public class CustomerService {
     private final MailService mailService;
 
 
-    // NO ES EL QUE USO, FUNCIONA.
-    public Customer createCustomerss(Customer customer) {
-
-        Customer customer1 = new Customer();
-        customer1.setName(customer.getName());
-        customer1.setLastName(customer.getLastName());
-        customer1.setAddress(customer.getAddress());
-        customer1.setEmail(customer.getEmail());
-        customer1.setContactNumber(customer.getContactNumber());
-        customer1.setPets(customer.getPets());
 
 
-        Optional<Role> role = roleService.findById(1L);
-        role.ifPresent(customer1::setRole);
-
-        String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
-        customer1.setPassword(encodedPassword);
-
-         return customerRepository.save(customer1);
-    }
-
-    // FUNCIONA. ES EL QUE SE USA.
     public void createCustomer(CustomerDTO customerDTO) {
         ModelMapper modelMapper = new ModelMapper();
         Customer customer = modelMapper.map(customerDTO, Customer.class);
@@ -78,54 +59,43 @@ public class CustomerService {
 
 
 
-    // Funciona. No es el que uso.
-    public void createCustomerDTO(CustomerDTO customerDTO) {
+    public void updateCustomerDTO(CustomerDTO customerDTO, Long id){
 
-        Customer customer = new Customer();
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Customer not found"));
 
         customer.setName(customerDTO.getName());
         customer.setLastName(customerDTO.getLastName());
-        customer.setAddress(customerDTO.getAddress());
         customer.setEmail(customerDTO.getEmail());
-        customer.setContactNumber(customerDTO.getContactNumber());
+        customer.setAddress(customerDTO.getAddress());
         customer.setPets(customerDTO.getPets());
-
-
-        Optional<Role> roleOptional = roleService.findById(customerDTO.getRoleId());
-        roleOptional.ifPresent(customer::setRole);
-
-
-        String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
-        customer.setPassword(encodedPassword);
-
-
-         customerRepository.save(customer);
-    }
-
-
-
-    public void updateCustomerDTO(CustomerDTO customerDTO, Long id){
-
-        Customer existingCustomer = customerRepository.findById(id).get();
-
-        existingCustomer.setName(customerDTO.getName());
-        existingCustomer.setLastName(customerDTO.getLastName());
-        existingCustomer.setEmail(customerDTO.getEmail());
-        existingCustomer.setAddress(customerDTO.getAddress());
-        existingCustomer.setPets(customerDTO.getPets());
-        existingCustomer.setContactNumber(customerDTO.getContactNumber());
-
-        Optional<Role> roleOptional = roleService.findById(customerDTO.getRoleId());
-        roleOptional.ifPresent(existingCustomer::setRole);
-
+        customer.setContactNumber(customerDTO.getContactNumber());
+        roleService.findById(customerDTO.getRoleId()).ifPresent(customer::setRole);
         if (isNotBlank(customerDTO.getPassword())) {
             String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
-            existingCustomer.setPassword(encodedPassword);
+            customer.setPassword(encodedPassword);
         }
-
-        customerRepository.save(existingCustomer);
+        customerRepository.save(customer);
     }
 
+    public void up(CustomerDTO customerDTO, Long id){
+        Optional<Customer> optionalCustomer = customerRepository.findById(id);
+        optionalCustomer.orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
+        optionalCustomer.ifPresent(customer -> {
+            customer.setName(customerDTO.getName());
+            customer.setLastName(customerDTO.getLastName());
+            customer.setEmail(customerDTO.getEmail());
+            customer.setAddress(customerDTO.getAddress());
+            customer.setPets(customerDTO.getPets());
+            customer.setContactNumber(customerDTO.getContactNumber());
+            roleService.findById(customerDTO.getRoleId()).ifPresent(customer::setRole);
+            if (isNotBlank(customerDTO.getPassword())) {
+                String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
+                customer.setPassword(encodedPassword);
+            }
+            customerRepository.save(customer);
+        });
+
+    }
 
 
 
@@ -226,6 +196,7 @@ public class CustomerService {
         customer.getPets().add(pet);
         customerRepository.save(customer);
     }
+
 
     public void addPetToCustomer(Long customerId, Long petId) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new RuntimeException("Customer not found"));

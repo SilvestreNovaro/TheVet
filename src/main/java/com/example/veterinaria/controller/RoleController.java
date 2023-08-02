@@ -1,6 +1,8 @@
 package com.example.veterinaria.controller;
 
 import com.example.veterinaria.entity.Role;
+import com.example.veterinaria.exception.BadRequestException;
+import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.RoleService;
 import lombok.AllArgsConstructor;
@@ -40,21 +42,22 @@ public class RoleController {
     }
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<?> update(@Validated @RequestBody Role role, @PathVariable Long id) {
+    public ResponseEntity<String> update(@Validated @RequestBody Role role, @PathVariable Long id) {
         Optional<Role> roleOptional = roleService.findByRoleName(role.getRoleName());
         Optional<Role> optionalRole = roleService.findById(id);
-        if (roleOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Role " + role.getRoleName() + " already exists");
-        }
-        if (optionalRole.isPresent()) {
-            roleService.update(role, id);
-            return ResponseEntity.status(HttpStatus.OK).body("Role " + role.getRoleName() + " updated succesfully");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Role with the id  " + id + " does not exist on our registers");
+        roleOptional.ifPresent(roleFound -> {
+            throw new BadRequestException("Role " + role.getRoleName() + " already exists");
+                });
+        optionalRole.ifPresentOrElse(
+                roleFound -> roleService.update(role, id),
+                () -> { throw new NotFoundException("Role with the id " + id + " does not exist on our registers"); }
+        );
+        return ResponseEntity.status(HttpStatus.OK).body("Role with the id " + id + " updated successfully");
     }
 
+
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delte(@Validated @PathVariable Long id) {
+    public ResponseEntity<?> delete(@Validated @PathVariable Long id) {
         Optional<Role> roleOptional = roleService.findById(id);
         if (roleOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Role with the id  " + id + " does not exist on our registers");

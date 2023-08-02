@@ -76,27 +76,6 @@ public class CustomerController {
         return customerService.listCustomersWithSeniorPets();
     }
 
-    // YA NO SE USA.
-    @PostMapping("/add")
-    public ResponseEntity<String > add(@Validated @RequestBody CustomerDTO customerDTO) {
-        Optional<Customer> customerOptional = customerService.findByEmail(customerDTO.getEmail());
-        if (customerOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer  " + customerDTO.getEmail() + " is already on our registers");
-        }
-        customerService.createCustomerDTO(customerDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully!");
-    }
-
-    @PostMapping("/addCustomer")
-        public ResponseEntity<String > adding(@RequestBody Customer customer){
-        Optional<Customer> customerOptional = customerService.findByEmail(customer.getEmail());
-        if (customerOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer  " + customer.getEmail() + " is already on our registers");
-        }
-        customerService.createCustomerss(customer);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully!");
-        }
-
 
 
     @PostMapping("/create")
