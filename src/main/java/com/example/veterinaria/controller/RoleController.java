@@ -31,13 +31,13 @@ public class RoleController {
         return roleService.list();
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> add(@Validated @RequestBody Role role) {
+    @PostMapping("/create")
+    public ResponseEntity<String> add(@Validated @RequestBody Role role) {
         Optional<Role> optionalRole = roleService.findByRoleName(role.getRoleName());
         if (optionalRole.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Role with name + " + role.getRoleName() + "already exists");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Role " + role.getRoleName() + " already exists");
         }
-        roleService.add(role);
+        roleService.create(role);
         return ResponseEntity.status(HttpStatus.CREATED).body("Role created succesfully");
     }
 
@@ -57,7 +57,7 @@ public class RoleController {
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@Validated @PathVariable Long id) {
+    public ResponseEntity<String> delete(@Validated @PathVariable Long id) {
         Optional<Role> roleOptional = roleService.findById(id);
         if (roleOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Role with the id  " + id + " does not exist on our registers");
@@ -71,7 +71,7 @@ public class RoleController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<?> findById(@Validated @PathVariable Long id){
+    public ResponseEntity<Object> findById(@Validated @PathVariable Long id){
         Optional<Role> roleOptional = roleService.findById(id);
         if(roleOptional.isPresent()){
             return ResponseEntity.ok(roleOptional);

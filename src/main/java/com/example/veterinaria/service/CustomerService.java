@@ -45,6 +45,7 @@ public class CustomerService {
 
 
 
+    //SAQUE EL MAIL POR QUE ROMPIA MI EXCEPCION.
     public void createCustomer(CustomerDTO customerDTO) {
         ModelMapper modelMapper = new ModelMapper();
         Customer customer = modelMapper.map(customerDTO, Customer.class);
@@ -52,7 +53,7 @@ public class CustomerService {
 
         String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
         customer.setPassword(encodedPassword);
-        mailService.sendRegistrationEmail(customer);
+        //mailService.sendRegistrationEmail(customer);
 
         customerRepository.save(customer);
     }

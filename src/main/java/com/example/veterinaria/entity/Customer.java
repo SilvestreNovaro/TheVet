@@ -27,24 +27,24 @@ public class Customer {
     private Long id;
 
     @Column
-    @NotBlank
+    @NotBlank(message = "Name cant be null")
     private String name;
     @Column
-    @NotBlank
+    @NotBlank(message = "LastName cant be null")
     private String lastName;
     @Column
-    @NotBlank
+    @NotBlank(message = "Address cant be null")
     private String address;
     @Column
-    @NotBlank
+    @NotBlank(message = "Email cant be null")
     private String email;
     @Column
-    @NotNull
+    @NotNull(message = "Contactnumber cant be null")
     @Min(1)
     private Long contactNumber;
 
     @Column
-    @NotBlank
+    @NotBlank(message = "Password cant be null")
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL)

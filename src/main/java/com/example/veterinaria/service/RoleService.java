@@ -23,24 +23,14 @@ public class RoleService {
     }
 
 
-    public Role add(Role role){
-        return roleRepository.save(role);
+    public void create(Role role){
+        roleRepository.save(role);
     }
 
     public Optional<Role> findById(Long id){
         return roleRepository.findById(id);
     }
 
-    /*public void update(Role role, Long id){
-        Optional<Role> roleOptional = roleRepository.findById(id);
-        if(roleOptional.isPresent()){
-            Role role1 = roleOptional.get();
-            if(role.getRoleName() !=null && !role.getRoleName().isEmpty()) role1.setRoleName(role.getRoleName());
-            roleRepository.save(role1);
-        }
-    }
-
-     */
 
     public void update(Role role, Long id){
         Role role1 = roleRepository.findById(id).orElseThrow(() -> new NotFoundException("Role with ID " + id + " not found"));

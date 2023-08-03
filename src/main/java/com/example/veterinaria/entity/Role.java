@@ -2,6 +2,7 @@ package com.example.veterinaria.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,8 @@ public class Role {
     private Long id;
 
 
+
+    @NotBlank(message = "Role name cant be null pal")
     @Column
     private String roleName;
 

@@ -1,12 +1,15 @@
 package com.example.veterinaria.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.stream.Collectors;
 
 
 @ControllerAdvice
@@ -25,7 +28,7 @@ public class ApiExceptionHandler {
             BadRequestException.class,
             org.springframework.dao.DuplicateKeyException.class,
             org.springframework.web.HttpRequestMethodNotSupportedException.class,
-            org.springframework.web.bind.MethodArgumentNotValidException.class,
+            //org.springframework.web.bind.MethodArgumentNotValidException.class,
             org.springframework.web.bind.MissingRequestHeaderException.class,
             org.springframework.web.bind.MissingServletRequestParameterException.class,
             org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
@@ -35,6 +38,28 @@ public class ApiExceptionHandler {
     public ErrorMessage badRequest(HttpServletRequest request, Exception exception){
         return new ErrorMessage(exception, request.getRequestURI());
     }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseBody
+    public ErrorMessage handleValidationException(HttpServletRequest request, MethodArgumentNotValidException exception) {
+        String errorMessages = exception.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + " " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        return new ErrorMessage(exception, request.getRequestURI(), errorMessages);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseBody
+    public ErrorMessage handleConstraintViolationException(HttpServletRequest request, ConstraintViolationException exception) {
+        String errorMessages = exception.getConstraintViolations().stream()
+                .map(violation -> violation.getPropertyPath() + " " + violation.getMessage())
+                .collect(Collectors.joining(", "));
+
+        return new ErrorMessage(exception, request.getRequestURI(), errorMessages);
+    }
+
 
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -71,4 +96,3 @@ public class ApiExceptionHandler {
         return new ErrorMessage(exception, request.getRequestURI());
     }
 }
-
