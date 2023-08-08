@@ -1,5 +1,6 @@
 package com.example.veterinaria.service;
 import com.example.veterinaria.entity.Vet;
+import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.repository.VetRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -16,17 +17,18 @@ public class VetService {
     @Autowired
     private final VetRepository vetRepository;
 
-    public void createVet(Vet vet) {
-        Vet vet1 = new Vet();
-        vet1.setName(vet.getName());
-        vet1.setSurname(vet.getSurname());
-        vet1.setEmail(vet.getEmail());
-        vet1.setLicense(vet.getLicense());
-        vet1.setImage(vet.getImage());
-        vet1.setSpecialty(vet.getSpecialty());
 
-        vetRepository.save(vet1);
+    public void createVet(Vet vet) {
+        String license = vet.getLicense();
+        Optional<Vet> foundVetOptional = vetRepository.findByLicense(license);
+        foundVetOptional.ifPresent(v -> {
+            throw new BadRequestException("License duplicated");
+        });
+        ModelMapper modelMapper = new ModelMapper();
+        Vet vetToSave = modelMapper.map(vet, Vet.class);
+        vetRepository.save(vetToSave);
     }
+
 
    public void updateVet(Vet vet, Long id) {
        Optional<Vet> optionalVet = vetRepository.findById(id);

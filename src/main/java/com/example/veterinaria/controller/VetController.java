@@ -32,14 +32,10 @@ public class VetController {
         return vetService.listOfVetsBySpecialty(specialty);
     }
 
-    @PostMapping("/add")
+    @PostMapping("/create")
     public ResponseEntity<String> add(@Validated @RequestBody Vet vet) {
-        Optional<Vet> vetOptional = vetService.findByLicense(vet.getLicense());
-        if (vetOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet  " + vet.getLicense() + " is already on our registers");
-        }
         vetService.createVet(vet);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Vet added succesfully!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Vet added successfully!");
     }
 
 

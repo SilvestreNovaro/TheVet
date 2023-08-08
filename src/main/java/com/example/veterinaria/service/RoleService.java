@@ -1,7 +1,6 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.entity.Role;
-import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.exception.ConflictException;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.RoleRepository;
@@ -17,7 +16,6 @@ import java.util.Optional;
 public class RoleService {
 
     private final RoleRepository roleRepository;
-
 
 
     public List<Role> list(){

@@ -44,15 +44,6 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
-    /*public Map<String, String> handleValidationException(HttpServletRequest request, MethodArgumentNotValidException exception){
-        Map<String, String> errorMap = new HashMap<>();
-        exception.getBindingResult().getFieldErrors().forEach(error -> {
-            errorMap.put(error.getField(), error.getDefaultMessage());
-        });
-        return errorMap;
-    }
-*/
-
     public ErrorMessage handleValidationException(HttpServletRequest request, MethodArgumentNotValidException exception) {
         String errorMessages = exception.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + " " + error.getDefaultMessage())

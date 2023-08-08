@@ -32,7 +32,4 @@ public interface VetRepository extends JpaRepository <Vet, Long> {
     List<Vet> findBySpecialty(@Param("specialty") String specialty);
 
 
-
-
-
 }

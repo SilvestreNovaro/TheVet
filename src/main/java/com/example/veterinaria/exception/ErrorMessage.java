@@ -2,7 +2,7 @@ package com.example.veterinaria.exception;
 
 
 import lombok.Getter;
-import org.springframework.stereotype.Component;
+
 
 
 
