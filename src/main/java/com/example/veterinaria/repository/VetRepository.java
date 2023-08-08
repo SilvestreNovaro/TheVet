@@ -16,6 +16,8 @@ public interface VetRepository extends JpaRepository <Vet, Long> {
     @Query("select v from Vet v where v.license = ?1")
     Optional<Vet> findByLicense(String license);
 
+    @Query("SELECT v from Vet v where v.email = ?1")
+    Optional<Vet> findByEmail(String email);
 
     @Modifying
     @Query("DELETE FROM Vet v WHERE v.license = :license")

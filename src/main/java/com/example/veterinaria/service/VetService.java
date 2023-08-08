@@ -19,11 +19,15 @@ public class VetService {
 
 
     public void createVet(Vet vet) {
-        String license = vet.getLicense();
-        Optional<Vet> foundVetOptional = vetRepository.findByLicense(license);
-        foundVetOptional.ifPresent(v -> {
+        vetRepository.findByLicense(vet.getLicense())
+        .ifPresent(v -> {
             throw new BadRequestException("License duplicated");
         });
+        vetRepository.findByEmail(vet.getEmail())
+        .ifPresent(v -> {
+            throw new BadRequestException("Email already in use");
+        });
+
         ModelMapper modelMapper = new ModelMapper();
         Vet vetToSave = modelMapper.map(vet, Vet.class);
         vetRepository.save(vetToSave);
@@ -68,6 +72,10 @@ public class VetService {
 
     public Optional<Vet>findByName(String name){
         return vetRepository.findByName(name);
+    }
+
+    public Optional<Vet> findVetByEmail(String email){
+        return vetRepository.findByEmail(email);
     }
 
     public void deleteBySurName(String surName){
