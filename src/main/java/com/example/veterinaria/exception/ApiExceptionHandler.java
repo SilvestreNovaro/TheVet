@@ -3,12 +3,15 @@ package com.example.veterinaria.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -41,6 +44,15 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
+    /*public Map<String, String> handleValidationException(HttpServletRequest request, MethodArgumentNotValidException exception){
+        Map<String, String> errorMap = new HashMap<>();
+        exception.getBindingResult().getFieldErrors().forEach(error -> {
+            errorMap.put(error.getField(), error.getDefaultMessage());
+        });
+        return errorMap;
+    }
+*/
+
     public ErrorMessage handleValidationException(HttpServletRequest request, MethodArgumentNotValidException exception) {
         String errorMessages = exception.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + " " + error.getDefaultMessage())
@@ -48,6 +60,9 @@ public class ApiExceptionHandler {
 
         return new ErrorMessage(exception, request.getRequestURI(), errorMessages);
     }
+
+
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
@@ -59,7 +74,6 @@ public class ApiExceptionHandler {
 
         return new ErrorMessage(exception, request.getRequestURI(), errorMessages);
     }
-
 
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -86,6 +100,7 @@ public class ApiExceptionHandler {
             org.springframework.security.access.AccessDeniedException.class
     })
     public void unauthorized(){
+        // empty. Nothing to do.
 
     }
 

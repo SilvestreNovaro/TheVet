@@ -23,7 +23,7 @@ public class Role {
 
 
 
-    @NotBlank(message = "Role name cant be null pal")
+    @NotBlank(message = "Role name cant be null")
     @Column
     private String roleName;
 
