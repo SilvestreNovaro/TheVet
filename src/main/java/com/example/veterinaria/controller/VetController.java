@@ -50,22 +50,14 @@ public class VetController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Vet updated successfully!");
     }
 
-    @PatchMapping("/updateDTO/{id}")
-    public ResponseEntity<String> updatedto(@Validated @RequestBody VetDTO vetDTO, @PathVariable Long id){
-        vetService.updateVetDTO(vetDTO, id);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Vet updated successfully!");
-    }
 
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete (@PathVariable Long id){
-        Optional<Vet> optionalVet = vetService.getVetById(id);
-        if(optionalVet.isPresent()){
             vetService.deleteVet(id);
             return ResponseEntity.status(HttpStatus.OK).body("Vet with id " + id + " deleted");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the id " + id);
-    }
+
 
     @GetMapping("/vetByLicense/{license}")
     public ResponseEntity<Object> findVetByLicense(@PathVariable String license) {
@@ -97,11 +89,10 @@ public class VetController {
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<Object> findById(@Validated @PathVariable Long id){
-        Optional<Vet> vetOptional = vetService.getVetById(id);
-        return vetOptional.isPresent()
-                ? ResponseEntity.ok(vetOptional)
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("The vet with id : " + id + " doesnt belong to any Vet on this vet");
+    public ResponseEntity<Object> findById(@PathVariable Long id){
+        Optional<Vet> optionalVet = vetService.getVetById(id);
+        return ResponseEntity.ok(optionalVet);
+
     }
 
     @DeleteMapping("/deleteByName/{name}")

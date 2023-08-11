@@ -27,18 +27,19 @@ public class VetService {
 
     @Autowired
     private final VetRepository vetRepository;
-
+    private static final String LICENSE_DUPLICATED = "License already in use";
+    private static final String EMAIL_IN_USE = "Email already in use";
 
 
 
     public void createVet(Vet vet) {
         vetRepository.findByLicense(vet.getLicense())
         .ifPresent(v -> {
-            throw new BadRequestException("License duplicated");
+            throw new BadRequestException(LICENSE_DUPLICATED);
         });
         vetRepository.findByEmail(vet.getEmail())
         .ifPresent(v -> {
-            throw new BadRequestException("Email already in use");
+            throw new BadRequestException(EMAIL_IN_USE);
         });
 
         ModelMapper modelMapper = new ModelMapper();
@@ -53,11 +54,11 @@ public class VetService {
 
        vetRepository.findByLicense(vet.getLicense())
                .ifPresent(v -> {
-                   throw new BadRequestException("License duplicated");
+                   throw new BadRequestException(LICENSE_DUPLICATED);
                });
        vetRepository.findByEmail(vet.getEmail())
                .ifPresent(v -> {
-                   throw new BadRequestException("Email already in use");
+                   throw new BadRequestException(EMAIL_IN_USE);
                });
 
            ModelMapper modelMapper = new ModelMapper();
@@ -66,37 +67,25 @@ public class VetService {
            vetRepository.save(existingVet);
        }
 
-    public void updateVetDTO(VetDTO vetDTO, Long id) {
-        Vet existingVet = vetRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Vet with ID " + id + " not found"));
-
-        vetRepository.findByLicense(vetDTO.getLicense())
-                .ifPresent(v -> {
-                    throw new BadRequestException("License duplicated");
-                });
-        vetRepository.findByEmail(vetDTO.getEmail())
-                .ifPresent(v -> {
-                    throw new BadRequestException("Email already in use");
-                });
-
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
-        modelMapper.map(vetDTO, existingVet);
-
-        vetRepository.save(existingVet);
-    }
-
 
     public List<Vet> getAllVets() {
         return vetRepository.findAll();
     }
 
     public Optional<Vet> getVetById(Long id) {
-        return vetRepository.findById(id);
-    }
+        return vetRepository.findById(id).or(() -> {
+            throw new NotFoundException("Vet with ID " + id + " not found");
+        });
+        }
+
 
     public void deleteVet(Long id) {
-        vetRepository.deleteById(id);
+        vetRepository.findById(id).ifPresentOrElse(
+                vet -> vetRepository.deleteById(id),
+                () -> {
+                    throw new NotFoundException("Vet with ID " + id + " not found");
+                }
+        );
     }
 
     // add any additional methods here

@@ -32,6 +32,4 @@ public class Vet {
     @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "Specialty cant be null")
     private String specialty;
 
-
-
 }
