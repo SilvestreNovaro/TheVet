@@ -126,6 +126,12 @@
 			<artifactId>thymeleaf-spring5</artifactId>
 			<!-- Utiliza la versión compatible con Spring Boot 2.x -->
 			<version>3.0.13.RELEASE</version>
+
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>8.0.0.Final</version>
 		</dependency>
 
 

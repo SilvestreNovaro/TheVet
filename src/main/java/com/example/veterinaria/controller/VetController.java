@@ -2,8 +2,12 @@ package com.example.veterinaria.controller;
 
 
 
+import com.example.veterinaria.DTO.VetDTO;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.VetService;
+import com.example.veterinaria.validationgroups.CreateValidationGroup;
+import com.example.veterinaria.validationgroups.UpdateValidationGroup;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -33,25 +38,24 @@ public class VetController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> add(@Validated @RequestBody Vet vet) {
+    public ResponseEntity<String> add(@Validated(CreateValidationGroup.class)@RequestBody Vet vet) {
         vetService.createVet(vet);
         return ResponseEntity.status(HttpStatus.CREATED).body("Vet added successfully!");
     }
 
 
-    @PutMapping("/modify/{id}")
-    public ResponseEntity<String> update(@Validated @RequestBody Vet vet, @PathVariable Long id){
-        Optional<Vet> sameLicenseVet = vetService.findByLicense(vet.getLicense());
-        Optional<Vet> optionalVet = vetService.getVetById(id);
-        if(sameLicenseVet.isPresent()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet with the name  " + vet.getLicense() + " is already on our registers");
-        }
-        if(optionalVet.isPresent()){
-            vetService.updateVet(vet, id);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Vet updated succesfully!");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vet with the id  " + id + " does not exist on our registers");
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<String> update(@RequestBody Vet vet, @PathVariable Long id){
+        vetService.updateVet(vet, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Vet updated successfully!");
     }
+
+    @PatchMapping("/updateDTO/{id}")
+    public ResponseEntity<String> updatedto(@Validated @RequestBody VetDTO vetDTO, @PathVariable Long id){
+        vetService.updateVetDTO(vetDTO, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Vet updated successfully!");
+    }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete (@PathVariable Long id){

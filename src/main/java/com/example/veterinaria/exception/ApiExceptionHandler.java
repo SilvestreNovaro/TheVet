@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -95,10 +96,31 @@ public class ApiExceptionHandler {
 
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler({Exception.class})
     @ResponseBody
     public ErrorMessage fatalErrorUnexpectedException(HttpServletRequest request, Exception exception){
         return new ErrorMessage(exception, request.getRequestURI());
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(TransactionSystemException.class)
+    @ResponseBody
+    public ErrorMessage handleTransactionSystemException(HttpServletRequest request, TransactionSystemException exception) {
+        Throwable rootCause = getRootCause(exception);
+        String errorMessage = "An error occurred while processing the transaction: " + rootCause.getMessage();
+        return new ErrorMessage(exception, request.getRequestURI(), errorMessage);
+    }
+
+    private Throwable getRootCause(Throwable throwable) {
+        Throwable rootCause = throwable;
+        while (rootCause.getCause() != null) {
+            rootCause = rootCause.getCause();
+        }
+        return rootCause;
+    }
+
+
+
+
 }

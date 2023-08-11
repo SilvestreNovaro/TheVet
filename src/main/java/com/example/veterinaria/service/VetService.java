@@ -1,13 +1,24 @@
 package com.example.veterinaria.service;
+import com.example.veterinaria.DTO.VetDTO;
 import com.example.veterinaria.entity.Vet;
+
 import com.example.veterinaria.exception.BadRequestException;
+import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.VetRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+
+
+
 import java.util.List;
 import java.util.Optional;
+
+
+
 
 @AllArgsConstructor
 @Service
@@ -16,6 +27,8 @@ public class VetService {
 
     @Autowired
     private final VetRepository vetRepository;
+
+
 
 
     public void createVet(Vet vet) {
@@ -35,18 +48,44 @@ public class VetService {
 
 
    public void updateVet(Vet vet, Long id) {
-       Optional<Vet> optionalVet = vetRepository.findById(id);
-       if (optionalVet.isPresent()) {
-           Vet existingVet = optionalVet.get();
+       Vet existingVet = vetRepository.findById(id)
+               .orElseThrow(() -> new NotFoundException("Vet with ID " + id + " not found"));
+
+       vetRepository.findByLicense(vet.getLicense())
+               .ifPresent(v -> {
+                   throw new BadRequestException("License duplicated");
+               });
+       vetRepository.findByEmail(vet.getEmail())
+               .ifPresent(v -> {
+                   throw new BadRequestException("Email already in use");
+               });
 
            ModelMapper modelMapper = new ModelMapper();
-           modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
+            modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
            modelMapper.map(vet, existingVet);
-
            vetRepository.save(existingVet);
        }
 
-   }
+    public void updateVetDTO(VetDTO vetDTO, Long id) {
+        Vet existingVet = vetRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Vet with ID " + id + " not found"));
+
+        vetRepository.findByLicense(vetDTO.getLicense())
+                .ifPresent(v -> {
+                    throw new BadRequestException("License duplicated");
+                });
+        vetRepository.findByEmail(vetDTO.getEmail())
+                .ifPresent(v -> {
+                    throw new BadRequestException("Email already in use");
+                });
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        modelMapper.map(vetDTO, existingVet);
+
+        vetRepository.save(existingVet);
+    }
+
 
     public List<Vet> getAllVets() {
         return vetRepository.findAll();
