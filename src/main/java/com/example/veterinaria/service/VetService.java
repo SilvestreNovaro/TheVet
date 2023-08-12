@@ -5,6 +5,7 @@ import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.VetRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
@@ -88,10 +89,14 @@ public class VetService {
         );
     }
 
-    // add any additional methods here
 
+
+    @Transactional
     public void deleteByLicense(String license){
-        vetRepository.deleteByLicense(license);
+        vetRepository.findByLicense(license).ifPresentOrElse(vet -> vetRepository.deleteByLicense(license), () -> {
+            throw new NotFoundException("No vet found with the license " + license);
+        }
+        );
     }
 
     public Optional<Vet>findByLicense(String license){

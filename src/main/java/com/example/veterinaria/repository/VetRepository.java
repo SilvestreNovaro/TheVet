@@ -19,9 +19,6 @@ public interface VetRepository extends JpaRepository <Vet, Long> {
     @Query("SELECT v from Vet v where v.email = ?1")
     Optional<Vet> findByEmail(String email);
 
-    @Modifying
-    @Query("DELETE FROM Vet v WHERE v.license = :license")
-    void deleteByLicense(@Param("license") String license);
 
     @Query("select v from Vet v where v.name = ?1")
     Optional<Vet> findByName(String name);
@@ -33,5 +30,6 @@ public interface VetRepository extends JpaRepository <Vet, Long> {
 
     List<Vet> findBySpecialty(@Param("specialty") String specialty);
 
+    void deleteByLicense(String license);
 
 }

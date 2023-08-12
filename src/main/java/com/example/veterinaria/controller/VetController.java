@@ -70,12 +70,8 @@ public class VetController {
 
     @DeleteMapping("/deleteByLicense/{license}")
     public ResponseEntity<String> deleteByLicense(@PathVariable String license){
-        Optional<Vet> optionalVet = vetService.findByLicense(license);
-        if(optionalVet.isPresent()){
-            vetService.deleteVet(optionalVet.get().getId());
+            vetService.deleteByLicense(license);
             return ResponseEntity.status(HttpStatus.OK).body("Vet with license " + license + " deleted");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the license " + license);
     }
 
     @GetMapping("/findVetByName/{name}")
