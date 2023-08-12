@@ -100,7 +100,9 @@ public class VetService {
     }
 
     public Optional<Vet>findByLicense(String license){
-        return vetRepository.findByLicense(license);
+        return vetRepository.findByLicense(license).or(() -> {
+            throw new NotFoundException("No vet found with the license " + license);
+        });
     }
 
     public Optional<Vet>findByName(String name){

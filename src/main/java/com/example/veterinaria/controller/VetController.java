@@ -61,10 +61,8 @@ public class VetController {
 
     @GetMapping("/vetByLicense/{license}")
     public ResponseEntity<Object> findVetByLicense(@PathVariable String license) {
-        Optional <Vet> vet = vetService.findByLicense(license);
-            return vet.isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vet with license " + license + " doesn't exist")
-                    : ResponseEntity.ok(vet);
+        Optional<Vet> vetOptional = vetService.findByLicense(license);
+            return ResponseEntity.ok(vetOptional);
 
     }
 
