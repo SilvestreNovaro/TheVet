@@ -13,10 +13,10 @@ import java.util.Optional;
 @Repository
 public interface VetRepository extends JpaRepository <Vet, Long> {
 
-    @Query("select v from Vet v where v.license = ?1")
+
     Optional<Vet> findByLicense(String license);
 
-    @Query("SELECT v from Vet v where v.email = ?1")
+
     Optional<Vet> findByEmail(String email);
 
 
@@ -27,7 +27,6 @@ public interface VetRepository extends JpaRepository <Vet, Long> {
     void deleteByName(String name);
 
     @Query("SELECT v FROM Vet v WHERE v.specialty = :specialty")
-
     List<Vet> findBySpecialty(@Param("specialty") String specialty);
 
     void deleteByLicense(String license);

@@ -112,7 +112,9 @@ public class VetService {
     }
 
     public Optional<Vet> findVetByEmail(String email){
-        return vetRepository.findByEmail(email);
+        return vetRepository.findByEmail(email).or(() -> {
+            throw new NotFoundException("No vet found with email " + email);
+        });
     }
 
     public void deleteBySurName(String surName){

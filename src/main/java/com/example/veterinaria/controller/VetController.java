@@ -74,9 +74,7 @@ public class VetController {
 
     @GetMapping("/findVetByName/{name}")
     public ResponseEntity<Object> findByName(@PathVariable String name){
-
         Optional<Vet> vetOptional = vetService.findByName(name);
-
         return ResponseEntity.ok(vetOptional);
     }
 
@@ -85,6 +83,12 @@ public class VetController {
         Optional<Vet> optionalVet = vetService.getVetById(id);
         return ResponseEntity.ok(optionalVet);
 
+    }
+
+    @GetMapping("/findByEmail/{email}")
+    public ResponseEntity<Object>findVetByEmail(@PathVariable String email){
+        Optional<Vet> vetOptional = vetService.findVetByEmail(email);
+        return ResponseEntity.ok(vetOptional);
     }
 
     @DeleteMapping("/deleteByName/{name}")
