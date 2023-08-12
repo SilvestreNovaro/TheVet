@@ -106,7 +106,9 @@ public class VetService {
     }
 
     public Optional<Vet>findByName(String name){
-        return vetRepository.findByName(name);
+        return vetRepository.findByName(name).or(() -> {
+            throw new NotFoundException("No vet found with name " + name);
+        });
     }
 
     public Optional<Vet> findVetByEmail(String email){

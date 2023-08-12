@@ -77,9 +77,7 @@ public class VetController {
 
         Optional<Vet> vetOptional = vetService.findByName(name);
 
-        return vetOptional.isEmpty()
-                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The name : " + name + " doesnt belong to any Vet on this vet")
-                : ResponseEntity.ok(vetOptional);
+        return ResponseEntity.ok(vetOptional);
     }
 
     @GetMapping("/findById/{id}")
