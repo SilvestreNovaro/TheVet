@@ -101,6 +101,12 @@ public class VetController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the name " + name);
     }
 
+    @DeleteMapping("/deleteBySurName/{surname}")
+    public ResponseEntity<String> deleteVetBySurName(@PathVariable String surname){
+        vetService.deleteBySurName(surname);
+        return ResponseEntity.status(HttpStatus.OK).body("Vet with name " + surname + " deleted");
+    }
+
     @DeleteMapping("/byLicense/{license}")
     public ResponseEntity<Object> byLicense (@PathVariable String license){
         Optional<Vet> vetOptional = vetService.findByLicense(license);

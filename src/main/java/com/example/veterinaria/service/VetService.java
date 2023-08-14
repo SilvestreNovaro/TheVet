@@ -1,6 +1,5 @@
 package com.example.veterinaria.service;
 import com.example.veterinaria.entity.Vet;
-
 import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.VetRepository;
@@ -9,10 +8,6 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
-
-
 import java.util.List;
 import java.util.Optional;
 
@@ -89,7 +84,6 @@ public class VetService {
     }
 
 
-
     @Transactional
     public void deleteByLicense(String license){
         vetRepository.findByLicense(license).ifPresentOrElse(vet -> vetRepository.deleteByLicense(license), () -> {
@@ -116,8 +110,10 @@ public class VetService {
         });
     }
 
+    @Transactional
     public void deleteBySurName(String surName){
-        vetRepository.deleteByName(surName);
+        vetRepository.findBySurname(surName).ifPresent(vet -> vetRepository.deleteBySurname(surName));
+        throw new NotFoundException("No vet found with the surname: " + surName);
     }
 
     public List<Vet> listOfVetsBySpecialty(String specialty){

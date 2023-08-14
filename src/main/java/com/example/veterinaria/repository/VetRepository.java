@@ -31,4 +31,7 @@ public interface VetRepository extends JpaRepository <Vet, Long> {
 
     void deleteByLicense(String license);
 
+    Optional<Vet> findBySurname(String surname);
+
+    void deleteBySurname(String surname);
 }
