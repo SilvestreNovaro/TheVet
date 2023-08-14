@@ -1,5 +1,4 @@
 package com.example.veterinaria.service;
-import com.example.veterinaria.DTO.VetDTO;
 import com.example.veterinaria.entity.Vet;
 
 import com.example.veterinaria.exception.BadRequestException;
@@ -7,7 +6,6 @@ import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.VetRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +28,7 @@ public class VetService {
     private final VetRepository vetRepository;
     private static final String LICENSE_DUPLICATED = "License already in use";
     private static final String EMAIL_IN_USE = "Email already in use";
+    private static final String NOT_FOUND_VET = "No vet found with the id: ";
 
 
 
@@ -51,7 +50,7 @@ public class VetService {
 
    public void updateVet(Vet vet, Long id) {
        Vet existingVet = vetRepository.findById(id)
-               .orElseThrow(() -> new NotFoundException("Vet with ID " + id + " not found"));
+               .orElseThrow(() -> new NotFoundException(NOT_FOUND_VET + id));
 
        vetRepository.findByLicense(vet.getLicense())
                .ifPresent(v -> {
@@ -75,7 +74,7 @@ public class VetService {
 
     public Optional<Vet> getVetById(Long id) {
         return vetRepository.findById(id).or(() -> {
-            throw new NotFoundException("Vet with ID " + id + " not found");
+            throw new NotFoundException(NOT_FOUND_VET + id);
         });
         }
 
@@ -84,7 +83,7 @@ public class VetService {
         vetRepository.findById(id).ifPresentOrElse(
                 vet -> vetRepository.deleteById(id),
                 () -> {
-                    throw new NotFoundException("Vet with ID " + id + " not found");
+                    throw new NotFoundException(NOT_FOUND_VET + id);
                 }
         );
     }
