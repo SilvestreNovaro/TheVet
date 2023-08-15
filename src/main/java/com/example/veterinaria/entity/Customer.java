@@ -2,6 +2,7 @@ package com.example.veterinaria.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,24 +28,18 @@ public class Customer {
     private Long id;
 
     @Column
-    @NotBlank(message = "Name cant be null")
     private String name;
     @Column
-    @NotBlank(message = "LastName cant be null")
     private String lastName;
     @Column
-    @NotBlank(message = "Address cant be null")
     private String address;
     @Column
-    @NotBlank(message = "Email cant be null")
+    @Email
     private String email;
     @Column
-    @NotNull(message = "Contactnumber cant be null")
-    @Min(1)
     private Long contactNumber;
 
     @Column
-    @NotBlank(message = "Password cant be null")
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL)

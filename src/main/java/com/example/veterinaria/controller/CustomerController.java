@@ -8,15 +8,15 @@ import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.MailService;
 import com.example.veterinaria.service.RoleService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -79,48 +79,18 @@ public class CustomerController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) {
-        String email = customerDTO.getEmail();
-        Optional<Customer> optionalCustomer = customerService.findByEmail(email);
-        if(optionalCustomer.isPresent()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email : " + email + " already exists");
-        }
-        Optional<Role> optionalRole = roleService.findById(customerDTO.getRoleId());
-        if(optionalRole.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no Role with the id " + customerDTO.getRoleId());
-        }
-
+    public ResponseEntity<String> addCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
         customerService.createCustomer(customerDTO);
-
-
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully");
     }
 
-
-
-
     @PutMapping("/update/{id}")
     public ResponseEntity<String> update(@Validated @RequestBody CustomerDTO customerDTO, @PathVariable Long id) {
-        Optional<Customer> sameEmailCustomer = customerService.findByEmail(customerDTO.getEmail());
-        Optional<Customer> customerOptional = customerService.getCustomerById(id);
-        Optional<Role> roleOptional = roleService.findById(customerDTO.getRoleId());
-        if(roleOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The roleId " + customerDTO.getRoleId() + " doesn't exist");
-        }
-        if (sameEmailCustomer.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer with the email  " + customerDTO.getEmail() + " is already on our registers");
-        }
-        if (customerOptional.isPresent()) {
-            customerService.updateCustomerDTO(customerDTO, id);
+        customerService.updateCustomerDTO(customerDTO, id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Customer updated successfully!");
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
-    }
-
-
     // YA NO SE USA.
-
     @PatchMapping("/updateCustomer/{id}")
     public ResponseEntity<String> updateCustomer(@Validated @RequestBody Customer customer, @PathVariable Long id){
         Optional<Customer> customerOptional = customerService.getCustomerById(id);

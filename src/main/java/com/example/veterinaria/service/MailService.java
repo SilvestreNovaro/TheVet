@@ -39,7 +39,7 @@ public class MailService {
 
     public void sendRegistrationEmail(Customer customer) {
         String recipient = customer.getEmail();
-        String subject = "Registro exitoso en VETHOME";
+        String subject = "Registry exitoso en VETHOME";
 
         Context context = new Context();
         context.setVariable("name", customer.getName());

@@ -13,18 +13,12 @@ import java.util.Optional;
 @Repository
 public interface VetRepository extends JpaRepository <Vet, Long> {
 
-
     Optional<Vet> findByLicense(String license);
-
 
     Optional<Vet> findByEmail(String email);
 
-
     @Query("select v from Vet v where v.name = ?1")
     Optional<Vet> findByName(String name);
-
-    @Query("DELETE FROM Vet v WHERE v.name=?1")
-    void deleteByName(String name);
 
     @Query("SELECT v FROM Vet v WHERE v.specialty = :specialty")
     List<Vet> findBySpecialty(@Param("specialty") String specialty);

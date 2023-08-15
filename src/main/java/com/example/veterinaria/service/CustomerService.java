@@ -44,16 +44,15 @@ public class CustomerService {
 
 
 
-
-    //SAQUE EL MAIL POR QUE ROMPIA MI EXCEPCION.
     public void createCustomer(CustomerDTO customerDTO) {
+        customerRepository.findByEmail(customerDTO.getEmail()).ifPresent( c -> {
+            throw new NotFoundException("Email already in use");
+        });
         ModelMapper modelMapper = new ModelMapper();
         Customer customer = modelMapper.map(customerDTO, Customer.class);
-        modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
-
-        String encodedPassword = this.passwordEncoder.encode(customer.getPassword());
+        String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
         customer.setPassword(encodedPassword);
-        //mailService.sendRegistrationEmail(customer);
+        mailService.sendRegistrationEmail(customer);
 
         customerRepository.save(customer);
     }
@@ -62,19 +61,15 @@ public class CustomerService {
 
     public void updateCustomerDTO(CustomerDTO customerDTO, Long id){
 
-        Customer customer = customerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Customer not found"));
-
-        customer.setName(customerDTO.getName());
-        customer.setLastName(customerDTO.getLastName());
-        customer.setEmail(customerDTO.getEmail());
-        customer.setAddress(customerDTO.getAddress());
-        customer.setPets(customerDTO.getPets());
-        customer.setContactNumber(customerDTO.getContactNumber());
-        roleService.findById(customerDTO.getRoleId()).ifPresent(customer::setRole);
-        if (isNotBlank(customerDTO.getPassword())) {
-            String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
-            customer.setPassword(encodedPassword);
-        }
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new NotFoundException("Customer not found"));
+        ModelMapper modelMapper = new ModelMapper();
+        String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
+        modelMapper.map(customerDTO, customer);
+        roleService.findById(customerDTO.getRoleId()).ifPresentOrElse(c -> customer.setRole(c), () -> {
+            throw new NotFoundException("No role found");
+        });
+        modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
+        //roleService.findById(customerDTO.getRoleId()).ifPresent(customer::setRole);
         customerRepository.save(customer);
     }
 

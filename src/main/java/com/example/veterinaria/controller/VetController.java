@@ -37,41 +37,6 @@ public class VetController {
         return vetService.listOfVetsBySpecialty(specialty);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<String> add(@Validated(CreateValidationGroup.class)@RequestBody Vet vet) {
-        vetService.createVet(vet);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Vet added successfully!");
-    }
-
-
-    @PatchMapping("/update/{id}")
-    public ResponseEntity<String> update(@RequestBody Vet vet, @PathVariable Long id){
-        vetService.updateVet(vet, id);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Vet updated successfully!");
-    }
-
-
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete (@PathVariable Long id){
-            vetService.deleteVet(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Vet with id " + id + " deleted");
-        }
-
-
-    @GetMapping("/vetByLicense/{license}")
-    public ResponseEntity<Object> findVetByLicense(@PathVariable String license) {
-        Optional<Vet> vetOptional = vetService.findByLicense(license);
-            return ResponseEntity.ok(vetOptional);
-
-    }
-
-    @DeleteMapping("/deleteByLicense/{license}")
-    public ResponseEntity<String> deleteByLicense(@PathVariable String license){
-            vetService.deleteByLicense(license);
-            return ResponseEntity.status(HttpStatus.OK).body("Vet with license " + license + " deleted");
-    }
-
     @GetMapping("/findVetByName/{name}")
     public ResponseEntity<Object> findByName(@PathVariable String name){
         Optional<Vet> vetOptional = vetService.findByName(name);
@@ -91,14 +56,36 @@ public class VetController {
         return ResponseEntity.ok(vetOptional);
     }
 
-    @DeleteMapping("/deleteByName/{name}")
-    public ResponseEntity<String> deleteByName (@PathVariable String name){
-        Optional<Vet> optionalVet = vetService.findByName(name);
-        if(optionalVet.isPresent()){
-            vetService.deleteVet(optionalVet.get().getId());
-            return ResponseEntity.status(HttpStatus.OK).body("Vet with name " + name + " deleted");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no vet with the name " + name);
+    @GetMapping("/FindVetByLicense/{license}")
+    public ResponseEntity<Object> findVetByLicense(@PathVariable String license) {
+        Optional<Vet> vetOptional = vetService.findByLicense(license);
+        return ResponseEntity.ok(vetOptional);
+
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<String> add(@Validated(CreateValidationGroup.class)@RequestBody Vet vet) {
+        vetService.createVet(vet);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Vet added successfully!");
+    }
+
+
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<String> update(@RequestBody Vet vet, @PathVariable Long id){
+        vetService.updateVet(vet, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Vet updated successfully!");
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete (@PathVariable Long id){
+        vetService.deleteVet(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Vet with id " + id + " deleted");
+    }
+
+    @DeleteMapping("/deleteByLicense/{license}")
+    public ResponseEntity<String> deleteByLicense(@PathVariable String license){
+            vetService.deleteByLicense(license);
+            return ResponseEntity.status(HttpStatus.OK).body("Vet with license " + license + " deleted");
     }
 
     @DeleteMapping("/deleteBySurName/{surname}")
@@ -107,16 +94,6 @@ public class VetController {
         return ResponseEntity.status(HttpStatus.OK).body("Vet with name " + surname + " deleted");
     }
 
-    @DeleteMapping("/byLicense/{license}")
-    public ResponseEntity<Object> byLicense (@PathVariable String license){
-        Optional<Vet> vetOptional = vetService.findByLicense(license);
-        if(vetOptional.isPresent()){
-            vetService.deleteByLicense(license);
-            return ResponseEntity.ok(vetOptional);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no vet with de license " + license);
-
-    }
 
 }
 

@@ -2,6 +2,7 @@ package com.example.veterinaria.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -96,8 +97,10 @@ public class ApiExceptionHandler {
     @ExceptionHandler({Exception.class})
     @ResponseBody
     public ErrorMessage fatalErrorUnexpectedException(HttpServletRequest request, Exception exception){
-        return new ErrorMessage(exception, request.getRequestURI());
+      Throwable rootCause = getRootCause(exception);
+        return new ErrorMessage(exception, request.getRequestURI(), rootCause.getMessage());
     }
+
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(TransactionSystemException.class)
