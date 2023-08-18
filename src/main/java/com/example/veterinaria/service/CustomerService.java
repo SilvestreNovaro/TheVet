@@ -41,6 +41,8 @@ public class CustomerService {
 
     private final MailService mailService;
 
+    private static final String NOT_FOUND_CUSTOMER = "Customer not found";
+
     @Autowired
     Converters customerDTOConverter;
 
@@ -62,7 +64,7 @@ public class CustomerService {
 
     public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Customer not found"));
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
         customerRepository.findByEmail(customerDTO.getEmail()).ifPresent( c -> {
             throw new BadRequestException("Email already in use");
         });
@@ -164,13 +166,13 @@ public class CustomerService {
     }
 
     public void addAnimalToCustomer(Long customerId, Pet pet){
-        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Customer not found"));
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
         customer.getPets().add(pet);
         customerRepository.save(customer);
     }
 
     public void addMultiplePetsToCustomer(Long customerId, List<Pet> pets){
-        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Customer not found"));
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
         List<Pet> petList = customer.getPets();
         for(Pet pet: pets){
             petList.add(pet);
@@ -180,7 +182,7 @@ public class CustomerService {
     }
 
     public void addRoleToCustomer(Long customerId, Long roleId){
-        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Customer not found"));
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
         roleService.findById(roleId).ifPresentOrElse(
                 foundRole -> {
                     customer.setRole(foundRole);
@@ -195,7 +197,7 @@ public class CustomerService {
 
 
     public void deletePetsById(Long customerId, List<Long> petIds){
-        Customer customer = customerRepository.findById(customerId).get();
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
         List<Pet> pets = customer.getPets();
         List<Pet> petsToRemove = new ArrayList<>();
         for(Long petId : petIds){
@@ -232,7 +234,7 @@ public class CustomerService {
                     throw new NotFoundException("Pet not found with id: " + petId);
                 }
             } else {
-                throw new NotFoundException("Customer not found with id: " + customerId);
+                throw new NotFoundException(NOT_FOUND_CUSTOMER);
             }
         }
 
@@ -253,7 +255,7 @@ public class CustomerService {
                 throw new NotFoundException("Role not found with the id " + roleId);
             }
             }else {
-                throw new NotFoundException("Customer not found with the id " + customerId);
+                throw new NotFoundException(NOT_FOUND_CUSTOMER);
             }
 
 
