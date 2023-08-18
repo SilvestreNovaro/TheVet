@@ -12,12 +12,8 @@ public class ModelMapperConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.typeMap(CustomerDTO.class, Customer.class)
-                .addMappings(mapping -> mapping.skip(Customer::setRole));
-
         // Configuración para el mapeo de IDs
         modelMapper.getConfiguration().setPropertyCondition(ctx ->
                 ctx.getSource() != null && !ctx.getSource().equals(""));
-
         return modelMapper;
     }}

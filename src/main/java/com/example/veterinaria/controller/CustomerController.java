@@ -82,25 +82,11 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully");
     }
 
-    /*@PatchMapping("/update/{id}")
+    @PatchMapping("/update/{id}")
     public ResponseEntity<String> update(@RequestBody CustomerDTO customerDTO, @PathVariable Long id) {
         customerService.updateCustomerDTO(customerDTO, id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Customer updated successfully!");
         }
-
-     */
-
-    // YA NO SE USA.
-    @PatchMapping("/updateCustomer/{id}")
-    public ResponseEntity<String> updateCustomer(@Validated @RequestBody Customer customer, @PathVariable Long id){
-        Optional<Customer> customerOptional = customerService.getCustomerById(id);
-        if(customerOptional.isPresent()){
-            customerService.updateCustomer(id, customer);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Customer updated successfully!");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
-
-    }
 
 
     @GetMapping("/find/{id}")
@@ -223,20 +209,10 @@ public class CustomerController {
 
     @PostMapping("/addPetToCustomer/{customerId}")
     public ResponseEntity<Object> addAnimalToCustomer(@Validated @PathVariable Long customerId, @RequestBody Pet pet) {
-        Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
-        if (customerOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
-        }
-        Customer customer = customerOptional.get();
         customerService.addAnimalToCustomer(customerId, pet);
-        return ResponseEntity.ok(customer);
+        return ResponseEntity.ok("Pet added successfully");
     }
 
-    @PostMapping("/addPetToCustomerByPetId/{customerId}/{petId}")
-    public ResponseEntity<String> addPetId(@PathVariable Long customerId, @PathVariable Long petId){
-        customerService.addPetToCustomer(customerId, petId);
-        return ResponseEntity.ok("Added pet tu customer successfully");
-    }
 
     @PostMapping("/addMultiplePets/{customerId}")
     public ResponseEntity<String> addPets(@PathVariable Long customerId,@RequestBody List<Pet> petIds){
