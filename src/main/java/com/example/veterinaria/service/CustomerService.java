@@ -170,26 +170,28 @@ public class CustomerService {
     }
 
     public void addMultiplePetsToCustomer(Long customerId, List<Pet> pets){
-        Customer customer = customerRepository.findById(customerId).get();
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Customer not found"));
         List<Pet> petList = customer.getPets();
-        List<Pet> petList1 = new ArrayList<>();
         for(Pet pet: pets){
-            if(pets.isEmpty()){
-                petList1.add(pet);
-                petList.addAll(petList1);
-                customer.setPets(petList);
-            }
+            petList.add(pet);
+            customer.setPets(petList);
         }
         customerRepository.save(customer);
     }
 
-    public void addRoleToCustomer(Long customerId, Role role){
-        Customer customer = customerRepository.findById(customerId).get();
-        customer.setRole(role);
+    public void addRoleToCustomer(Long customerId, Long roleId){
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("Customer not found"));
+        roleService.findById(roleId).ifPresentOrElse(
+                foundRole -> {
+                    customer.setRole(foundRole);
+                    customerRepository.save(customer);
+                },
+                () -> {
+                    throw new NotFoundException("Role not found");
+                }
+        );
         customerRepository.save(customer);
     }
-
-
 
 
     public void deletePetsById(Long customerId, List<Long> petIds){

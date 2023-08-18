@@ -199,13 +199,11 @@ public class CustomerController {
 
     }
 
-    @PostMapping("/addRoleToCustomer/{customerId}/{role}")
-    public ResponseEntity<String> addRole(@PathVariable Long customerId, @PathVariable Role role){
-        customerService.addRoleToCustomer(customerId, role);
-        return ResponseEntity.ok("Customer with id " + customerId + " has now the Role " + role.toString());
+    @PostMapping("/addRoleToCustomer/{customerId}/{roleId}")
+    public ResponseEntity<String> addRole(@PathVariable Long customerId, @PathVariable Long roleId){
+        customerService.addRoleToCustomer(customerId, roleId);
+        return ResponseEntity.ok("Customer with id " + customerId + " has now the Role " + roleId.toString());
     }
-
-
 
     @PostMapping("/addPetToCustomer/{customerId}")
     public ResponseEntity<Object> addAnimalToCustomer(@Validated @PathVariable Long customerId, @RequestBody Pet pet) {
@@ -213,15 +211,10 @@ public class CustomerController {
         return ResponseEntity.ok("Pet added successfully");
     }
 
-
     @PostMapping("/addMultiplePets/{customerId}")
     public ResponseEntity<String> addPets(@PathVariable Long customerId,@RequestBody List<Pet> petIds){
-        Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
-        if(customerOptional.isPresent()){
             customerService.addMultiplePetsToCustomer(customerId, petIds);
             return ResponseEntity.ok("Added pets tu customer successfully");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
     }
 
 
