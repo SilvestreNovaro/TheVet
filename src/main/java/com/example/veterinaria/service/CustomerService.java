@@ -1,9 +1,11 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.CustomerDTO;
+import com.example.veterinaria.convert.CustomerDTOConverter;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Role;
+import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
 import com.example.veterinaria.repository.PetRepository;
@@ -30,7 +32,7 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 public class CustomerService {
 
     @Autowired
-
+    private final ModelMapper modelMapper;
     private final CustomerRepository customerRepository;
 
     private final PetService petService;
@@ -42,36 +44,63 @@ public class CustomerService {
 
     private final MailService mailService;
 
+    @Autowired
+    CustomerDTOConverter customerDTOConverter;
+
 
 
     public void createCustomer(CustomerDTO customerDTO) {
         customerRepository.findByEmail(customerDTO.getEmail()).ifPresent( c -> {
-            throw new NotFoundException("Email already in use");
+            throw new BadRequestException("Email already in use");
         });
-        ModelMapper modelMapper = new ModelMapper();
-        Customer customer = modelMapper.map(customerDTO, Customer.class);
+        Customer customer = customerDTOConverter.convertCustomerDTOtoCustomer(customerDTO);
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
         customer.setPassword(encodedPassword);
+        Role role = roleService.findById(3L).orElseThrow(() -> new NotFoundException("Role not found"));
+        customer.setRole(role);
         mailService.sendRegistrationEmail(customer);
-
         customerRepository.save(customer);
     }
 
 
+   public void updateCustomerDTO(CustomerDTO customerDTO, Long id){
 
-    public void updateCustomerDTO(CustomerDTO customerDTO, Long id){
 
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new NotFoundException("Customer not found"));
+        List<Pet> existingPets = customer.getPets();
+
         ModelMapper modelMapper = new ModelMapper();
+        // Update existing pets or add new ones
+        for (Pet petDTO : customerDTO.getPets()) {
+            if (petDTO.getId() != null) {
+                // Existing pet, find and update
+                Pet existingPet = existingPets.stream()
+                        .filter(pet -> pet.getId().equals(petDTO.getId()))
+                        .findFirst()
+                        .orElseThrow(() -> new NotFoundException("Pet not found"));
+                // Update existing pet properties
+                // You can add more properties here
+                existingPet.setPetName(petDTO.getPetName());
+                existingPet.setAge(petDTO.getAge());
+                existingPet.setGender(petDTO.getGender());
+                existingPet.setPetSpecies(petDTO.getPetSpecies());
+            } else {
+                // New pet, add to the list
+                existingPets.add(modelMapper.map(petDTO, Pet.class));
+            }
+        }
+
+        modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
-        modelMapper.map(customerDTO, customer);
         roleService.findById(customerDTO.getRoleId()).ifPresentOrElse(c -> customer.setRole(c), () -> {
             throw new NotFoundException("No role found");
         });
-        modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
-        //roleService.findById(customerDTO.getRoleId()).ifPresent(customer::setRole);
+        customer.setPassword(encodedPassword);
+        modelMapper.map(customerDTO, customer);
         customerRepository.save(customer);
     }
+
+
 
     public void up(CustomerDTO customerDTO, Long id){
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
@@ -92,6 +121,8 @@ public class CustomerService {
         });
 
     }
+
+
 
 
 

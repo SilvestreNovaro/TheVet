@@ -1,7 +1,8 @@
 package com.example.veterinaria.config;
 
+import com.example.veterinaria.DTO.CustomerDTO;
+import com.example.veterinaria.entity.Customer;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,12 +10,14 @@ import org.springframework.context.annotation.Configuration;
 public class ModelMapperConfig {
 
     @Bean
-    public ModelMapper modelMapper(){
+    public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration()
-                .setFieldMatchingEnabled(true)
-                .setMatchingStrategy(MatchingStrategies.STRICT);
+        modelMapper.typeMap(CustomerDTO.class, Customer.class)
+                .addMappings(mapping -> mapping.skip(Customer::setRole));
 
-        return modelMapper; // Devuelve la instancia configurada.
-    }
-}
+        // Configuración para el mapeo de IDs
+        modelMapper.getConfiguration().setPropertyCondition(ctx ->
+                ctx.getSource() != null && !ctx.getSource().equals(""));
+
+        return modelMapper;
+    }}

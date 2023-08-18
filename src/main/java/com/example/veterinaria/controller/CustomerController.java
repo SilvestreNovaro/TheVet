@@ -8,7 +8,6 @@ import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.MailService;
 import com.example.veterinaria.service.RoleService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @AllArgsConstructor
 @RestController
-@RestControllerAdvice
 @Validated
 @RequestMapping("/customer")
 public class CustomerController {
@@ -79,16 +77,18 @@ public class CustomerController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<String> addCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) {
         customerService.createCustomer(customerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully");
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> update(@Validated @RequestBody CustomerDTO customerDTO, @PathVariable Long id) {
+    /*@PatchMapping("/update/{id}")
+    public ResponseEntity<String> update(@RequestBody CustomerDTO customerDTO, @PathVariable Long id) {
         customerService.updateCustomerDTO(customerDTO, id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Customer updated successfully!");
         }
+
+     */
 
     // YA NO SE USA.
     @PatchMapping("/updateCustomer/{id}")

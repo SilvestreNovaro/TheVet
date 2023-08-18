@@ -4,10 +4,7 @@ package com.example.veterinaria.DTO;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Role;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,7 +37,7 @@ public class CustomerDTO {
     private String password;
 
     private Long roleId;
-
+    @NotEmpty(message = "Pets cant be null")
     private List<Pet> pets;
 
 
