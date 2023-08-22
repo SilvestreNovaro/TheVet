@@ -142,7 +142,7 @@ public class AppointmentController {
 
     //CREATE
 
-    @PostMapping("/create")
+   /*@PostMapping("/create")
     public ResponseEntity<Object> createAppointment(@RequestBody AppointmentDTO appointmentDTO) throws MessagingException {
 
         Optional<Customer> optionalCustomer = customerService.getCustomerById(appointmentDTO.getCustomerId());
@@ -227,10 +227,14 @@ public class AppointmentController {
         return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
         }
 
+    */
+
+
+
 
     //UPDATE (PUT PATCH MAPPING)
 
-    @PutMapping("/updateApp/{id}")
+   /* @PutMapping("/updateApp/{id}")
     public ResponseEntity<String> update(@Validated @RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id) {
 
         Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
@@ -256,6 +260,8 @@ public class AppointmentController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointment found for the id " + id);
     }
+
+    */
 
 
     @PatchMapping ("/update/{id}")

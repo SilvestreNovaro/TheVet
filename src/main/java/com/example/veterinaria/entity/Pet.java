@@ -24,16 +24,16 @@ public class Pet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
-    @NotBlank
+    @NotBlank(message = "name cant be null")
     private String petName;
     @Column
-    @NotNull
+    @NotNull(message = "age cant be null")
     private Integer age;
     @Column
-    @NotBlank
+    @NotBlank(message = "gender cant be null")
     private String gender;
     @Column
-    @NotBlank
+    @NotBlank(message = "petSpecies cant be null")
     private String petSpecies;
 
 

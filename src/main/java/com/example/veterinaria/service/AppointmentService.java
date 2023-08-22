@@ -87,7 +87,7 @@ public class AppointmentService {
     // CREATE (POST REQUEST)
 
 
-    public void createAppointment(AppointmentDTO appointmentDTO) {
+    /*public void createAppointment(AppointmentDTO appointmentDTO) {
 
         Appointment appointment = new Appointment();
 
@@ -116,11 +116,13 @@ public class AppointmentService {
          appointmentRepository.save(appointment);
     }
 
+     */
+
     //UPDATE (PUT PATCH REQUESTS)
 
 
     // Funciona. Quitar validaciones service? @NotBlank en entity.
-    public void updateAppointmentDTO(AppointmentDTO appointmentDTO, Long id) {
+    /*public void updateAppointmentDTO(AppointmentDTO appointmentDTO, Long id) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
         if (optionalAppointment.isPresent()) {
             Appointment appointment = optionalAppointment.get();
@@ -167,6 +169,8 @@ public class AppointmentService {
             appointmentRepository.save(appointment);
         }
     }
+
+     */
 
 
     //Funciona.

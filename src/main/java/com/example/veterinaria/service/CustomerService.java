@@ -98,10 +98,10 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public Optional<Customer> getCustomerById(Long id) {
-        return customerRepository.findById(id);
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
     }
-
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
     }

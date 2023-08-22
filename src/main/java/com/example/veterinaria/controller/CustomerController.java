@@ -4,7 +4,6 @@ package com.example.veterinaria.controller;
 import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
-import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.MailService;
 import com.example.veterinaria.service.RoleService;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @AllArgsConstructor
 @RestController
@@ -90,21 +88,10 @@ public class CustomerController {
         }
 
 
-    @GetMapping("/find/{id}")
-    public ResponseEntity<String> findById(@PathVariable Long id){
-        Optional<Customer> customerOptional = customerService.findById(id);
-        return customerOptional.map(customer -> ResponseEntity.status(HttpStatus.OK).body("The id " + id + " belongs to the customer " + customer.getName())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers"));
-    }
-
-
-    //SAME METHOD AS ABOVE.
     @GetMapping("/findCustomerById/{id}")
-    public ResponseEntity<Object> findCustomerById(@Validated @PathVariable Long id){
-        Optional<Customer> customerOptional = customerService.findById(id);
-        if(customerOptional.isPresent()){
-            return ResponseEntity.ok(customerOptional);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
+    public ResponseEntity<Object> findCustomerById(@PathVariable Long id){
+        Customer customer = customerService.getCustomerById(id);
+            return ResponseEntity.ok(customer);
     }
 
     @GetMapping("/findCustomerByLastName/{lastName}")
@@ -165,13 +152,10 @@ public class CustomerController {
 
     @DeleteMapping("/deleteManyPets/{customerId}")
     public ResponseEntity<String> deletePetsById(@PathVariable  Long customerId, @RequestParam List <Long> petIds){
-        Optional<Customer> optionalCustomer = customerService.getCustomerById(customerId);
-        if(optionalCustomer.isPresent()){
             customerService.deletePetsById(customerId,petIds);
             return ResponseEntity.ok("Pet with id " + petIds + DELETE_SUCCESS_MESSAGE + customerId);
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet associated with that owner");
-    }
+
 
 
     @DeleteMapping("/deletePetById/{customerId}/{petId}")
@@ -185,12 +169,8 @@ public class CustomerController {
     //DELETE.
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
-        Optional<Customer> optionalCustomer = customerService.getCustomerById(id);
-        if (optionalCustomer.isPresent()) {
             customerService.deleteCustomer(id);
             return ResponseEntity.status(HttpStatus.OK).body("Customer with id " + id + " deleted");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE + id);
     }
 
     @DeleteMapping("/deleteRoleFromCustomer/{customerId}/{roleId}")
