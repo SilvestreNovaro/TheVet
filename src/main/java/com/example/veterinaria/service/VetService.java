@@ -21,6 +21,8 @@ public class VetService {
 
     @Autowired
     private final VetRepository vetRepository;
+
+    private final ModelMapper modelMapper;
     private static final String LICENSE_DUPLICATED = "License already in use";
     private static final String EMAIL_IN_USE = "Email already in use";
     private static final String NOT_FOUND_VET = "No vet found with the id: ";
@@ -55,9 +57,6 @@ public class VetService {
                .ifPresent(v -> {
                    throw new BadRequestException(EMAIL_IN_USE);
                });
-
-           ModelMapper modelMapper = new ModelMapper();
-            modelMapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
            modelMapper.map(vet, existingVet);
            vetRepository.save(existingVet);
        }

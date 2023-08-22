@@ -1,7 +1,7 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.CustomerDTO;
-import com.example.veterinaria.convert.Converters;
+import com.example.veterinaria.convert.UtilityServiceCustomerPet;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Role;
@@ -43,8 +43,10 @@ public class CustomerService {
 
     private static final String NOT_FOUND_CUSTOMER = "Customer not found";
 
+    private static final String NOT_FOUND_ROLE = "Role not found";
+
     @Autowired
-    Converters customerDTOConverter;
+    UtilityServiceCustomerPet utilityService;
 
 
 
@@ -52,14 +54,15 @@ public class CustomerService {
         customerRepository.findByEmail(customerDTO.getEmail()).ifPresent( c -> {
             throw new BadRequestException("Email already in use");
         });
-        Customer customer = customerDTOConverter.convertCustomerDTOtoCustomerCreate(customerDTO);
+        Customer customer = utilityService.convertCustomerDTOtoCustomerCreate(customerDTO);
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
         customer.setPassword(encodedPassword);
-        Role role = roleService.findById(3L).orElseThrow(() -> new NotFoundException("Role not found"));
+        Role role = roleService.findById(3L).orElseThrow(() -> new NotFoundException(NOT_FOUND_ROLE));
         customer.setRole(role);
         mailService.sendRegistrationEmail(customer);
         customerRepository.save(customer);
     }
+
 
 
     public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {
@@ -68,27 +71,24 @@ public class CustomerService {
         customerRepository.findByEmail(customerDTO.getEmail()).ifPresent( c -> {
             throw new BadRequestException("Email already in use");
         });
-        customer =  customerDTOConverter.convertCustomerDTOtoCustomerUpdate(customerDTO, customer);
+        customer =  utilityService.convertCustomerDTOtoCustomerUpdate(customerDTO, customer);
         List<Pet> existingPets = customer.getPets();
-        for (Pet petDTO : customerDTO.getPets()) {
-            if (petDTO.getId() != null) {
+        for (Pet pet : customerDTO.getPets()) {
+            if (pet.getId() != null) {
                 Pet existingPet = existingPets.stream()
-                        .filter(pet -> pet.getId().equals(petDTO.getId()))
+                        .filter(pet1 -> pet1.getId().equals(pet.getId()))
                         .findFirst()
                         .orElseThrow(() -> new NotFoundException("Pet not found"));
-                existingPet.setPetName(petDTO.getPetName());
-                existingPet.setAge(petDTO.getAge());
-                existingPet.setGender(petDTO.getGender());
-                existingPet.setPetSpecies(petDTO.getPetSpecies());
+                modelMapper.map(pet, existingPet);
             }
             else{
-                    customerDTOConverter.createPet(customer, petDTO);
+                utilityService.createPet(customer, pet);
             }
         }
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
         customer.setPassword(encodedPassword);
         Role role = roleService.findById(customerDTO.getRoleId())
-                .orElseThrow(() -> new NotFoundException("No role found"));
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_ROLE));
         customer.setRole(role);
         customerRepository.save(customer);
     }
@@ -102,7 +102,6 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
-
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
     }
@@ -110,7 +109,6 @@ public class CustomerService {
     public Optional<Customer> findByName(String name){
         return customerRepository.findByName(name);
     }
-
 
     public Optional<Customer> findByEmail(String email){
         return customerRepository.findByEmail(email);
@@ -189,7 +187,7 @@ public class CustomerService {
                     customerRepository.save(customer);
                 },
                 () -> {
-                    throw new NotFoundException("Role not found");
+                    throw new NotFoundException(NOT_FOUND_ROLE);
                 }
         );
         customerRepository.save(customer);

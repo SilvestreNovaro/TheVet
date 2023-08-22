@@ -8,6 +8,7 @@ import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.service.CustomerService;
 import com.example.veterinaria.service.MailService;
 import com.example.veterinaria.service.RoleService;
+import com.example.veterinaria.validationgroups.CreateValidationGroup;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,7 +78,7 @@ public class CustomerController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<String> addCustomer(@Validated(CreateValidationGroup.class) @RequestBody CustomerDTO customerDTO) {
         customerService.createCustomer(customerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully");
     }
@@ -90,7 +91,7 @@ public class CustomerController {
 
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<String> findById(@Validated @PathVariable Long id){
+    public ResponseEntity<String> findById(@PathVariable Long id){
         Optional<Customer> customerOptional = customerService.findById(id);
         return customerOptional.map(customer -> ResponseEntity.status(HttpStatus.OK).body("The id " + id + " belongs to the customer " + customer.getName())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the id  " + id + " does not exist on our registers"));
     }

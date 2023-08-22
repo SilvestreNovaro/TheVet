@@ -122,31 +122,24 @@ public class AppointmentService {
     // Funciona. Quitar validaciones service? @NotBlank en entity.
     public void updateAppointmentDTO(AppointmentDTO appointmentDTO, Long id) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
-
         if (optionalAppointment.isPresent()) {
             Appointment appointment = optionalAppointment.get();
-
             LocalDateTime appDateTime = appointmentDTO.getAppointmentDateTime();
             String appReason = appointmentDTO.getAppointmentReason();
             List<Long> appPetIds = appointmentDTO.getPetIds();
             Long customer = appointmentDTO.getCustomerId();
             Long vet = appointmentDTO.getVetId();
-
             if (appDateTime != null && !appDateTime.equals("")) {
                 appointment.setAppointmentDateTime(appDateTime);
             }
-
             if (appReason != null && !appReason.isEmpty()) {
                 appointment.setAppointmentReason(appReason);
             }
-
-
             if (customer != null && !customer.equals("")) {
                 Optional<Customer> optionalCustomer = customerService.getCustomerById(customer);
                 if (optionalCustomer.isPresent()) {
                     Customer customerObj = optionalCustomer.get();
                     List<Pet> validPets = new ArrayList<>();
-
                     for (Long petId : appPetIds) {
                         Optional<Pet> optionalPet = petService.getPetById(petId);
                         if (optionalPet.isPresent()) {
@@ -160,12 +153,10 @@ public class AppointmentService {
                             throw new NotFoundException("PetId " + petId + " not found");
                         }
                     }
-
                     appointment.setPets(validPets);
                     appointment.setCustomer(customerObj);
                 }
             }
-
             if (vet != null && !vet.equals("")) {
                 Optional<Vet> vetOptional = vetService.getVetById(vet);
                 if (vetOptional.isPresent()) {
@@ -173,7 +164,6 @@ public class AppointmentService {
                     appointment.setVet(vetObj);
                 }
             }
-
             appointmentRepository.save(appointment);
         }
     }

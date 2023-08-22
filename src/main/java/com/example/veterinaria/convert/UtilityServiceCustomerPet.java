@@ -3,18 +3,17 @@ package com.example.veterinaria.convert;
 import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
-import com.example.veterinaria.exception.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
+import io.micrometer.common.util.StringUtils;
 
 @Component
-public class Converters {
+public class UtilityServiceCustomerPet {
 
     @Autowired
     private ModelMapper modelMapper;
+
 
     public CustomerDTO convertCustomerToCustomerDTO(Customer customer){
 
@@ -34,13 +33,36 @@ public class Converters {
         return customer;
     }
 
-    public Customer convertCustomerDTOtoCustomerUpdate(CustomerDTO customerDTO, Customer existingCustomer) {
+    /*public Customer convertCustomerDTOtoCustomerUpdate(CustomerDTO customerDTO, Customer existingCustomer) {
         existingCustomer.setName(customerDTO.getName());
         existingCustomer.setLastName(customerDTO.getLastName());
         existingCustomer.setAddress(customerDTO.getAddress());
         existingCustomer.setEmail(customerDTO.getEmail());
         existingCustomer.setContactNumber(customerDTO.getContactNumber());
         existingCustomer.setPassword(customerDTO.getPassword());
+        return existingCustomer;
+    }
+
+     */
+    public Customer convertCustomerDTOtoCustomerUpdate(CustomerDTO customerDTO, Customer existingCustomer) {
+        if (StringUtils.isNotBlank(customerDTO.getName())) {
+            existingCustomer.setName(customerDTO.getName());
+        }
+        if (StringUtils.isNotBlank(customerDTO.getLastName())) {
+            existingCustomer.setLastName(customerDTO.getLastName());
+        }
+        if (StringUtils.isNotBlank(customerDTO.getAddress())) {
+            existingCustomer.setAddress(customerDTO.getAddress());
+        }
+        if (StringUtils.isNotBlank(customerDTO.getEmail())) {
+            existingCustomer.setEmail(customerDTO.getEmail());
+        }
+        if (customerDTO.getContactNumber() != null) {
+            existingCustomer.setContactNumber(customerDTO.getContactNumber());
+        }
+        if (StringUtils.isNotBlank(customerDTO.getPassword())) {
+            existingCustomer.setPassword(customerDTO.getPassword());
+        }
         return existingCustomer;
     }
 
@@ -52,6 +74,11 @@ public class Converters {
         newPet.setPetSpecies(pet.getPetSpecies());
         customer.getPets().add(newPet);
     }
+
+    public void updatePetProperties(Pet existingPet, Pet pet) {
+        modelMapper.map(pet, existingPet);
+    }
+
 
 
 }
