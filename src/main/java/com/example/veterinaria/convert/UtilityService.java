@@ -1,7 +1,9 @@
 package com.example.veterinaria.convert;
 
 import com.example.veterinaria.DTO.CustomerDTO;
+import com.example.veterinaria.DTO.MedicalRecordDTO;
 import com.example.veterinaria.entity.Customer;
+import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,7 @@ import org.springframework.stereotype.Component;
 import io.micrometer.common.util.StringUtils;
 
 @Component
-public class UtilityServiceCustomerPet {
+public class UtilityService {
 
     @Autowired
     private ModelMapper modelMapper;
@@ -32,6 +34,22 @@ public class UtilityServiceCustomerPet {
         customer.setContactNumber(customerDTO.getContactNumber());
         return customer;
     }
+    public void createMedicalRecord(Pet pet, MedicalRecordDTO medicalRecordDTO){
+        MedicalRecord newMR = new MedicalRecord();
+        newMR.setVaccinationStatus(medicalRecordDTO.getVaccinationStatus());
+        newMR.setVaccineDates(medicalRecordDTO.getVaccineDates());
+        newMR.setMedication(medicalRecordDTO.getMedication());
+        newMR.setIsNeutered(medicalRecordDTO.getIsNeutered());
+        newMR.setAllergies(medicalRecordDTO.getAllergies());
+        newMR.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
+        newMR.setSurgeries(medicalRecordDTO.getSurgeries());
+        newMR.setRecordDate(medicalRecordDTO.getRecordDate());
+        pet.getMedicalRecords().add(newMR);
+    }
+
+
+
+
 
     public Customer convertCustomerDTOtoCustomerUpdate(CustomerDTO customerDTO, Customer existingCustomer) {
         if (StringUtils.isNotBlank(customerDTO.getName())) {

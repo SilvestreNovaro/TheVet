@@ -1,7 +1,7 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.CustomerDTO;
-import com.example.veterinaria.convert.UtilityServiceCustomerPet;
+import com.example.veterinaria.convert.UtilityService;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Role;
@@ -46,7 +46,7 @@ public class CustomerService {
     private static final String NOT_FOUND_ROLE = "Role not found";
 
     @Autowired
-    UtilityServiceCustomerPet utilityService;
+    UtilityService utilityService;
 
 
 

@@ -39,10 +39,6 @@ public class PetController {
 
     @PostMapping("/addMedicalRecord")
     public ResponseEntity<Object> addMedicalRecordToPet(@RequestBody MedicalRecordDTO medicalRecordDTO, @RequestParam Long petId){
-        Optional<Pet> petOptional = petService.getPetById(petId);
-        if(petOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pet  id " + petId + " does not exist on our registers");
-        }
         Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVetId());
         if(vetOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet  id " + (medicalRecordDTO.getVetId() + " does not exist on our registers"));
@@ -51,7 +47,7 @@ public class PetController {
         return ResponseEntity.status(HttpStatus.CREATED).body("MR added");
     }
 
-    @PatchMapping("/modify/{id}")
+    @PatchMapping("/update/{id}")
     public ResponseEntity<String> update (@RequestBody Pet pet, @PathVariable Long id){
             petService.updatePet(pet, id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Pet updated successfully!");

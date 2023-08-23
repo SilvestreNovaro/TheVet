@@ -1,7 +1,7 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.MedicalRecordDTO;
-import com.example.veterinaria.convert.UtilityServiceCustomerPet;
+import com.example.veterinaria.convert.UtilityService;
 import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.exception.NotFoundException;
@@ -12,7 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 @AllArgsConstructor
 @Service
@@ -25,8 +24,9 @@ public class PetService {
     @Autowired
     private ModelMapper modelMapper;
 
-    private UtilityServiceCustomerPet utilityServiceCustomerPet;
+    private UtilityService utilityService;
 
+    private final VetService vetService;
 
     public void createPet(Pet pet) {
         petRepository.save(pet);
@@ -34,29 +34,17 @@ public class PetService {
 
     public void updatePet(Pet pet, Long id) {
         Pet existingPet = petRepository.findById(id).orElseThrow(() -> new NotFoundException("Pet not found"));
-        utilityServiceCustomerPet.updatePetProperties(existingPet, pet);
+        utilityService.updatePetProperties(existingPet, pet);
             petRepository.save(existingPet);
         }
 
     public void createMedicalRecord(Long petId, MedicalRecordDTO medicalRecordDTO) {
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setPropertyCondition(ctx -> ctx.getSource() != null && !ctx.getSource().equals(""));
-        mapper.typeMap(MedicalRecordDTO.class, MedicalRecord.class).setProvider(request -> new MedicalRecord());
-
-        MedicalRecord medicalRecord = mapper.map(medicalRecordDTO, MedicalRecord.class);
-
-        Optional<Pet> petOptional = petRepository.findById(petId);
-        Pet pet = petOptional.orElseThrow(() -> new NoSuchElementException("Pet not found"));
-
-        List<MedicalRecord> medicalRecords = pet.getMedicalRecords();
-        medicalRecords.add(medicalRecord);
-        pet.setMedicalRecords(medicalRecords);
-
+        Pet pet = petRepository.findById(petId).orElseThrow(() -> new NotFoundException("Pet not found"));
+        utilityService.createMedicalRecord(pet, medicalRecordDTO);
+        vetService.getVetById(medicalRecordDTO.getVetId())
+                .orElseThrow(() -> new NotFoundException("Vet not found"));
         petRepository.save(pet);
     }
-
-
-
 
 
     public List<Pet> getAllPets() {
