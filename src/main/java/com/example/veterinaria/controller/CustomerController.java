@@ -94,14 +94,6 @@ public class CustomerController {
             return ResponseEntity.ok(customer);
     }
 
-    @GetMapping("/findCustomerByLastName/{lastName}")
-    public ResponseEntity<Object> findByLastName(@Validated @PathVariable String lastName){
-        Optional<Customer> customerOptional = customerService.findByLastName(lastName);
-        if(customerOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customer found with lastName: " + lastName);
-        }
-        return ResponseEntity.ok(customerOptional);
-    }
 
     @GetMapping("/findCustomerByLastNameAndAddress")
     public ResponseEntity<Object> findByLastNameAndAddress(@Validated @RequestParam String lastName, @RequestParam String address){
@@ -115,30 +107,25 @@ public class CustomerController {
     @GetMapping("/findRoleCustomers")
     public ResponseEntity<Object> findCustomersByCustomersRole(){
         List<Customer> customers = customerService.listOfCustomersRole();
-        if(customers.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There are no Customers");
-        }
         return  ResponseEntity.ok(customers);
     }
 
-
-
     @GetMapping("/findByEmail/{email}")
     ResponseEntity<Object> findByEmail(@Validated @PathVariable String email){
-        Optional<Customer> optionalCustomer = customerService.findByEmail(email);
-        if(optionalCustomer.isPresent()){
-            return ResponseEntity.ok(optionalCustomer);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer with the email  " + email + " does not exists on our registers");
+        Customer customer = customerService.findByEmail(email);
+            return ResponseEntity.ok(customer);
     }
 
     @GetMapping("/petsByCustomersLastName/{lastName}")
     public ResponseEntity<Object> findPetsFromCustomer(@PathVariable String lastName) {
-        List<Pet> petList = customerService.findPetsByCustomerName(lastName);
-            return petList.isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The customer with name " + lastName + ", doesn't have any pets")
-                    : ResponseEntity.ok(petList);
+        List<Pet> petList = customerService.findPetsByCustomerLastName(lastName);
+            return ResponseEntity.ok(petList);
 
+    }
+    @GetMapping("/findCustomerByLastName/{lastName}")
+    public ResponseEntity<Object> findByLastName(@Validated @PathVariable String lastName){
+        List<Customer> customerOptional = customerService.findByLastName(lastName);
+        return ResponseEntity.ok(customerOptional);
     }
 
     @GetMapping("/findPetOwner/{name}")
@@ -157,16 +144,12 @@ public class CustomerController {
         }
 
 
-
     @DeleteMapping("/deletePetById/{customerId}/{petId}")
     public ResponseEntity<String> deletePetById(@PathVariable Long customerId,@PathVariable Long petId){
        customerService.deletePetById(customerId, petId);
         return ResponseEntity.ok("Pet with id " + petId + DELETE_SUCCESS_MESSAGE + customerId);
     }
 
-
-
-    //DELETE.
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
             customerService.deleteCustomer(id);

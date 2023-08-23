@@ -103,19 +103,13 @@ public class CustomerService {
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
     }
     public void deleteCustomer(Long id) {
-        customerRepository.deleteById(id);
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
+        customerRepository.delete(customer);
     }
 
-    public Optional<Customer> findByName(String name){
-        return customerRepository.findByName(name);
-    }
-
-    public Optional<Customer> findByEmail(String email){
-        return customerRepository.findByEmail(email);
-    }
-
-    public Optional<Customer> findById(Long id){
-        return customerRepository.findById(id);
+    public Customer findByEmail(String email) {
+        return customerRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("No customer found"));
     }
 
     public List<Customer> findAllAsc(){
@@ -125,7 +119,6 @@ public class CustomerService {
     public Long countCustomers(){
         return customerRepository.countCustomers();
     }
-
 
     public Long countCustomersByPetSpecies(String petSpecies) {
         return customerRepository.countCustomersByPetSpecies(petSpecies);
@@ -148,11 +141,19 @@ public class CustomerService {
     }
 
     public List<Pet> findPetsByCustomerLastName(String lastName){
-        return customerRepository.findPetsByCustomerLastName(lastName);
+        List<Pet> pets = customerRepository.findPetsByCustomerLastName(lastName);
+        if (pets.isEmpty()) {
+            throw new NotFoundException("No pets found for customer with last name: " + lastName);
+        }
+        return pets;
     }
 
-    public Optional<Customer> findByLastName(String lastName){
-        return customerRepository.findByLastName(lastName);
+    public List<Customer> findByLastName(String lastName){
+        List<Customer> customers = customerRepository.findByLastName(lastName);
+        if(customers.isEmpty()) {
+            throw new NotFoundException("No pets found for customer with last name: " + lastName);
+        }
+        return customers;
     }
 
     public Optional<Customer> findByLastNameAndAnddress(String lastName, String address){
