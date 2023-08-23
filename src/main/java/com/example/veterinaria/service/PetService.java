@@ -2,14 +2,10 @@ package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.MedicalRecordDTO;
 import com.example.veterinaria.convert.UtilityService;
-import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.PetRepository;
 import lombok.AllArgsConstructor;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -21,10 +17,7 @@ public class PetService {
 
     private final PetRepository petRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
-    private UtilityService utilityService;
+    private final UtilityService utilityService;
 
     private final VetService vetService;
 
@@ -40,10 +33,13 @@ public class PetService {
 
     public void createMedicalRecord(Long petId, MedicalRecordDTO medicalRecordDTO) {
         Pet pet = petRepository.findById(petId).orElseThrow(() -> new NotFoundException("Pet not found"));
-        utilityService.createMedicalRecord(pet, medicalRecordDTO);
-        vetService.getVetById(medicalRecordDTO.getVetId())
-                .orElseThrow(() -> new NotFoundException("Vet not found"));
-        petRepository.save(pet);
+        vetService.getVetById(medicalRecordDTO.getVetId()).ifPresentOrElse(vet -> {
+            utilityService.createMedicalRecord(pet, medicalRecordDTO);
+            petRepository.save(pet);
+        },
+                () -> { throw new NotFoundException("Vet not found");
+        });
+
     }
 
 

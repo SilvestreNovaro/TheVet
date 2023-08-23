@@ -39,10 +39,6 @@ public class PetController {
 
     @PostMapping("/addMedicalRecord")
     public ResponseEntity<Object> addMedicalRecordToPet(@RequestBody MedicalRecordDTO medicalRecordDTO, @RequestParam Long petId){
-        Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVetId());
-        if(vetOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vet  id " + (medicalRecordDTO.getVetId() + " does not exist on our registers"));
-        }
         petService.createMedicalRecord(petId, medicalRecordDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("MR added");
     }

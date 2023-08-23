@@ -5,22 +5,26 @@ import com.example.veterinaria.DTO.MedicalRecordDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.entity.Vet;
+import com.example.veterinaria.service.VetService;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import io.micrometer.common.util.StringUtils;
-
+@AllArgsConstructor
 @Component
 public class UtilityService {
 
     @Autowired
     private ModelMapper modelMapper;
 
+    private final VetService vetService;
+
 
     public CustomerDTO convertCustomerToCustomerDTO(Customer customer){
 
-        CustomerDTO customerDTO = modelMapper.map(customer, CustomerDTO.class);
-        return customerDTO;
+        return modelMapper.map(customer, CustomerDTO.class);
     }
 
     public Customer convertCustomerDTOtoCustomerCreate(CustomerDTO customerDTO){
@@ -44,6 +48,9 @@ public class UtilityService {
         newMR.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
         newMR.setSurgeries(medicalRecordDTO.getSurgeries());
         newMR.setRecordDate(medicalRecordDTO.getRecordDate());
+        Long vetId = medicalRecordDTO.getVetId();
+        Vet vet = vetService.getVetById(vetId).get();
+        newMR.setVet(vet);
         pet.getMedicalRecords().add(newMR);
     }
 
