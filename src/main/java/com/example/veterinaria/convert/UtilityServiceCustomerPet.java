@@ -33,17 +33,6 @@ public class UtilityServiceCustomerPet {
         return customer;
     }
 
-    /*public Customer convertCustomerDTOtoCustomerUpdate(CustomerDTO customerDTO, Customer existingCustomer) {
-        existingCustomer.setName(customerDTO.getName());
-        existingCustomer.setLastName(customerDTO.getLastName());
-        existingCustomer.setAddress(customerDTO.getAddress());
-        existingCustomer.setEmail(customerDTO.getEmail());
-        existingCustomer.setContactNumber(customerDTO.getContactNumber());
-        existingCustomer.setPassword(customerDTO.getPassword());
-        return existingCustomer;
-    }
-
-     */
     public Customer convertCustomerDTOtoCustomerUpdate(CustomerDTO customerDTO, Customer existingCustomer) {
         if (StringUtils.isNotBlank(customerDTO.getName())) {
             existingCustomer.setName(customerDTO.getName());

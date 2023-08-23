@@ -27,24 +27,24 @@ public class Customer {
     private Long id;
 
     @Column
-    @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "Name cant be null")
+    @NotBlank(groups = {CreateValidationGroup.class}, message = "Name cant be null")
     private String name;
     @Column
-    @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "LastName cant be null")
+    @NotBlank(groups = {CreateValidationGroup.class}, message = "LastName cant be null")
     private String lastName;
     @Column
-    @NotBlank( groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "Address cant be null")
+    @NotBlank( groups = {CreateValidationGroup.class}, message = "Address cant be null")
     private String address;
     @Column
     @Email(message = "Email must be valid")
-    @NotBlank( groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "Email cant be null")
+    @NotBlank( groups = {CreateValidationGroup.class}, message = "Email cant be null")
     private String email;
     @Column
-    @NotNull(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "Contactnumber cant be null")
+    @NotNull(groups = {CreateValidationGroup.class}, message = "Contactnumber cant be null")
     @Min(1)
     private Long contactNumber;
     @Column
-    @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "Password cant be null")
+    @NotBlank(groups = {CreateValidationGroup.class}, message = "Password cant be null")
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL)

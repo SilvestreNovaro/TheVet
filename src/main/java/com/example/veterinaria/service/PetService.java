@@ -1,8 +1,10 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.MedicalRecordDTO;
+import com.example.veterinaria.convert.UtilityServiceCustomerPet;
 import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.PetRepository;
 import lombok.AllArgsConstructor;
 
@@ -23,25 +25,18 @@ public class PetService {
     @Autowired
     private ModelMapper modelMapper;
 
+    private UtilityServiceCustomerPet utilityServiceCustomerPet;
+
 
     public void createPet(Pet pet) {
         petRepository.save(pet);
     }
 
     public void updatePet(Pet pet, Long id) {
-        Optional<Pet> optionalPet = petRepository.findById(id);
-        if(optionalPet.isPresent()){
-            Pet existingPet = optionalPet.get();
-            if(pet.getPetName() !=null && !pet.getPetName().isEmpty()) existingPet.setPetName(pet.getPetName());
-            if(pet.getAge() !=null && !pet.getAge().equals("")) existingPet.setAge(pet.getAge());
-            if(pet.getGender() !=null && !pet.getGender().isEmpty()) existingPet.setGender(pet.getGender());
-            if(pet.getPetSpecies() !=null && !pet.getPetSpecies().isEmpty()) existingPet.setPetSpecies(pet.getPetSpecies());
+        Pet existingPet = petRepository.findById(id).orElseThrow(() -> new NotFoundException("Pet not found"));
+        utilityServiceCustomerPet.updatePetProperties(existingPet, pet);
             petRepository.save(existingPet);
         }
-
-    }
-
-
 
     public void createMedicalRecord(Long petId, MedicalRecordDTO medicalRecordDTO) {
         ModelMapper mapper = new ModelMapper();

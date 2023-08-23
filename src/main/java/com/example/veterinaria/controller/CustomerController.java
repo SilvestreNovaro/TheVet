@@ -5,19 +5,16 @@ import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.service.CustomerService;
-import com.example.veterinaria.service.MailService;
-import com.example.veterinaria.service.RoleService;
 import com.example.veterinaria.validationgroups.CreateValidationGroup;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
-import java.util.Optional;
+
 
 
 @AllArgsConstructor
@@ -28,16 +25,7 @@ public class CustomerController {
     private final CustomerService customerService;
 
 
-    private final JavaMailSender javaMailSender;
-
-    private final RoleService roleService;
-
-    private final MailService mailService;
-
     public static final String DELETE_SUCCESS_MESSAGE = " has been successfully deleted from Customer with id ";
-
-    public static final String NOT_FOUND_MESSAGE = "There is no Customer with the id: ";
-
 
 
 

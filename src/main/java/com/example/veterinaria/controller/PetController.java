@@ -26,23 +26,16 @@ public class PetController {
     private final PetService petService;
     private final VetService vetService;
 
-
     @GetMapping("/list")
     public List<Pet> list(){
         return petService.getAllPets();
     }
 
-
-    @PostMapping("/add")
-    public ResponseEntity<String> add (@Validated @RequestBody Pet pet){
-        Optional<Pet> petOptional = petService.findByName(pet.getPetName());
-        if(petOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pet  " + pet.getPetName() + " is already on our registers");
-        }
+    @PostMapping("/create")
+    public ResponseEntity<String> add(@Validated @RequestBody Pet pet){
         petService.createPet(pet);
         return ResponseEntity.status(HttpStatus.CREATED).body("Pet added successfully!");
     }
-
 
     @PostMapping("/addMedicalRecord")
     public ResponseEntity<Object> addMedicalRecordToPet(@RequestBody MedicalRecordDTO medicalRecordDTO, @RequestParam Long petId){
@@ -58,21 +51,11 @@ public class PetController {
         return ResponseEntity.status(HttpStatus.CREATED).body("MR added");
     }
 
-
-
-    @PutMapping("/modify/{id}")
-    public ResponseEntity<String> update (@Validated @RequestBody Pet pet, @PathVariable Long id){
-        Optional<Pet> sameNamePet= petService.findByName(pet.getPetName());
-        Optional<Pet> optionalPet = petService.getPetById(id);
-        if(sameNamePet.isPresent()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Pet with the name  " + pet.getPetName() + " is already on our registers");
-        }
-        if(optionalPet.isPresent()){
+    @PatchMapping("/modify/{id}")
+    public ResponseEntity<String> update (@RequestBody Pet pet, @PathVariable Long id){
             petService.updatePet(pet, id);
             return ResponseEntity.status(HttpStatus.CREATED).body("Pet updated successfully!");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pet with the id  " + id + " does not exist on our registers");
-    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){

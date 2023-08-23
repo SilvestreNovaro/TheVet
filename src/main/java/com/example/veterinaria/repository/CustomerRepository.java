@@ -19,13 +19,6 @@ import java.util.Optional;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    @Query("select c from Customer c where c.name = ?1")
-    Optional<Customer> findByName(String name);
-
-
-    @Query("SELECT c.pets FROM Customer c WHERE c.lastName = :lastName")
-    List<Pet> findPetsByCustomerName(@Param("lastName") String lastName);
-
     @Query("SELECT p FROM Customer c JOIN c.pets p WHERE c.lastName = :lastName")
     List<Pet> findPetsByCustomerLastName(@Param("lastName") String lastName);
 
@@ -34,7 +27,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("SELECT c FROM Customer c JOIN c.pets p WHERE p.petName = :petName")
     List<Customer> findCustomersByPetName(@Param("petName") String petName);
-
 
     @Query("SELECT c FROM Customer c WHERE c.lastName = :lastName and c.address = :address")
     Optional<Customer> findByLastNameAndAddress(@Param("lastName") String lastName, @Param("address") String address);
@@ -56,7 +48,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("SELECT c FROM Customer c WHERE c.role.roleName = 'Customer'")
     List<Customer> findAllCustomerByRole();
-
 
     Optional<Customer> findByEmail(String email);
 
