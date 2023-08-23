@@ -161,7 +161,11 @@ public class CustomerService {
     }
 
     public List<Customer> findCustomersByPetName(String petName) {
-        return customerRepository.findCustomersByPetName(petName);
+        List<Customer> customers = customerRepository.findCustomersByPetName(petName);
+        if(customers.isEmpty()){
+            throw new NotFoundException("No pets found for customer with last name");
+        }
+        return customers;
     }
 
     public void addAnimalToCustomer(Long customerId, Pet pet){

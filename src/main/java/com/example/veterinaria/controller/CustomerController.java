@@ -127,11 +127,8 @@ public class CustomerController {
 
     @GetMapping("/findPetOwner/{name}")
     public ResponseEntity<Object> findOwner(@PathVariable String name) {
-        List<Customer> optionalCustomer = customerService.findCustomersByPetName(name);
-        if (optionalCustomer.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet associated with that owner");
-        }
-        return ResponseEntity.ok(optionalCustomer);
+        List<Customer> customers = customerService.findCustomersByPetName(name);
+        return ResponseEntity.ok(customers);
     }
 
     @DeleteMapping("/deleteManyPets/{customerId}")
