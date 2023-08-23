@@ -164,7 +164,7 @@ public class CustomerController {
     }
 
     @PostMapping("/addPetToCustomer/{customerId}")
-    public ResponseEntity<Object> addAnimalToCustomer(@Validated @PathVariable Long customerId, @RequestBody Pet pet) {
+    public ResponseEntity<Object> addAnimalToCustomer(@PathVariable Long customerId, @RequestBody Pet pet) {
         customerService.addAnimalToCustomer(customerId, pet);
         return ResponseEntity.ok("Pet added successfully");
     }

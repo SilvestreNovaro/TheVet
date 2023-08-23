@@ -100,16 +100,16 @@ public class CustomerService {
 
     public Customer getCustomerById(Long id) {
         return customerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Customer not found"));
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
     }
     public void deleteCustomer(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Customer not found"));
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
         customerRepository.delete(customer);
     }
 
     public Customer findByEmail(String email) {
-        return customerRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("No customer found"));
+        return customerRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
     }
 
     public List<Customer> findAllAsc(){
@@ -136,10 +136,6 @@ public class CustomerService {
         return customerRepository.findOldPets();
     }
 
-    public List<Pet> findPetsByCustomerName(String name) {
-        return customerRepository.findPetsByCustomerName(name);
-    }
-
     public List<Pet> findPetsByCustomerLastName(String lastName){
         List<Pet> pets = customerRepository.findPetsByCustomerLastName(lastName);
         if (pets.isEmpty()) {
@@ -157,7 +153,7 @@ public class CustomerService {
     }
 
     public Customer findByLastNameAndAnddress(String lastName, String address){
-        return customerRepository.findByLastNameAndAddress(lastName, address).orElseThrow(() -> new NotFoundException("No customer found"));
+        return customerRepository.findByLastNameAndAddress(lastName, address).orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
     }
 
     public List<Customer> findCustomersByPetName(String petName) {
@@ -202,44 +198,27 @@ public class CustomerService {
     public void deletePetsById(Long customerId, List<Long> petIds){
         Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
         List<Pet> pets = customer.getPets();
-        List<Pet> petsToRemove = new ArrayList<>();
-        for(Long petId : petIds){
-
-            // La variable pet se sobreescribe en cada vuelta, guardando el objeto Pet que contenga el id proporcionado en petIds.
-            Pet pet = pets.stream().filter(p-> p.getId().equals(petId)).findFirst().orElse(null);
-            if(pet !=null){
-               petsToRemove.add(pet);
-
+            List<Pet> petsToRemove = new ArrayList<>();
+            for (Long petId : petIds) {
+                // La variable pet se sobreescribe en cada vuelta, guardando el objeto Pet que contenga el id proporcionado en petIds.
+                Pet pet = pets.stream().filter(p -> p.getId().equals(petId)).findFirst().orElseThrow(() -> new NotFoundException("Pet with id: " + petId + " does not belong to the customer"));
+                if (pet != null) {
+                    petsToRemove.add(pet);
+                }
+                pets.removeAll(petsToRemove);
+                customer.setPets(pets);
             }
-            pets.removeAll(petsToRemove);
-            customer.setPets(pets);
-
-        }
-
         customerRepository.save(customer);
     }
 
-
-
-
-        public void deletePetById(Long customerId, Long petId) {
-            Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
-            if (optionalCustomer.isPresent()) {
-                Customer customer = optionalCustomer.get();
-                List<Pet> pets = customer.getPets();
-                Optional<Pet> optionalPet = pets.stream().filter(p -> p.getId().equals(petId)).findFirst();
-                if (optionalPet.isPresent()) {
-                    Pet pet = optionalPet.get();
-                    pets.remove(pet);
-                    customer.setPets(pets);
-                    customerRepository.save(customer);
-                } else {
-                    throw new NotFoundException("Pet not found with id: " + petId);
-                }
-            } else {
-                throw new NotFoundException(NOT_FOUND_CUSTOMER);
-            }
-        }
+    public void deletePetById(Long customerId, Long petId){
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException(NOT_FOUND_CUSTOMER));
+        List<Pet> pets = customer.getPets();
+        Pet pet = pets.stream().filter(p -> p.getId().equals(petId)).findFirst().orElseThrow(() -> new NotFoundException("Pet not found"));
+        pets.remove(pet);
+        customer.setPets(pets);
+        customerRepository.save(customer);
+    }
 
     public List<Customer> findCustomerByRoleId(Long id){
         return customerRepository.findCustomerByRoleId(id);
