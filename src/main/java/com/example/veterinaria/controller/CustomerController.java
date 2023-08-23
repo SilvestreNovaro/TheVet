@@ -96,12 +96,9 @@ public class CustomerController {
 
 
     @GetMapping("/findCustomerByLastNameAndAddress")
-    public ResponseEntity<Object> findByLastNameAndAddress(@Validated @RequestParam String lastName, @RequestParam String address){
-        Optional<Customer> customerOptional = customerService.findByLastNameAndAnddress(lastName, address);
-        if(customerOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customer found with lastName: " + lastName + " and address: " + address);
-        }
-        return  ResponseEntity.ok(customerOptional);
+    public ResponseEntity<Object> findByLastNameAndAddress(@RequestParam String lastName, @RequestParam String address){
+        Customer customer = customerService.findByLastNameAndAnddress(lastName, address);
+        return ResponseEntity.ok(customer);
     }
 
     @GetMapping("/findRoleCustomers")

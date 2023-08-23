@@ -156,8 +156,8 @@ public class CustomerService {
         return customers;
     }
 
-    public Optional<Customer> findByLastNameAndAnddress(String lastName, String address){
-        return customerRepository.findByLastNameAndAddress(lastName, address);
+    public Customer findByLastNameAndAnddress(String lastName, String address){
+        return customerRepository.findByLastNameAndAddress(lastName, address).orElseThrow(() -> new NotFoundException("No customer found"));
     }
 
     public List<Customer> findCustomersByPetName(String petName) {
