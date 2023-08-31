@@ -1,5 +1,7 @@
 package com.example.veterinaria.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,21 +15,21 @@ public class MedicalRecordDTO {
     private String vaccinationStatus;
 
     private LocalDateTime vaccineDates;
-
+    @NotBlank
     private String medication;
-
+    @NotNull(message = "esto es en dto")
     private Boolean isNeutered;
-
+    @NotBlank
     private String allergies;
-
+    @NotBlank
     private String existingPathologies;
-
+    @NotBlank
     private String surgeries;
-
+    @NotNull
     private LocalDateTime recordDate;
-
+    @NotNull
     private Long vetId;
-
+    @NotBlank
     private String vaccinesJson;
 
     public MedicalRecordDTO() {

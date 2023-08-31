@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface PetRepository extends JpaRepository<Pet, Long> {
 
     @Query("select p from Pet p where p.petName = ?1")
-    public Optional<Pet> findByName(String name);
+    public List<Pet> findByName(String name);
 
     List<Pet> findByAge(Integer age);
 

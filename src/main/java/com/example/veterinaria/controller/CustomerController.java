@@ -28,7 +28,6 @@ public class CustomerController {
     public static final String DELETE_SUCCESS_MESSAGE = " has been successfully deleted from Customer with id ";
 
 
-
     @GetMapping("list")
     public List<Customer> list() {
         return customerService.getAllCustomers();

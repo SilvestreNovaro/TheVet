@@ -1,8 +1,12 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.MedicalRecordDTO;
+import com.example.veterinaria.convert.UtilityService;
+import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.MedicalRecord;
+import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
+import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.AppointmentRepository;
 import com.example.veterinaria.repository.MedicalRecordRepository;
 import com.example.veterinaria.repository.VetRepository;
@@ -27,47 +31,76 @@ public class MedicalRecordService {
     private final MedicalRecordRepository medicalRecordRepository;
 
     private final PetService petService;
+
     private final VetRepository vetService;
+
     private final CustomerService customerService;
+
+    private final UtilityService utilityService;
+
+    private static final String NOT_FOUND_MEDICALRECORD = "MedicalRecord not found";
 
     public List<MedicalRecord> findAll(){
         return medicalRecordRepository.findAll();
     }
 
-    public Optional <MedicalRecord> findById(Long id) {
-        return medicalRecordRepository.findById(id);
+    public MedicalRecord findById(Long id) {
+        return medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEDICALRECORD));
     }
 
-    public Optional<MedicalRecord> findByRecordDate(LocalDateTime recordDate){
-        return medicalRecordRepository.findByRecordDate(recordDate);
+    public MedicalRecord findByRecordDate(LocalDateTime recordDate){
+        return medicalRecordRepository.findByRecordDate(recordDate).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEDICALRECORD));
     }
 
+    // a elegir con vevis
+    /*public void updateMR(MedicalRecordDTO medicalRecordDTO, Long id, Long petId){
+
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEDICALRECORD));
+            petService.getPetById(petId);
+            utilityService.updateMedicalRecord(medicalRecordDTO, id);
+            vetService.findById(medicalRecordDTO.getVetId());
+            medicalRecordRepository.save(medicalRecord);
+        }
+
+     */
 
 
-    public void updateMR(MedicalRecordDTO medicalRecordDTO, Long id){
-        Optional<MedicalRecord> medicalRecordOptional = medicalRecordRepository.findById(id);
-        if(medicalRecordOptional.isPresent()){
-            MedicalRecord medicalRecord = medicalRecordOptional.get();
 
-            medicalRecord.setVaccinationStatus(medicalRecordDTO.getVaccinationStatus());
-            medicalRecord.setVaccineDates(medicalRecordDTO.getVaccineDates());
-            medicalRecord.setMedication(medicalRecordDTO.getMedication());
-            medicalRecord.setIsNeutered(medicalRecordDTO.getIsNeutered());
-            medicalRecord.setAllergies(medicalRecordDTO.getAllergies());
-            medicalRecord.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
-            medicalRecord.setSurgeries(medicalRecordDTO.getSurgeries());
-            medicalRecord.setRecordDate(medicalRecordDTO.getRecordDate());
-
-            Optional<Vet> vetOptional = vetService.findById(medicalRecordDTO.getVetId());
-               vetOptional.ifPresent(medicalRecord::setVet);
-            if(vetOptional.isPresent()){
-                Vet vet = vetOptional.get();
-
+    // a elegir con vevis
+    public void updatetoo(MedicalRecordDTO medicalRecordDTO, Long id, Long customerId, Long petId){
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEDICALRECORD));
+        vetService.findById(medicalRecordDTO.getVetId());
+        Customer customer = customerService.getCustomerById(customerId);
+        List<Pet> petList = customer.getPets();
+        for(Pet pets : petList) {
+            Pet pet = petList.stream().filter(p -> p.getId().equals(petId)).findFirst().orElseThrow(() -> new NotFoundException("Pet with id: " + petId + " does not belong to the customer"));
+            List<MedicalRecord> medicalRecords = pet.getMedicalRecords();
+            for(MedicalRecord mr : medicalRecords){
+                if(pet.getMedicalRecords().contains(mr))
+                    utilityService.updateMedicalRecord(medicalRecordDTO, id, customerId, petId);
             }
-
             medicalRecordRepository.save(medicalRecord);
         }
     }
+
+    // es el que uso por ahora, que verifica que el medicalrecord sea de la mascota, que la mascota sea del cliente.
+    public void updatetoot(MedicalRecordDTO medicalRecordDTO, Long id, Long customerId, Long petId) {
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEDICALRECORD));
+        Customer customer = customerService.getCustomerById(customerId);
+        Pet pet = customer.getPets().stream().filter(p -> p.getId().equals(petId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Pet with id: " + petId + " does not belong to the customer"));
+
+        List<MedicalRecord> medicalRecords = pet.getMedicalRecords();
+        MedicalRecord medicalRecordToUpdate = medicalRecords.stream()
+                .filter(mr -> mr.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Medical Record with id: " + id + " not found for the pet"));
+
+        utilityService.updateMedicalRecord(medicalRecordDTO, id, customerId, petId);
+    }
+
+
 
 
     public void delete(Long id){

@@ -3,6 +3,7 @@ package com.example.veterinaria.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,23 +26,24 @@ public class MedicalRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @NotBlank
     private String vaccinationStatus;
     @NotNull
     private LocalDateTime vaccineDates;
-    @NotNull
+    @NotBlank
     private String medication;
-    @NotNull
+    @NotNull(message = "esto es en entidad")
     private Boolean isNeutered;
-    @NotNull
+    @NotBlank
     private String allergies;
-    @NotNull
+    @NotBlank
     private String existingPathologies;
-    @NotNull
+    @NotBlank
     private String surgeries;
     @NotNull
     private LocalDateTime recordDate;
-
+    @NotBlank
+    private String vaccinesJson;
 
 
     @JsonIgnoreProperties({"name", "email", "license" })

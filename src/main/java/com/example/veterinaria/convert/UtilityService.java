@@ -6,6 +6,11 @@ import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
+import com.example.veterinaria.exception.NotFoundException;
+import com.example.veterinaria.repository.MedicalRecordRepository;
+import com.example.veterinaria.service.CustomerService;
+import com.example.veterinaria.service.MedicalRecordService;
+import com.example.veterinaria.service.PetService;
 import com.example.veterinaria.service.VetService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -21,6 +26,11 @@ public class UtilityService {
 
     private final VetService vetService;
 
+    private final MedicalRecordRepository medicalRecordRepository;
+
+    //private final CustomerService customerService;
+
+   // private final PetService petService;
 
     public CustomerDTO convertCustomerToCustomerDTO(Customer customer){
 
@@ -48,14 +58,48 @@ public class UtilityService {
         newMR.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
         newMR.setSurgeries(medicalRecordDTO.getSurgeries());
         newMR.setRecordDate(medicalRecordDTO.getRecordDate());
+        newMR.setVaccinesJson(medicalRecordDTO.getVaccinesJson());
         Long vetId = medicalRecordDTO.getVetId();
         Vet vet = vetService.getVetById(vetId).get();
         newMR.setVet(vet);
         pet.getMedicalRecords().add(newMR);
+
     }
 
+    public void updateMedicalRecord(MedicalRecordDTO medicalRecordDTO, Long id, Long customerId, Long petId){
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException("No mr found"));
+        medicalRecord.setVaccinationStatus(medicalRecordDTO.getVaccinationStatus());
+        medicalRecord.setVaccineDates(medicalRecordDTO.getVaccineDates());
+        medicalRecord.setMedication(medicalRecordDTO.getMedication());
+        medicalRecord.setIsNeutered(medicalRecordDTO.getIsNeutered());
+        medicalRecord.setAllergies(medicalRecordDTO.getAllergies());
+        medicalRecord.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
+        medicalRecord.setSurgeries(medicalRecordDTO.getSurgeries());
+        medicalRecord.setRecordDate(medicalRecordDTO.getRecordDate());
+        medicalRecord.setVaccinesJson(medicalRecordDTO.getVaccinesJson());
+        Long vetId = medicalRecordDTO.getVetId();
+        Vet vet = vetService.getVetById(vetId).get();
+        medicalRecord.setVet(vet);
+        medicalRecordRepository.save(medicalRecord);
+    }
 
+    public void updateMedicalRecordt(MedicalRecordDTO medicalRecordDTO, MedicalRecord medicalRecordToUpdate) {
+        medicalRecordToUpdate.setVaccinationStatus(medicalRecordDTO.getVaccinationStatus());
+        medicalRecordToUpdate.setVaccineDates(medicalRecordDTO.getVaccineDates());
+        medicalRecordToUpdate.setMedication(medicalRecordDTO.getMedication());
+        medicalRecordToUpdate.setIsNeutered(medicalRecordDTO.getIsNeutered());
+        medicalRecordToUpdate.setAllergies(medicalRecordDTO.getAllergies());
+        medicalRecordToUpdate.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
+        medicalRecordToUpdate.setSurgeries(medicalRecordDTO.getSurgeries());
+        medicalRecordToUpdate.setRecordDate(medicalRecordDTO.getRecordDate());
+        medicalRecordToUpdate.setVaccinesJson(medicalRecordDTO.getVaccinesJson());
 
+        Long vetId = medicalRecordDTO.getVetId();
+        Vet vet = vetService.getVetById(vetId).orElseThrow(() -> new NotFoundException("Vet with id: " + vetId + " not found"));
+        medicalRecordToUpdate.setVet(vet);
+
+        medicalRecordRepository.save(medicalRecordToUpdate);
+    }
 
 
     public Customer convertCustomerDTOtoCustomerUpdate(CustomerDTO customerDTO, Customer existingCustomer) {

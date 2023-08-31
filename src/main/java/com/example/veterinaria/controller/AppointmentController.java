@@ -38,10 +38,6 @@ public class AppointmentController {
     private JavaMailSender javaMailSender;
 
 
-
-
-
-
     // GET MAPPING
 
     @GetMapping("/findById/{id}")
@@ -279,10 +275,7 @@ public class AppointmentController {
     }
 
 
-
-
   //DELETE MAPPING
-
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteAppointment(@PathVariable Long id) {

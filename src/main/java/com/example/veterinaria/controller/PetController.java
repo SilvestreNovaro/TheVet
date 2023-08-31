@@ -24,7 +24,6 @@ import java.util.Optional;
 public class PetController {
 
     private final PetService petService;
-    private final VetService vetService;
 
     @GetMapping("/list")
     public List<Pet> list(){
@@ -38,7 +37,7 @@ public class PetController {
     }
 
     @PostMapping("/addMedicalRecord")
-    public ResponseEntity<Object> addMedicalRecordToPet(@RequestBody MedicalRecordDTO medicalRecordDTO, @RequestParam Long petId){
+    public ResponseEntity<Object> addMedicalRecordToPet(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO, @RequestParam Long petId){
         petService.createMedicalRecord(petId, medicalRecordDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("MR added");
     }
@@ -51,82 +50,39 @@ public class PetController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){
-        Optional<Pet> petOptional = petService.getPetById(id);
-        if(petOptional.isPresent()){
             petService.deletePet(id);
             return ResponseEntity.status(HttpStatus.OK).body("Pet with id " + id + " deleted");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Theres no pet with the id " + id);
     }
 
     @GetMapping("/findPetByName/{name}")
     public ResponseEntity<Object> findByName(@PathVariable String name){
-
-        Optional<Pet> petOptional= petService.findByName(name);
-
-        return petOptional.isEmpty()
-                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("The name : " + name + " doesn't belong to any Pet on this vet")
-                : ResponseEntity.ok(petOptional);
+        List<Pet> pets  = petService.findByName(name);
+        return ResponseEntity.ok(pets);
     }
 
     @GetMapping("/find/{id}")
     public ResponseEntity<Object> find (@PathVariable Long id){
-        Optional<Pet> petOptional = petService.getPetById(id);
-        if(petOptional.isPresent()){
-           return ResponseEntity.ok(petOptional);
+        Pet pet = petService.getPetById(id);
+           return ResponseEntity.ok(pet);
         }
-       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is no Pet with the id " + id + " on our registers");
-    }
 
 
-
-
-
-    @GetMapping("/getSpecies/{petSpecies}")
-    public ResponseEntity<Object> getSpecies(@PathVariable String petSpecies) {
-        List<Pet> petList = petService.getAllPets();
-        List<Pet> petList1 = new ArrayList<>();
-        for (Pet pet : petList) {
-            if (pet.getPetSpecies() !=null && pet.getPetSpecies().equals(petSpecies)) {
-                petList1.add(pet);
-                }
-
-        }
-        if (petList1.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There are no " + petSpecies + " on our register");
-
-        }
-        return ResponseEntity.ok(petList1);
-    }
 
     @GetMapping("/bySpecies/{petSpecies}")
     public ResponseEntity<List<Pet>> getPetsBySpecies(@PathVariable String petSpecies){
         List<Pet> petList = petService.findBySpecies(petSpecies);
-        if(petList.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(petList);
     }
-    //THIS LAST 2 METHODS ARE THE SAME.
-
-
-
 
     @GetMapping("/byAge/{age}")
     public ResponseEntity<List<Pet>> getPetsByAge(@PathVariable Integer age) {
         List<Pet> pets = petService.findByAge(age);
-        if (pets.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(pets);
     }
 
     @GetMapping("/byGender/{gender}")
     public ResponseEntity<List<Pet>> getPetsByGender(@PathVariable String gender){
         List<Pet> pets = petService.findByGender(gender);
-            if(pets.isEmpty()){
-                return ResponseEntity.notFound().build();
-            }
             return ResponseEntity.ok(pets);
         }
     }

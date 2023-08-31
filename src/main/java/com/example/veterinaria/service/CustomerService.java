@@ -85,6 +85,7 @@ public class CustomerService {
                 utilityService.createPet(customer, pet);
             }
         }
+
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
         customer.setPassword(encodedPassword);
         Role role = roleService.findById(customerDTO.getRoleId())

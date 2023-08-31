@@ -39,45 +39,23 @@ public class MedicalRecordController {
 
     @GetMapping("/findById/{id}")
     public ResponseEntity<Object> findById(@Validated @PathVariable Long id){
-        Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findById(id);
-        if(medicalRecordOptional.isPresent()){
-             return ResponseEntity.ok(medicalRecordOptional);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical record exists with the id " + id);
+        MedicalRecord medicalRecord = medicalRecordService.findById(id);
+             return ResponseEntity.ok(medicalRecord);
     }
 
 
-
-
-    @PutMapping("/modify/{id}")
-    public ResponseEntity<String> update(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO, @PathVariable Long id) {
-        Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findById(id);
-        if (medicalRecordOptional.isPresent()) {
-            if(medicalRecordService.findByRecordDate(medicalRecordDTO.getRecordDate()).isPresent()){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Theres already a medical record for the exact same date and time");
-            }
-            Optional<Vet> vetOptional = vetService.getVetById(medicalRecordDTO.getVetId());
-            if (vetOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No vet found with the id " + medicalRecordDTO.getVetId());
-            }
-            medicalRecordService.updateMR(medicalRecordDTO, id);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical record exists with the id " + id);
-
-        }
+    @PatchMapping("/modify/{id}/{customerId}/{petId}")
+    public ResponseEntity<String> update(@RequestBody MedicalRecordDTO medicalRecordDTO, @PathVariable Long id, @PathVariable Long customerId, @PathVariable Long petId) {
+        medicalRecordService.updatetoot(medicalRecordDTO, id, customerId,  petId);
         return ResponseEntity.status(HttpStatus.CREATED).body("Medical Record updated successfully!");
     }
 
 
 
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){
-        Optional<MedicalRecord> medicalRecordOptional = medicalRecordService.findById(id);
-        if(medicalRecordOptional.isPresent()){
-            medicalRecordService.delete(id);
             return ResponseEntity.ok("Medical Record with id " + id + " successfully deleted");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Medical Record found with the given id " + id);
     }
 
     @DeleteMapping("/deleteByIds")
