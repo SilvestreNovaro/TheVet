@@ -104,7 +104,7 @@ public class MedicalRecordService {
     }
 
 
-    public ResponseEntity<String> deleteMedicalRecordByIds(Long[] medicalRecordIds){
+    public void deleteMedicalRecordByIds(Long[] medicalRecordIds){
         List<Long> deletedIds = new ArrayList<>();
         List<Long> notFoundIds = new ArrayList<>();
         for(Long medicalRecordId : medicalRecordIds){
@@ -116,10 +116,8 @@ public class MedicalRecordService {
                 notFoundIds.add(medicalRecordId);
             }
         }
-        if(!deletedIds.isEmpty()){
-            return ResponseEntity.ok("The following medical records have been deleted: " + deletedIds);
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical records for the ids " + notFoundIds);
+        if(!notFoundIds.isEmpty()){
+            throw new NotFoundException(NOT_FOUND_MEDICALRECORD + notFoundIds);
         }
     }
 

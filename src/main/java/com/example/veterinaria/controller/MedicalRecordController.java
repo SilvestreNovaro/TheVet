@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -52,7 +54,8 @@ public class MedicalRecordController {
 
     @DeleteMapping("/deleteByIds")
     public ResponseEntity<String> deleteMedicalRecordsByIds(@RequestParam Long[] medicalRecordIds){
-        return medicalRecordService.deleteMedicalRecordByIds(medicalRecordIds);
+         medicalRecordService.deleteMedicalRecordByIds(medicalRecordIds);
+        return ResponseEntity.ok("The following medical records have been deleted: " + Arrays.toString(medicalRecordIds));
     }
 
     @DeleteMapping("/deleteMrs")
