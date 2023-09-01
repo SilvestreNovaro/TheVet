@@ -5,22 +5,21 @@ import com.example.veterinaria.convert.UtilityService;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
-import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.exception.NotFoundException;
-import com.example.veterinaria.repository.AppointmentRepository;
 import com.example.veterinaria.repository.MedicalRecordRepository;
+import com.example.veterinaria.repository.PetRepository;
 import com.example.veterinaria.repository.VetRepository;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -37,6 +36,8 @@ public class MedicalRecordService {
     private final CustomerService customerService;
 
     private final UtilityService utilityService;
+
+    private final PetRepository petRepository;
 
     private static final String NOT_FOUND_MEDICALRECORD = "MedicalRecord not found";
 
@@ -84,28 +85,24 @@ public class MedicalRecordService {
     }
 
     // es el que uso por ahora, que verifica que el medicalrecord sea de la mascota, que la mascota sea del cliente.
-    public void updatetoot(MedicalRecordDTO medicalRecordDTO, Long id, Long customerId, Long petId) {
-        MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEDICALRECORD));
+    public void updateMR(MedicalRecordDTO medicalRecordDTO, Long id, Long customerId, Long petId) {
+        medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEDICALRECORD));
         Customer customer = customerService.getCustomerById(customerId);
         Pet pet = customer.getPets().stream().filter(p -> p.getId().equals(petId))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Pet with id: " + petId + " does not belong to the customer"));
 
         List<MedicalRecord> medicalRecords = pet.getMedicalRecords();
-        MedicalRecord medicalRecordToUpdate = medicalRecords.stream()
+        Optional<MedicalRecord> foundMedicalRecord = medicalRecords.stream()
                 .filter(mr -> mr.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Medical Record with id: " + id + " not found for the pet"));
-
-        utilityService.updateMedicalRecord(medicalRecordDTO, id, customerId, petId);
+                .findFirst();
+        if (foundMedicalRecord.isPresent()) {
+            utilityService.updateMedicalRecord(medicalRecordDTO, id, customerId, petId);
+        } else {
+            throw new NotFoundException("Medical Record with id: " + id + " not found for the pet");
+        }
     }
 
-
-
-
-    public void delete(Long id){
-            medicalRecordRepository.deleteById(id);
-        }
 
     public ResponseEntity<String> deleteMedicalRecordByIds(Long[] medicalRecordIds){
         List<Long> deletedIds = new ArrayList<>();
@@ -125,6 +122,43 @@ public class MedicalRecordService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No medical records for the ids " + notFoundIds);
         }
     }
+
+
+    public void deleteMR(Long[] medicalRecordIds, Long customerId, Long petId) {
+        Customer customer = customerService.getCustomerById(customerId);
+        Pet pet = customer.getPets().stream()
+                .filter(p -> p.getId().equals(petId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Pet with id: " + petId + " does not belong to the customer"));
+
+        List<MedicalRecord> medicalRecordList = pet.getMedicalRecords();
+        List<Long> validIds = new ArrayList<>();
+        List<Long> invalidIds = new ArrayList<>();
+
+        for (Long id : medicalRecordIds) {
+            boolean found = medicalRecordList.stream()
+                    .anyMatch(mr -> mr.getId().equals(id));
+            if (found) {
+                validIds.add(id);
+            } else {
+                invalidIds.add(id);
+            }
+        }
+        if (!invalidIds.isEmpty()) {
+            throw new NotFoundException("Medical Record with the following ids not found for the pet: " + invalidIds);
+        }
+        medicalRecordList.removeIf(mr -> validIds.contains(mr.getId()));
+        petRepository.save(pet);
+    }
+
+
+    public void delete(Long id){
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEDICALRECORD));
+            medicalRecordRepository.delete(medicalRecord);
+        }
+
+
+
 
 
     }

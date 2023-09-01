@@ -75,7 +75,7 @@ public class UtilityService {
         medicalRecord.setAllergies(medicalRecordDTO.getAllergies());
         medicalRecord.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
         medicalRecord.setSurgeries(medicalRecordDTO.getSurgeries());
-        medicalRecord.setRecordDate(medicalRecordDTO.getRecordDate());
+        //medicalRecord.setRecordDate(medicalRecordDTO.getRecordDate());
         medicalRecord.setVaccinesJson(medicalRecordDTO.getVaccinesJson());
         Long vetId = medicalRecordDTO.getVetId();
         Vet vet = vetService.getVetById(vetId).get();
