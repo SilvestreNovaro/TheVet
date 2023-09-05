@@ -10,16 +10,12 @@ import com.example.veterinaria.repository.MedicalRecordRepository;
 import com.example.veterinaria.repository.PetRepository;
 import com.example.veterinaria.repository.VetRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -40,6 +36,10 @@ public class MedicalRecordService {
     private final PetRepository petRepository;
 
     private static final String NOT_FOUND_MEDICALRECORD = "MedicalRecord not found";
+
+    private static String PET_NOT_FOUND = "The following pet does not belong to the customer: petId ";
+
+
 
     public List<MedicalRecord> findAll(){
         return medicalRecordRepository.findAll();
@@ -74,7 +74,7 @@ public class MedicalRecordService {
         Customer customer = customerService.getCustomerById(customerId);
         List<Pet> petList = customer.getPets();
         for(Pet pets : petList) {
-            Pet pet = petList.stream().filter(p -> p.getId().equals(petId)).findFirst().orElseThrow(() -> new NotFoundException("Pet with id: " + petId + " does not belong to the customer"));
+            Pet pet = petList.stream().filter(p -> p.getId().equals(petId)).findFirst().orElseThrow(() -> new NotFoundException(PET_NOT_FOUND + petId));
             List<MedicalRecord> medicalRecords = pet.getMedicalRecords();
             for(MedicalRecord mr : medicalRecords){
                 if(pet.getMedicalRecords().contains(mr))
@@ -90,7 +90,7 @@ public class MedicalRecordService {
         Customer customer = customerService.getCustomerById(customerId);
         Pet pet = customer.getPets().stream().filter(p -> p.getId().equals(petId))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("Pet with id: " + petId + " does not belong to the customer"));
+                .orElseThrow(() -> new NotFoundException(PET_NOT_FOUND + petId));
 
         List<MedicalRecord> medicalRecords = pet.getMedicalRecords();
         Optional<MedicalRecord> foundMedicalRecord = medicalRecords.stream()
@@ -127,7 +127,7 @@ public class MedicalRecordService {
         Pet pet = customer.getPets().stream()
                 .filter(p -> p.getId().equals(petId))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("Pet with id: " + petId + " does not belong to the customer"));
+                .orElseThrow(() -> new NotFoundException(PET_NOT_FOUND + petId));
 
         List<MedicalRecord> medicalRecordList = pet.getMedicalRecords();
         List<Long> validIds = new ArrayList<>();
@@ -154,10 +154,6 @@ public class MedicalRecordService {
         MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEDICALRECORD));
             medicalRecordRepository.delete(medicalRecord);
         }
-
-
-
-
 
     }
 

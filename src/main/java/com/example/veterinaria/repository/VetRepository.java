@@ -1,5 +1,6 @@
 package com.example.veterinaria.repository;
 
+import com.example.veterinaria.entity.AvailabilitySlot;
 import com.example.veterinaria.entity.Vet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,9 +24,16 @@ public interface VetRepository extends JpaRepository <Vet, Long> {
     @Query("SELECT v FROM Vet v WHERE v.specialty = :specialty")
     List<Vet> findBySpecialty(@Param("specialty") String specialty);
 
+   /* @Query("SELECT v FROM Vet v WHERE v.availabilitySlot = :availabilitySlots")
+    List<AvailabilitySlot> findVetsAvailabilitys(@Param("availabilitySlots") String availabilitySlots);
+
+
+    */
     void deleteByLicense(String license);
 
     Optional<Vet> findBySurname(String surname);
 
     void deleteBySurname(String surname);
+
+
 }

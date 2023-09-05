@@ -2,20 +2,17 @@ package com.example.veterinaria.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.veterinaria.DTO.AppointmentDTO;
+import com.example.veterinaria.convert.UtilityService;
 import com.example.veterinaria.entity.*;
 import com.example.veterinaria.service.*;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +34,7 @@ public class AppointmentController {
 
     private JavaMailSender javaMailSender;
 
+    private final UtilityService utilityService;
 
     // GET MAPPING
 
@@ -138,92 +136,20 @@ public class AppointmentController {
 
     //CREATE
 
-   /*@PostMapping("/create")
-    public ResponseEntity<Object> createAppointment(@RequestBody AppointmentDTO appointmentDTO) throws MessagingException {
+   @PostMapping("/create")
+    public ResponseEntity<Object> createAppointment(@RequestBody com.example.veterinaria.DTO.AppointmentDTO appointmentDTO) throws MessagingException {
 
-        Optional<Customer> optionalCustomer = customerService.getCustomerById(appointmentDTO.getCustomerId());
         Optional<Vet> optionalVetId = vetService.getVetById(appointmentDTO.getVetId());
         List<Long> petIds = appointmentDTO.getPetIds();
         Optional<Appointment> appointmentOptional = appointmentService.findByAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
 
-
-        if (optionalCustomer.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customerId " + appointmentDTO.getCustomerId() + " not found");
-        }
-        if (optionalVetId.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("vetId " + appointmentDTO.getVetId() + " not found");
-        }
-        if (appointmentOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appointmentDTO.getAppointmentDateTime());
-        }
-        if (appointmentOptional  == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Local date time cant be null");
-        }
-        if(petIds.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No pets found with the ids: " + petIds);
-         }
-
-        Customer customer = optionalCustomer.get();
-
-            // Crear el mensaje de correo electrónico
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-            String formattedDateTime = now.format(formatter);
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setTo(customer.getEmail());
-            helper.setSubject("¡Appointment confirmation!");
-            String htmlMsg =
-                    "<html>" +
-                            "<head>" +
-                            "<style>" +
-                            "table {" +
-                            "  border-collapse: collapse;" +
-                            "  width: 100%;" +
-                            "}" +
-                            "th, td {" +
-                            "  text-align: left;" +
-                            "  padding: 8px;" +
-                            "}" +
-                            "th {" +
-                            "  background-color: #dddddd;" +
-                            "  color: #333333;" +
-                            "}" +
-                            "</style>" +
-                            "</head>" +
-                            "<body>" +
-                            "<h1 style='color: #007bff;'>Confirmación de reserva</h1>" +
-                            "<p>Estimado/a " + optionalCustomer.get().getName() + ",</p>" +
-                            "<p>Please, review the details of your reservation in the following table:</p>" +
-                            "<table>" +
-                            "<tr>" +
-                            "<th>Customer</th>" +
-                            "<th>appointmentReason</th>" +
-                            "<th>appointmentNotes</th>" +
-                            "<th>Vet</th>" +
-                            "<th>Pet</th>" +
-                            "</tr>" +
-                            "<tr>" +
-                            "<td>" + optionalCustomer.get().getName() + "</td>" +
-                            "<td>" + appointmentDTO.getAppointmentReason() + "</td>" +
-                            "<td>" + optionalVetId.get().getName() + "</td>" +
-                            "td>" + optionalCustomer.get().getPets().toString() + "</td>" +
-                            "<td>" + formattedDateTime + "</td>" +
-                            "</tr>" +
-                            "</table>" +
-                            "<p>Hope to see you soon!.</p>" +
-                            "<p>Sincirely,</p>" +
-                            "<p>The vet</p>" +
-                            "</body>" +
-                            "</html>";
-            helper.setText(htmlMsg, true);
-            javaMailSender.send(message);
+       //utilityService.buildAppointmentConfirmationEmail(appointmentDTO);
 
         appointmentService.createAppointment(appointmentDTO);
         return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
         }
 
-    */
+
 
 
 
@@ -261,14 +187,14 @@ public class AppointmentController {
 
 
     @PatchMapping ("/update/{id}")
-    public ResponseEntity<String> updateAppointment(@Validated @RequestBody Appointment appointment, @PathVariable Long id) {
+    public ResponseEntity<String> updateAppointment(@Validated @RequestBody Appointment appointmentDTO, @PathVariable Long id) {
         Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
         if (appointmentOptional.isPresent()) {
-            Optional<Appointment> localDateTimeOptional = appointmentService.findByAppointmentDateTime(appointment.getAppointmentDateTime());
+            Optional<Appointment> localDateTimeOptional = appointmentService.findByAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
             if (localDateTimeOptional.isPresent()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appointment.getAppointmentDateTime());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appointmentDTO.getAppointmentDateTime());
             }
-            appointmentService.updateAppointment(id, appointment);
+            appointmentService.updateAppointment(id, appointmentDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("Appointment updated succesfully!!");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointment found for the id " + id);

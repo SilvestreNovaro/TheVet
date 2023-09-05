@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.example.veterinaria.DTO.AppointmentDTO;
 import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
+import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.AppointmentRepository;
 import io.micrometer.common.util.StringUtils;
@@ -87,17 +87,17 @@ public class AppointmentService {
     // CREATE (POST REQUEST)
 
 
-    /*public void createAppointment(AppointmentDTO appointmentDTO) {
+    public void createAppointment(com.example.veterinaria.DTO.AppointmentDTO appointmentDTO) {
 
         Appointment appointment = new Appointment();
-
+        boolean isAvailable = appointmentRepository.isAppointmentAvailable(appointmentDTO.getAppointmentDateTime());
+        if(isAvailable){
+            throw new BadRequestException("An appointment is already created by the exact same time");
+        }
         List<Long> appPetIds = appointmentDTO.getPetIds();
 
-        Optional<Customer> optionalCustomer = customerService.getCustomerById(appointmentDTO.getCustomerId());
-
-
-        optionalCustomer.ifPresent(appointment::setCustomer);
-        Customer customer = optionalCustomer.get();
+        Customer customer = customerService.getCustomerById(appointmentDTO.getCustomerId());
+        appointment.setCustomer(customer);
 
         Optional<Vet> optionalVet = vetService.getVetById(appointmentDTO.getVetId());
         optionalVet.ifPresent(appointment::setVet);
@@ -115,8 +115,6 @@ public class AppointmentService {
         appointment.setPets(selectedPets);
          appointmentRepository.save(appointment);
     }
-
-     */
 
     //UPDATE (PUT PATCH REQUESTS)
 
@@ -174,15 +172,15 @@ public class AppointmentService {
 
 
     //Funciona.
-    public void updateAppointment(Long appointmentId, Appointment appointment) {
+    public void updateAppointment(Long appointmentId, Appointment appointmentDTO) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
         if (optionalAppointment.isPresent()) {
             Appointment existingAppointment = optionalAppointment.get();
 
-            if(appointment.getAppointmentDateTime() !=null && !appointment.getAppointmentDateTime().equals(""))
-                existingAppointment.setAppointmentDateTime(appointment.getAppointmentDateTime());
-            if (StringUtils.isNotBlank(appointment.getAppointmentReason())) {
-                existingAppointment.setAppointmentReason(appointment.getAppointmentReason());
+            if(appointmentDTO.getAppointmentDateTime() !=null && !appointmentDTO.getAppointmentDateTime().equals(""))
+                existingAppointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
+            if (StringUtils.isNotBlank(appointmentDTO.getAppointmentReason())) {
+                existingAppointment.setAppointmentReason(appointmentDTO.getAppointmentReason());
             }
 
             appointmentRepository.save(existingAppointment);

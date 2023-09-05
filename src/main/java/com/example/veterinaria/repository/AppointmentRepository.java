@@ -25,6 +25,12 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     Optional<Appointment> findByAppointmentDateTime(LocalDateTime appointmentDateTime);
 
+    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END " +
+            "FROM Appointment a " +
+            "WHERE a.appointmentDateTime = :appointmentDateTime")
+    boolean isAppointmentAvailable(@Param("appointmentDateTime") LocalDateTime appointmentDateTime);
+
+
     List<Appointment> findByVetId(Long vetId);
 
     List<Appointment> findByVetLicense(String license);
