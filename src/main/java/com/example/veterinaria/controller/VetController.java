@@ -4,6 +4,7 @@ import com.example.veterinaria.entity.AvailabilitySlot;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.VetService;
 import com.example.veterinaria.validationgroups.CreateValidationGroup;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,7 +87,7 @@ public class VetController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Vet updated successfully!");
     }
 
-    @PatchMapping("/updateAvailabilitySlots/{id}")
+    @PutMapping("/updateAvailabilitySlots/{id}")
     public ResponseEntity<String> updateAvailabillity(@RequestBody List<AvailabilitySlot> availabilitySlots, @PathVariable Long id){
         vetService.updateAvailabilitySlots(id, availabilitySlots);
         return ResponseEntity.status(HttpStatus.CREATED).body("Vet updated successfully!");

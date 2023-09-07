@@ -1,6 +1,6 @@
 package com.example.veterinaria.convert;
 
-import com.example.veterinaria.DTO.AppointmentDTO;
+
 import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.DTO.MedicalRecordDTO;
 import com.example.veterinaria.entity.Customer;
@@ -9,19 +9,13 @@ import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.MedicalRecordRepository;
-import com.example.veterinaria.service.CustomerService;
-import com.example.veterinaria.service.MedicalRecordService;
-import com.example.veterinaria.service.PetService;
-import com.example.veterinaria.service.VetService;
+import com.example.veterinaria.service.*;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import io.micrometer.common.util.StringUtils;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Component
@@ -34,9 +28,6 @@ public class UtilityService {
 
     private final MedicalRecordRepository medicalRecordRepository;
 
-    //private final CustomerService customerService;
-
-    //private final PetService petService;
 
     public CustomerDTO convertCustomerToCustomerDTO(Customer customer){
 

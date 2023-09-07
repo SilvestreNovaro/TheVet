@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.veterinaria.DTO.AppointmentDTO;
 import com.example.veterinaria.convert.UtilityService;
 import com.example.veterinaria.entity.*;
 import com.example.veterinaria.service.*;
+import com.example.veterinaria.validationgroups.CreateValidationGroup;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -137,7 +139,7 @@ public class AppointmentController {
     //CREATE
 
    @PostMapping("/create")
-    public ResponseEntity<Object> createAppointment(@RequestBody com.example.veterinaria.DTO.AppointmentDTO appointmentDTO) throws MessagingException {
+    public ResponseEntity<Object> createAppointment(@Validated(CreateValidationGroup.class)@RequestBody com.example.veterinaria.DTO.AppointmentDTO appointmentDTO) throws MessagingException {
 
         Optional<Vet> optionalVetId = vetService.getVetById(appointmentDTO.getVetId());
         List<Long> petIds = appointmentDTO.getPetIds();
@@ -151,39 +153,15 @@ public class AppointmentController {
 
 
 
-
-
-
     //UPDATE (PUT PATCH MAPPING)
 
-   /* @PutMapping("/updateApp/{id}")
-    public ResponseEntity<String> update(@Validated @RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id) {
-
-        Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
-        Optional<Appointment> localDateTimeOptional = appointmentService.findByAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
-        if(localDateTimeOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appointmentDTO.getAppointmentDateTime());
-        }
-        Optional<Customer> optionalCustomer = customerService.findById(appointmentDTO.getCustomerId());
-        Optional<Vet> vetOptional = vetService.getVetById(appointmentDTO.getVetId());
-        List<Pet> petIds = petService.getAllPetsIds(appointmentDTO.getPetIds());
-        if (petIds.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The petIds " + appointmentDTO.getPetIds() + " cant be null");
-        }
-        if (optionalCustomer.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The CustomerId " + appointmentDTO.getCustomerId() + " doesnt exist");
-        }
-        if (vetOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The VetId " + appointmentDTO.getVetId() + " doesnt exist");
-        }
-        if(appointmentOptional.isPresent()) {
-            appointmentService.updateAppointmentDTO(appointmentDTO, id);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Appointment updated succesfully!!");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointment found for the id " + id);
+  @PatchMapping("/updateApp/{id}")
+    public ResponseEntity<String> update(@RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id) {
+        appointmentService.updateAppointment(appointmentDTO, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Appointment updated succesfully!!");
     }
 
-    */
+
 
 
     @PatchMapping ("/update/{id}")

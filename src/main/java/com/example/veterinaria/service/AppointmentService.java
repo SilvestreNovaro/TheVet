@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import com.example.veterinaria.DTO.AppointmentDTO;
 import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
@@ -104,9 +104,9 @@ public class AppointmentService {
 
         List<Pet> selectedPets = customer.getPets().stream()
                 .filter(pet -> appPetIds.contains(pet.getId()))
-                .collect(Collectors.toList());
+                .toList();
 
-        if (!selectedPets.stream().map(Pet::getId).collect(Collectors.toList()).containsAll(appPetIds)) {
+        if (!selectedPets.stream().map(Pet::getId).toList().containsAll(appPetIds)) {
             throw new NotFoundException("One or more petIds not found for the customer");
         }
 
@@ -118,57 +118,37 @@ public class AppointmentService {
 
     //UPDATE (PUT PATCH REQUESTS)
 
-
-    // Funciona. Quitar validaciones service? @NotBlank en entity.
-    /*public void updateAppointmentDTO(AppointmentDTO appointmentDTO, Long id) {
-        Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
-        if (optionalAppointment.isPresent()) {
-            Appointment appointment = optionalAppointment.get();
-            LocalDateTime appDateTime = appointmentDTO.getAppointmentDateTime();
-            String appReason = appointmentDTO.getAppointmentReason();
-            List<Long> appPetIds = appointmentDTO.getPetIds();
-            Long customer = appointmentDTO.getCustomerId();
-            Long vet = appointmentDTO.getVetId();
-            if (appDateTime != null && !appDateTime.equals("")) {
-                appointment.setAppointmentDateTime(appDateTime);
-            }
-            if (appReason != null && !appReason.isEmpty()) {
-                appointment.setAppointmentReason(appReason);
-            }
-            if (customer != null && !customer.equals("")) {
-                Optional<Customer> optionalCustomer = customerService.getCustomerById(customer);
-                if (optionalCustomer.isPresent()) {
-                    Customer customerObj = optionalCustomer.get();
-                    List<Pet> validPets = new ArrayList<>();
-                    for (Long petId : appPetIds) {
-                        Optional<Pet> optionalPet = petService.getPetById(petId);
-                        if (optionalPet.isPresent()) {
-                            Pet pet = optionalPet.get();
-                            if (customerObj.getPets().contains(pet)) {
-                                validPets.add(pet);
-                            } else {
-                                throw new NotFoundException("PetId " + petId + " not found for the customer");
-                            }
-                        } else {
-                            throw new NotFoundException("PetId " + petId + " not found");
-                        }
-                    }
-                    appointment.setPets(validPets);
-                    appointment.setCustomer(customerObj);
-                }
-            }
-            if (vet != null && !vet.equals("")) {
-                Optional<Vet> vetOptional = vetService.getVetById(vet);
-                if (vetOptional.isPresent()) {
-                    Vet vetObj = vetOptional.get();
-                    appointment.setVet(vetObj);
-                }
-            }
-            appointmentRepository.save(appointment);
+    @Transactional
+    public void updateAppointment(AppointmentDTO appointmentDTO, Long id){
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new NotFoundException("No appointment found with the given id"));
+        boolean isAvailable = appointmentRepository.isAppointmentAvailable(appointmentDTO.getAppointmentDateTime());
+        if(isAvailable){
+        throw new BadRequestException("An appointment is already created by the exact same time");
         }
-    }
-
-     */
+        Customer customer = customerService.getCustomerById(appointmentDTO.getCustomerId());
+        Vet vet = vetService.getVetById(appointmentDTO.getVetId()).orElseThrow(() -> new NotFoundException("No vet found"));
+        List<Long> petIds = appointmentDTO.getPetIds();
+        List<Pet> petsToAdd = new ArrayList<>();
+        for(Long petId : petIds){
+            Pet pet = customer.getPets().stream()
+                    .filter(p -> p.getId().equals(petId))
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("Pet not found for the customer"));
+            petsToAdd.add(pet);
+        }
+        if(petsToAdd.isEmpty()){
+            throw new NotFoundException("Pet not found on our database");
+        }else{
+            appointment.setPets(petsToAdd);
+        }
+        appointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime() != null && !appointmentDTO.getAppointmentDateTime().toString().isEmpty() ? appointmentDTO.getAppointmentDateTime() : appointment.getAppointmentDateTime());
+        if (StringUtils.isNotBlank(appointmentDTO.getAppointmentReason())) {
+            appointment.setAppointmentReason(appointmentDTO.getAppointmentReason());
+        }
+        appointment.setVet(vet);
+        appointment.setCustomer(customer);
+        appointmentRepository.save(appointment);
+}
 
 
     //Funciona.
@@ -177,7 +157,7 @@ public class AppointmentService {
         if (optionalAppointment.isPresent()) {
             Appointment existingAppointment = optionalAppointment.get();
 
-            if(appointmentDTO.getAppointmentDateTime() !=null && !appointmentDTO.getAppointmentDateTime().equals(""))
+            if(appointmentDTO.getAppointmentDateTime() != null && !appointmentDTO.getAppointmentDateTime().toString().isEmpty())
                 existingAppointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
             if (StringUtils.isNotBlank(appointmentDTO.getAppointmentReason())) {
                 existingAppointment.setAppointmentReason(appointmentDTO.getAppointmentReason());
@@ -188,8 +168,6 @@ public class AppointmentService {
             throw new NotFoundException("Appointment not found with ID: " + appointmentId);
         }
     }
-
-
 
 
     // DELETE REQUESTS

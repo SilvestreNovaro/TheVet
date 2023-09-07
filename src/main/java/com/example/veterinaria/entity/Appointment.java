@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.veterinaria.validationgroups.CreateValidationGroup;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -22,9 +23,12 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "date time cant be null")
+    @Column
+    @NotNull(groups = {CreateValidationGroup.class},message = "date time cant be null")
     private LocalDateTime appointmentDateTime;
-    @NotBlank(message = "reason cant be null")
+
+    @Column
+    @NotBlank(groups = {CreateValidationGroup.class},message = "reason cant be null")
     private String appointmentReason;
 
 
@@ -40,7 +44,7 @@ public class Appointment {
     private Vet vet;
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH) //LO CAMBIE A DETACH SOLO PARA PODER ELIMINAR APPOINTMENTS, SI NO NO ME DEJABA ELIMNAR XQ PET ESTABA SIENDO REFERENCIADO EN APPOINTMENT_PET, PERO ESTABA EN TYPE.ALL ASI QUE MIRAR QUE COMBIENE.
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL) //LO CAMBIE A DETACH SOLO PARA PODER ELIMINAR APPOINTMENTS, SI NO NO ME DEJABA ELIMNAR XQ PET ESTABA SIENDO REFERENCIADO EN APPOINTMENT_PET, PERO ESTABA EN TYPE.ALL ASI QUE MIRAR QUE COMBIENE.
     @JoinTable(
             name = "appointment_pet",
             joinColumns = @JoinColumn(name = "appointment_id"),
