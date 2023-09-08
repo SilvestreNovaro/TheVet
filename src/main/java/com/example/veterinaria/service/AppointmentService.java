@@ -45,7 +45,7 @@ public class AppointmentService {
 
     private final MailService mailService;
 
-
+    private final static String NOT_FOUND_APPOINTMENT = "Appointment not found";
 
 
     // FIND(GET REQUESTS)
@@ -120,7 +120,7 @@ public class AppointmentService {
 
     @Transactional
     public void updateAppointment(AppointmentDTO appointmentDTO, Long id){
-        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new NotFoundException("No appointment found with the given id"));
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_APPOINTMENT));
         boolean isAvailable = appointmentRepository.isAppointmentAvailable(appointmentDTO.getAppointmentDateTime());
         if(isAvailable){
         throw new BadRequestException("An appointment is already created by the exact same time");
@@ -152,21 +152,14 @@ public class AppointmentService {
 
 
     //Funciona.
-    public void updateAppointment(Long appointmentId, Appointment appointmentDTO) {
-        Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
-        if (optionalAppointment.isPresent()) {
-            Appointment existingAppointment = optionalAppointment.get();
-
-            if(appointmentDTO.getAppointmentDateTime() != null && !appointmentDTO.getAppointmentDateTime().toString().isEmpty())
-                existingAppointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
-            if (StringUtils.isNotBlank(appointmentDTO.getAppointmentReason())) {
-                existingAppointment.setAppointmentReason(appointmentDTO.getAppointmentReason());
+    public void updateAppointment(Long appointmentId, Appointment appointment1) {
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new NotFoundException(NOT_FOUND_APPOINTMENT));
+            if(appointment1.getAppointmentDateTime() != null && !appointment1.getAppointmentDateTime().toString().isEmpty())
+                appointment.setAppointmentDateTime(appointment1.getAppointmentDateTime());
+            if (StringUtils.isNotBlank(appointment1.getAppointmentReason())) {
+                appointment.setAppointmentReason(appointment1.getAppointmentReason());
             }
-
-            appointmentRepository.save(existingAppointment);
-        } else {
-            throw new NotFoundException("Appointment not found with ID: " + appointmentId);
-        }
+            appointmentRepository.save(appointment);
     }
 
 
@@ -174,28 +167,31 @@ public class AppointmentService {
 
 
     public void deleteAppointmentId(Long id) {
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_APPOINTMENT));
+        //appointment.getPets().clear(); Si quiero eliminar, y no tener que usar cascade DETACH.
         appointmentRepository.deleteById(id);
     }
 
 
-
-    public ResponseEntity<String> deleteAppointmentsByIds(Long[] appointmentIds) {
+    public void deleteAppointmentsByIds(Long[] appointmentIds) {
         List<Long> deletedIds = new ArrayList<>();
         List<Long> notFoundIds = new ArrayList<>();
 
         for (Long appointmentId : appointmentIds) {
-            Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
-            if (optionalAppointment.isPresent()) {
-                appointmentRepository.deleteById(appointmentId);
+            try {
+                // Intenta encontrar y eliminar la cita
+                Appointment appointment = appointmentRepository.findById(appointmentId)
+                        .orElseThrow(() -> new NotFoundException(NOT_FOUND_APPOINTMENT));
+                appointmentRepository.delete(appointment);
                 deletedIds.add(appointmentId);
-            } else {
+            } catch (NotFoundException ex) {
+                // Si no se encuentra la cita, agrega su ID a notFoundIds
                 notFoundIds.add(appointmentId);
             }
         }
-        if (!deletedIds.isEmpty()) {
-            return ResponseEntity.ok("The following appointments have been deleted: " + deletedIds);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointments for the ids " + notFoundIds);
+        if (!notFoundIds.isEmpty()) {
+            // Si hay IDs no encontrados, lanza una excepción
+            throw new NotFoundException(NOT_FOUND_APPOINTMENT + notFoundIds);
         }
     }
 
@@ -213,7 +209,6 @@ public class AppointmentService {
                 inexistentIds.add(idAppointment );
             }
         }
-
         return inexistentIds;
     }
 

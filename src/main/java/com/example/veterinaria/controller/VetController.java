@@ -1,5 +1,6 @@
 package com.example.veterinaria.controller;
 
+import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.AvailabilitySlot;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.VetService;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +66,12 @@ public class VetController {
     @GetMapping("/getVetAvailability/{id}")
     public ResponseEntity<Object> vetsAbailavility(@PathVariable Long id){
         return ResponseEntity.ok(vetService.findVetAvailability(id));
+    }
+
+    @GetMapping("/getOccupiedTime/{id}")
+    public ResponseEntity<Object> vetsOcuppied(@PathVariable Long id){
+        //List<LocalDateTime> localDateTimes = vetService.getOccupiedTimeSlotsForVet(id);
+        return ResponseEntity.ok(vetService.getOccupiedTimeSlotsForVet(id));
     }
 
     @PostMapping("/create")

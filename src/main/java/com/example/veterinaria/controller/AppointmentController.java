@@ -166,16 +166,8 @@ public class AppointmentController {
 
     @PatchMapping ("/update/{id}")
     public ResponseEntity<String> updateAppointment(@Validated @RequestBody Appointment appointmentDTO, @PathVariable Long id) {
-        Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
-        if (appointmentOptional.isPresent()) {
-            Optional<Appointment> localDateTimeOptional = appointmentService.findByAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
-            if (localDateTimeOptional.isPresent()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An appointment is already created by the exact same time " + appointmentDTO.getAppointmentDateTime());
-            }
             appointmentService.updateAppointment(id, appointmentDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("Appointment updated succesfully!!");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointment found for the id " + id);
     }
 
 
@@ -183,34 +175,24 @@ public class AppointmentController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteAppointment(@PathVariable Long id) {
-        Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
-        if(appointmentOptional.isPresent()){
-            appointmentService.deleteAppointmentId(id);
+        appointmentService.deleteAppointmentId(id);
             return ResponseEntity.ok("Appointment with id " + id + " deleted");
-        }else{
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No appointment found with the given id " + id);
-        }
-
     }
 
 
     //DELETE MANY APPOINTMENTS.
     @DeleteMapping("/deleteByIds")
     public ResponseEntity<Object> deleteAppointmentsByIds(@RequestParam List <Long> appointmentIds) {
-        List<Long> deletedIds = appointmentService.deleteAppointment(appointmentIds);
-        if(deletedIds.isEmpty()){
-            return ResponseEntity.ok("non existent ids " + deletedIds);
-        }else{
-            return ResponseEntity.ok("appointents deleted succesfully " + appointmentIds.toString());
-        }
-
+        appointmentService.deleteAppointment(appointmentIds);
+        return ResponseEntity.ok("appointents deleted succesfully " + appointmentIds.toString());
     }
 
 
     // ALSO DELETES MANY APPOINTEMTS
     @DeleteMapping("/deleteAppointmentByIds2")
     public ResponseEntity<?> deleteAppointmentsByIds(@RequestParam  Long[] appointmentIds) {
-        return appointmentService.deleteAppointmentsByIds(appointmentIds);
+        appointmentService.deleteAppointmentsByIds(appointmentIds);
+        return ResponseEntity.ok("appointents deleted succesfully " + appointmentIds.toString());
     }
 
 

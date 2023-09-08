@@ -1,8 +1,10 @@
 package com.example.veterinaria.service;
+import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.AvailabilitySlot;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.exception.NotFoundException;
+import com.example.veterinaria.repository.AppointmentRepository;
 import com.example.veterinaria.repository.AvailabilitySlotRepository;
 import com.example.veterinaria.repository.VetRepository;
 import jakarta.transaction.Transactional;
@@ -10,6 +12,9 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +27,9 @@ public class VetService {
     @Autowired
     private final VetRepository vetRepository;
 
-    private final AvailabilitySlotRepository availableSlotRepository;
+    @Autowired
+    private final AppointmentRepository appointmentRepository;
+
     private final ModelMapper modelMapper;
     private static final String LICENSE_DUPLICATED = "License already in use";
     private static final String EMAIL_IN_USE = "Email already in use";
@@ -60,7 +67,7 @@ public class VetService {
         vetRepository.save(existingVet);
     }
 
-    public void updateAvailabilitySlots(Long id, List<AvailabilitySlot> availabilitySlots){
+    public void updateAvailabilitySlots(Long id, List<AvailabilitySlot> availabilitySlots) {
         Vet vet = vetRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_VET + id));
         vet.setAvailabilitySlots(availabilitySlots);
         vetRepository.save(vet);
@@ -132,5 +139,25 @@ public class VetService {
     public List<AvailabilitySlot> findVetAvailability(Long vetId) {
         Vet vet = vetRepository.findById(vetId).orElseThrow(() -> new NotFoundException(NOT_FOUND_VET + vetId));
         return vet.getAvailabilitySlots();
+    }
+
+
+    public List<LocalDateTime> getOccupiedTimeSlotsForVet(Long vetId) {
+        if (vetRepository.existsById(vetId)) {
+            // Obtener todas las citas programadas para el veterinario con el ID dado
+            List<Appointment> appointments = appointmentRepository.findByVetId(vetId);
+
+            // Crear una lista para almacenar las fechas y horarios ocupados
+            List<LocalDateTime> occupiedTimeSlots = new ArrayList<>();
+
+            // Recorrer las citas y agregar sus fechas y horarios a la lista
+            for (Appointment appointment : appointments) {
+                occupiedTimeSlots.add(appointment.getAppointmentDateTime());
+            }
+
+            return occupiedTimeSlots;
+        } else {
+            throw new NotFoundException(NOT_FOUND_VET + vetId);
+        }
     }
 }

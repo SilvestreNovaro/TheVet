@@ -2,7 +2,6 @@ package com.example.veterinaria.entity;
 
 
 import com.example.veterinaria.validationgroups.CreateValidationGroup;
-import com.example.veterinaria.validationgroups.UpdateValidationGroup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -40,9 +39,9 @@ public class Customer {
     @NotBlank( groups = {CreateValidationGroup.class}, message = "Email cant be null")
     private String email;
     @Column
-    @NotNull(groups = {CreateValidationGroup.class}, message = "Contactnumber cant be null")
+    @NotBlank(groups = {CreateValidationGroup.class}, message = "Contactnumber cant be null")
     @Min(1)
-    private Long contactNumber;
+    private String contactNumber;
     @Column
     @NotBlank(groups = {CreateValidationGroup.class}, message = "Password cant be null")
     private String password;

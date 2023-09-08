@@ -31,9 +31,9 @@ public class CustomerDTO {
     @NotBlank(groups = {CreateValidationGroup.class}, message = "Email cant be null")
     private String email;
     @Column
-    @NotNull(groups = {CreateValidationGroup.class}, message = "Contactnumber cant be null")
+    @NotBlank(groups = {CreateValidationGroup.class}, message = "Contactnumber cant be null")
     @Min(1)
-    private Long contactNumber;
+    private String contactNumber;
     @Column
     @NotBlank(groups = {CreateValidationGroup.class}, message = "Password cant be null")
     private String password;
