@@ -47,15 +47,12 @@ public class UtilityService {
     }
     public void createMedicalRecord(Pet pet, MedicalRecordDTO medicalRecordDTO){
         MedicalRecord newMR = new MedicalRecord();
-        newMR.setVaccinationStatus(medicalRecordDTO.getVaccinationStatus());
-        newMR.setVaccineDates(medicalRecordDTO.getVaccineDates());
         newMR.setMedication(medicalRecordDTO.getMedication());
         newMR.setIsNeutered(medicalRecordDTO.getIsNeutered());
         newMR.setAllergies(medicalRecordDTO.getAllergies());
         newMR.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
         newMR.setSurgeries(medicalRecordDTO.getSurgeries());
         newMR.setRecordDate(medicalRecordDTO.getRecordDate());
-        newMR.setVaccinesJson(medicalRecordDTO.getVaccinesJson());
         Long vetId = medicalRecordDTO.getVetId();
         Vet vet = vetService.getVetById(vetId).get();
         newMR.setVet(vet);
@@ -64,15 +61,12 @@ public class UtilityService {
     }
 
     public void updateMedicalRecord(MedicalRecordDTO medicalRecordDTO, Long id, Long customerId, Long petId){
-        MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException("No mr found"));
-        medicalRecord.setVaccinationStatus(medicalRecordDTO.getVaccinationStatus());
-        medicalRecord.setVaccineDates(medicalRecordDTO.getVaccineDates());
+        MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException("No medical record found"));
         medicalRecord.setMedication(medicalRecordDTO.getMedication());
         medicalRecord.setIsNeutered(medicalRecordDTO.getIsNeutered());
         medicalRecord.setAllergies(medicalRecordDTO.getAllergies());
         medicalRecord.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
         medicalRecord.setSurgeries(medicalRecordDTO.getSurgeries());
-        medicalRecord.setVaccinesJson(medicalRecordDTO.getVaccinesJson());
         Long vetId = medicalRecordDTO.getVetId();
         Vet vet = vetService.getVetById(vetId).get();
         medicalRecord.setVet(vet);
@@ -80,15 +74,12 @@ public class UtilityService {
     }
 
     public void updateMedicalRecordt(MedicalRecordDTO medicalRecordDTO, MedicalRecord medicalRecordToUpdate) {
-        medicalRecordToUpdate.setVaccinationStatus(medicalRecordDTO.getVaccinationStatus());
-        medicalRecordToUpdate.setVaccineDates(medicalRecordDTO.getVaccineDates());
         medicalRecordToUpdate.setMedication(medicalRecordDTO.getMedication());
         medicalRecordToUpdate.setIsNeutered(medicalRecordDTO.getIsNeutered());
         medicalRecordToUpdate.setAllergies(medicalRecordDTO.getAllergies());
         medicalRecordToUpdate.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
         medicalRecordToUpdate.setSurgeries(medicalRecordDTO.getSurgeries());
         medicalRecordToUpdate.setRecordDate(medicalRecordDTO.getRecordDate());
-        medicalRecordToUpdate.setVaccinesJson(medicalRecordDTO.getVaccinesJson());
 
         Long vetId = medicalRecordDTO.getVetId();
         Vet vet = vetService.getVetById(vetId).orElseThrow(() -> new NotFoundException("Vet with id: " + vetId + " not found"));

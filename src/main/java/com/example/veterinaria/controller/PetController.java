@@ -2,7 +2,9 @@ package com.example.veterinaria.controller;
 
 
 import com.example.veterinaria.DTO.MedicalRecordDTO;
+import com.example.veterinaria.DTO.VaccineDTO;
 import com.example.veterinaria.entity.Pet;
+import com.example.veterinaria.entity.Vaccine;
 import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.PetService;
 import com.example.veterinaria.service.VetService;
@@ -85,7 +87,21 @@ public class PetController {
         List<Pet> pets = petService.findByGender(gender);
             return ResponseEntity.ok(pets);
         }
+
+
+    @GetMapping("/vaccines/{id}")
+    public ResponseEntity<List<Vaccine>> getPetVaccines(@PathVariable Long id){
+      List<Vaccine> vaccines = petService.findVaccines(id);
+      return ResponseEntity.ok(vaccines);
     }
+
+    @PostMapping("/addVaccine/{id}")
+    public ResponseEntity<String> addVaccineStatus(@PathVariable Long id, @RequestBody VaccineDTO vaccineDTO){
+        petService.addVaccine(id, vaccineDTO);
+        return ResponseEntity.ok().body("Vaccine added successfully!");
+    }
+
+}
 
 
 

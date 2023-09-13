@@ -42,6 +42,13 @@ public class Pet {
     private List<MedicalRecord> medicalRecords = new ArrayList<>();
 
 
+    @ManyToMany(cascade = CascadeType.DETACH)
+    @JoinTable(
+            name = "pet_vaccine",
+            joinColumns = @JoinColumn(name = "pet_id"),
+            inverseJoinColumns = @JoinColumn(name = "vaccine_id")
+    )
+    private List<Vaccine> vaccines = new ArrayList<>();
 
 
 

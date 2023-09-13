@@ -12,9 +12,8 @@ import java.util.Map;
 @Setter
 public class MedicalRecordDTO {
 
-    private String vaccinationStatus;
-
-    private LocalDateTime vaccineDates;
+    @NotBlank
+    private String vaccineshot;
     @NotBlank
     private String medication;
     @NotNull(message = "esto es en dto")
@@ -29,8 +28,7 @@ public class MedicalRecordDTO {
     private LocalDateTime recordDate;
     @NotNull
     private Long vetId;
-    @NotBlank
-    private String vaccinesJson;
+
 
     public MedicalRecordDTO() {
         this.recordDate = LocalDateTime.now();

@@ -27,9 +27,7 @@ public class MedicalRecord {
     private Long id;
 
     @NotBlank
-    private String vaccinationStatus;
-    @NotNull
-    private LocalDateTime vaccineDates;
+    private String vaccineshot;
     @NotBlank
     private String medication;
     @NotNull(message = "esto es en entidad")
@@ -42,8 +40,6 @@ public class MedicalRecord {
     private String surgeries;
     @NotNull
     private LocalDateTime recordDate;
-    @NotBlank
-    private String vaccinesJson;
 
 
     @JsonIgnoreProperties({"name", "email", "license" })
