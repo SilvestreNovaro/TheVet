@@ -5,18 +5,14 @@ import com.example.veterinaria.DTO.MedicalRecordDTO;
 import com.example.veterinaria.DTO.VaccineDTO;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vaccine;
-import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.service.PetService;
-import com.example.veterinaria.service.VetService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @RestController

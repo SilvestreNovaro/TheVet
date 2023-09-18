@@ -19,6 +19,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
+@RestControllerAdvice
 @Validated
 @RequestMapping("/customer")
 public class CustomerController {

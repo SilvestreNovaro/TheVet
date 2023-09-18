@@ -8,7 +8,6 @@ import com.example.veterinaria.entity.Vaccine;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.PetRepository;
 import com.example.veterinaria.repository.VaccineRepository;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -64,7 +63,6 @@ public class PetService {
             );
             vaccine.setName(vaccineDTO.getName());
             vaccine.setType(vaccineDTO.getType());
-
             vaccine.setDateAdministration(vaccineDTO.getDateAdministration());
             vaccine.setBatch(vaccineDTO.getBatch());
 
@@ -98,8 +96,6 @@ public class PetService {
             throw new NotFoundException("nf");
         });
     }
-
-
 
 
     public List<Pet> findByName(String name) {

@@ -28,6 +28,7 @@ public class VaccineDTO {
         this.dateAdministration = LocalDateTime.now();
         calculateNextDate();
     }
+
     public void calculateNextDate() {
         if (name != null) {
             switch (name.toLowerCase()) {

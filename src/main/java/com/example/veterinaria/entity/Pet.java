@@ -50,7 +50,5 @@ public class Pet {
     )
     private List<Vaccine> vaccines = new ArrayList<>();
 
-
-
 }
 

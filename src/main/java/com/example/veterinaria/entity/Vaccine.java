@@ -35,5 +35,4 @@ public class Vaccine {
     @ManyToOne(cascade = CascadeType.DETACH)
     private Vet vet;
 
-
 }

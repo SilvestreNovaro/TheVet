@@ -27,7 +27,7 @@ public class MedicalRecordController {
 
     @GetMapping("/list")
     public List<MedicalRecord> findAll(){
-        return medicalRecordService.findAll();
+        return medicalRecordService.getAll();
     }
 
 

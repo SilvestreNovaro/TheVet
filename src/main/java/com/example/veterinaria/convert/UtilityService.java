@@ -61,6 +61,7 @@ public class UtilityService {
     }
 
     public void updateMedicalRecord(MedicalRecordDTO medicalRecordDTO, Long id, Long customerId, Long petId){
+        //esta excepcion esta repetida, mirar.
         MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException("No medical record found"));
         medicalRecord.setMedication(medicalRecordDTO.getMedication());
         medicalRecord.setIsNeutered(medicalRecordDTO.getIsNeutered());
@@ -68,7 +69,7 @@ public class UtilityService {
         medicalRecord.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
         medicalRecord.setSurgeries(medicalRecordDTO.getSurgeries());
         Long vetId = medicalRecordDTO.getVetId();
-        Vet vet = vetService.getVetById(vetId).get();
+        Vet vet = vetService.getVetById(vetId).orElseThrow(() -> new NotFoundException("Vet not found"));
         medicalRecord.setVet(vet);
         medicalRecordRepository.save(medicalRecord);
     }

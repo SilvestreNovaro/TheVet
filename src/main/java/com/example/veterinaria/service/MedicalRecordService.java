@@ -41,7 +41,7 @@ public class MedicalRecordService {
 
 
 
-    public List<MedicalRecord> findAll(){
+    public List<MedicalRecord> getAll(){
         return medicalRecordRepository.findAll();
     }
 
