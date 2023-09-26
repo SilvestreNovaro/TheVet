@@ -11,7 +11,6 @@ public class AvailabilitySlotService {
 
     private final AvailabilitySlotRepository availableSlotRepository;
 
-
     public AvailabilitySlot add(AvailabilitySlot availabilitySlot){
         return availableSlotRepository.save(availabilitySlot);
     }

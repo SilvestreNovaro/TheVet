@@ -20,8 +20,6 @@ import lombok.AllArgsConstructor;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -45,7 +43,7 @@ public class AppointmentService {
 
     private final MailService mailService;
 
-    private final static String NOT_FOUND_APPOINTMENT = "Appointment not found";
+    private static final String NOT_FOUND_APPOINTMENT = "Appointment not found";
 
 
     // FIND(GET REQUESTS)
@@ -136,9 +134,7 @@ public class AppointmentService {
                     .orElseThrow(() -> new NotFoundException("Pet not found for the customer"));
             petsToAdd.add(pet);
         }
-        if(petsToAdd.isEmpty()){
-            throw new NotFoundException("Pet not found on our database");
-        }else{
+        if(!petsToAdd.isEmpty()) {
             appointment.setPets(petsToAdd);
         }
         appointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime() != null && !appointmentDTO.getAppointmentDateTime().toString().isEmpty() ? appointmentDTO.getAppointmentDateTime() : appointment.getAppointmentDateTime());
@@ -169,7 +165,7 @@ public class AppointmentService {
     public void deleteAppointmentId(Long id) {
         Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_APPOINTMENT));
         //appointment.getPets().clear(); Si quiero eliminar, y no tener que usar cascade DETACH.
-        appointmentRepository.deleteById(id);
+        appointmentRepository.delete(appointment);
     }
 
 

@@ -9,8 +9,6 @@ import com.example.veterinaria.DTO.AppointmentDTO;
 import com.example.veterinaria.convert.UtilityService;
 import com.example.veterinaria.entity.*;
 import com.example.veterinaria.service.*;
-import com.example.veterinaria.validationgroups.CreateValidationGroup;
-import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +73,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/findAppointmentByDateAndTime/{appointmentDateTime}")
-    public ResponseEntity<?> findAppointmentByLocalDateTime(@PathVariable LocalDateTime appointmentDateTime){
+    public ResponseEntity<Object> findAppointmentByLocalDateTime(@PathVariable LocalDateTime appointmentDateTime){
         Optional<Appointment> appointmentOptional = appointmentService.findByAppointmentDateTime(appointmentDateTime);
         if(appointmentOptional.isEmpty()){
             return ResponseEntity.badRequest().body("No appointments found for the specified date and time.");
@@ -139,7 +137,7 @@ public class AppointmentController {
     //CREATE
 
    @PostMapping("/create")
-    public ResponseEntity<Object> createAppointment(@Validated @RequestBody AppointmentDTO appointmentDTO) throws MessagingException {
+    public ResponseEntity<Object> createAppointment(@Validated @RequestBody AppointmentDTO appointmentDTO){
 
        //utilityService.buildAppointmentConfirmationEmail(appointmentDTO);
 
@@ -158,10 +156,8 @@ public class AppointmentController {
     }
 
 
-
-
     @PatchMapping ("/update/{id}")
-    public ResponseEntity<String> updateAppointment(@Validated @RequestBody Appointment appointmentDTO, @PathVariable Long id) {
+    public ResponseEntity<String> updateAppointment(@RequestBody Appointment appointmentDTO, @PathVariable Long id) {
             appointmentService.updateAppointment(id, appointmentDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("Appointment updated succesfully!!");
     }
@@ -186,7 +182,7 @@ public class AppointmentController {
 
     // ALSO DELETES MANY APPOINTEMTS
     @DeleteMapping("/deleteAppointmentByIds2")
-    public ResponseEntity<?> deleteAppointmentsByIds(@RequestParam  Long[] appointmentIds) {
+    public ResponseEntity<String> deleteAppointmentsByIds(@RequestParam  Long[] appointmentIds) {
         appointmentService.deleteAppointmentsByIds(appointmentIds);
         return ResponseEntity.ok("appointents deleted succesfully " + appointmentIds.toString());
     }
