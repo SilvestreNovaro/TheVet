@@ -9,6 +9,7 @@ import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.PetRepository;
 import com.example.veterinaria.repository.VaccineRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,8 @@ public class PetService {
 
     private final VaccineRepository vaccineRepository;
 
+    private ModelMapper modelMapper;
+
 
     private static final String NOT_FOUND_PET = "Pet not found";
 
@@ -36,7 +39,7 @@ public class PetService {
 
     public void updatePet(Pet pet, Long id) {
         Pet existingPet = petRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_PET));
-        utilityService.updatePetProperties(existingPet, pet);
+        modelMapper.map(pet, existingPet);
         petRepository.save(existingPet);
     }
 

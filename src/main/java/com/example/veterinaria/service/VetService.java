@@ -65,8 +65,8 @@ public class VetService {
         vetRepository.save(existingVet);
     }
 
-    public void updateAvailabilitySlots(Long id, List<AvailabilitySlot> availabilitySlots) {
-        Vet vet = vetRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_VET + id));
+    public void updateAvailabilitySlots(Long vetId, List<AvailabilitySlot> availabilitySlots) {
+        Vet vet = vetRepository.findById(vetId).orElseThrow(() -> new NotFoundException(NOT_FOUND_VET + vetId));
         vet.setAvailabilitySlots(availabilitySlots);
         vetRepository.save(vet);
     }
