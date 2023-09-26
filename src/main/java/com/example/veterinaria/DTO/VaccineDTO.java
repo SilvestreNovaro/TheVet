@@ -1,5 +1,6 @@
 package com.example.veterinaria.DTO;
 
+import com.example.veterinaria.validationgroups.CreateValidationGroup;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -11,15 +12,15 @@ import java.time.LocalDateTime;
 @Setter
 public class VaccineDTO {
 
-    @NotBlank
+    @NotBlank(groups = {CreateValidationGroup.class}, message = "Name cant be null")
     private String name;
-    @NotBlank
+    @NotBlank(groups = {CreateValidationGroup.class}, message = "Type cant be null")
     private String type;
     @NotNull
     private LocalDateTime dateAdministration;
     @NotNull
     private LocalDateTime nextDate;
-    @NotBlank
+    @NotBlank//(groups = {CreateValidationGroup.class}, message = "Batch cant be null")
     private String batch;
     @NotNull
     private Long vetId;

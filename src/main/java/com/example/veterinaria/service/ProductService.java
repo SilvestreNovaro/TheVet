@@ -97,8 +97,6 @@ public class ProductService {
     }
 
 
-
-
     public void updateProductDTO(ProductDTO productDTO, Long id) {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
@@ -128,9 +126,6 @@ public class ProductService {
     }
 
 
-
-
-
     public void addImagesToProduct(Long productId, List<Image> images){
         Product product = productRepository.findById(productId).get();
         List<Image> imageList = product.getImages();
@@ -146,10 +141,7 @@ public class ProductService {
         }
     }
 
-
-
     //DELETE METHODS
-
 
     public void deleteImagesFromproduct(Long idProduct, List<Long> imagesIds) {
         // busco el producto por id

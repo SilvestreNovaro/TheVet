@@ -47,6 +47,7 @@ public class UtilityService {
     }
     public void createMedicalRecord(Pet pet, MedicalRecordDTO medicalRecordDTO){
         MedicalRecord newMR = new MedicalRecord();
+        newMR.setVaccineshot(medicalRecordDTO.getVaccineshot());
         newMR.setMedication(medicalRecordDTO.getMedication());
         newMR.setIsNeutered(medicalRecordDTO.getIsNeutered());
         newMR.setAllergies(medicalRecordDTO.getAllergies());
@@ -63,6 +64,7 @@ public class UtilityService {
     public void updateMedicalRecord(MedicalRecordDTO medicalRecordDTO, Long id, Long customerId, Long petId){
         //esta excepcion esta repetida, mirar.
         MedicalRecord medicalRecord = medicalRecordRepository.findById(id).orElseThrow(() -> new NotFoundException("No medical record found"));
+        medicalRecord.setVaccineshot(medicalRecordDTO.getVaccineshot());
         medicalRecord.setMedication(medicalRecordDTO.getMedication());
         medicalRecord.setIsNeutered(medicalRecordDTO.getIsNeutered());
         medicalRecord.setAllergies(medicalRecordDTO.getAllergies());
@@ -111,6 +113,17 @@ public class UtilityService {
         }
         return existingCustomer;
     }
+
+    public Customer convertCustomerDTOtoCustomerUpdate1(CustomerDTO customerDTO, Customer existingCustomer) {
+        existingCustomer.setName(customerDTO.getName());
+        existingCustomer.setLastName(customerDTO.getLastName());
+        existingCustomer.setAddress(customerDTO.getAddress());
+        existingCustomer.setEmail(customerDTO.getEmail());
+        existingCustomer.setContactNumber(customerDTO.getContactNumber());
+        existingCustomer.setPassword(customerDTO.getPassword());
+        return existingCustomer;
+    }
+
 
     public void createPet(Customer customer, Pet pet){
         Pet newPet = new Pet();

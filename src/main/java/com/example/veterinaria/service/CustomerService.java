@@ -73,19 +73,19 @@ public class CustomerService {
         });
         customer =  utilityService.convertCustomerDTOtoCustomerUpdate(customerDTO, customer);
         List<Pet> existingPets = customer.getPets();
-        for (Pet pet : customerDTO.getPets()) {
-            if (pet.getId() != null) {
-                Pet existingPet = existingPets.stream()
-                        .filter(pet1 -> pet1.getId().equals(pet.getId()))
-                        .findFirst()
-                        .orElseThrow(() -> new NotFoundException("Pet not found"));
-                modelMapper.map(pet, existingPet);
-            }
-            else{
-                utilityService.createPet(customer, pet);
+        if(!customerDTO.getPets().isEmpty()) {
+            for (Pet pet : customerDTO.getPets()) {
+                if (pet.getId() != null) {
+                    Pet existingPet = existingPets.stream()
+                            .filter(pet1 -> pet1.getId().equals(pet.getId()))
+                            .findFirst()
+                            .orElseThrow(() -> new NotFoundException("Pet not found"));
+                    modelMapper.map(pet, existingPet);
+                } else {
+                    utilityService.createPet(customer, pet);
+                }
             }
         }
-
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
         customer.setPassword(encodedPassword);
         Role role = roleService.findById(customerDTO.getRoleId())

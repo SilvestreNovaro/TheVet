@@ -5,7 +5,6 @@ import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.service.CustomerService;
-import com.example.veterinaria.validationgroups.CreateValidationGroup;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RestControllerAdvice
-@Validated
+
 @RequestMapping("/customer")
 public class CustomerController {
     private final CustomerService customerService;
@@ -63,8 +62,8 @@ public class CustomerController {
 
 
 
-    @PostMapping("/create")
-    public ResponseEntity<String> addCustomer(@Validated(CreateValidationGroup.class) @RequestBody CustomerDTO customerDTO) {
+    @PostMapping("/addCustomer")
+    public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) {
         customerService.createCustomer(customerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully");
     }

@@ -1,5 +1,6 @@
 package com.example.veterinaria.entity;
 
+import com.example.veterinaria.validationgroups.CreateValidationGroup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,15 +22,24 @@ public class Vaccine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @Column
+    @NotBlank(groups = {CreateValidationGroup.class}, message = "Name cant be null")
     private String name;
-    @NotBlank
+
+    @Column
+    @NotBlank(groups = {CreateValidationGroup.class}, message = "Type cant be null")
     private String type;
+
+    @Column
     @NotNull
     private LocalDateTime dateAdministration;
+
+    @Column
     @NotNull
     private LocalDateTime nextDate;
-    @NotBlank
+
+    @Column
+    @NotBlank//(groups = {CreateValidationGroup.class}, message = "Batch cant be null")
     private String batch;
 
     @ManyToOne(cascade = CascadeType.DETACH)

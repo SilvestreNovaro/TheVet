@@ -87,7 +87,7 @@ public class AppointmentService {
     // CREATE (POST REQUEST)
 
 
-    public void createAppointment(com.example.veterinaria.DTO.AppointmentDTO appointmentDTO) {
+    public void createAppointment(AppointmentDTO appointmentDTO) {
 
         Appointment appointment = new Appointment();
         boolean isAvailable = appointmentRepository.isAppointmentAvailable(appointmentDTO.getAppointmentDateTime());

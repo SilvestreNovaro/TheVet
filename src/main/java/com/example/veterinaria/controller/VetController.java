@@ -75,7 +75,7 @@ public class VetController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> add(@Validated(CreateValidationGroup.class)@RequestBody Vet vet) {
+    public ResponseEntity<String> add(@Validated @RequestBody Vet vet) {
         vetService.createVet(vet);
         return ResponseEntity.status(HttpStatus.CREATED).body("Vet added successfully!");
     }

@@ -139,11 +139,7 @@ public class AppointmentController {
     //CREATE
 
    @PostMapping("/create")
-    public ResponseEntity<Object> createAppointment(@Validated(CreateValidationGroup.class)@RequestBody com.example.veterinaria.DTO.AppointmentDTO appointmentDTO) throws MessagingException {
-
-        Optional<Vet> optionalVetId = vetService.getVetById(appointmentDTO.getVetId());
-        List<Long> petIds = appointmentDTO.getPetIds();
-        Optional<Appointment> appointmentOptional = appointmentService.findByAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
+    public ResponseEntity<Object> createAppointment(@Validated @RequestBody AppointmentDTO appointmentDTO) throws MessagingException {
 
        //utilityService.buildAppointmentConfirmationEmail(appointmentDTO);
 

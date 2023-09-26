@@ -6,6 +6,7 @@ import com.example.veterinaria.DTO.VaccineDTO;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vaccine;
 import com.example.veterinaria.service.PetService;
+import com.example.veterinaria.validationgroups.CreateValidationGroup;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class PetController {
     }
 
     @PostMapping("/addMedicalRecord")
-    public ResponseEntity<Object> addMedicalRecordToPet(@Validated @RequestBody MedicalRecordDTO medicalRecordDTO, @RequestParam Long petId){
+    public ResponseEntity<Object> addMedicalRecordToPet(@Validated(CreateValidationGroup.class) @RequestBody MedicalRecordDTO medicalRecordDTO, @RequestParam Long petId){
         petService.createMedicalRecord(petId, medicalRecordDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("MR added");
     }
@@ -92,7 +93,7 @@ public class PetController {
     }
 
     @PostMapping("/addVaccine/{id}")
-    public ResponseEntity<String> addVaccineStatus(@PathVariable Long id, @RequestBody VaccineDTO vaccineDTO){
+    public ResponseEntity<String> addVaccineStatus(@Validated(CreateValidationGroup.class) @PathVariable Long id, @RequestBody VaccineDTO vaccineDTO){
         petService.addVaccine(id, vaccineDTO);
         return ResponseEntity.ok().body("Vaccine added successfully!");
     }

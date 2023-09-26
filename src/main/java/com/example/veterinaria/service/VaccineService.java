@@ -1,10 +1,12 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.VaccineDTO;
+import com.example.veterinaria.DTO.VetDTO;
 import com.example.veterinaria.convert.VaccineUtilityService;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vaccine;
+import com.example.veterinaria.entity.Vet;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.VaccineRepository;
 import lombok.AllArgsConstructor;
@@ -22,6 +24,8 @@ public class VaccineService {
     private final CustomerService customerService;
 
     private final VaccineUtilityService vaccineUtilityService;
+
+    private final VetService vetService;
 
 
     public List<Vaccine> getAll(){
@@ -42,6 +46,17 @@ public class VaccineService {
                 throw new NotFoundException("No vaccine found");
             }
         }
+    }
+
+    public Vaccine createVaccine(VaccineDTO vaccineDTO){
+        Vaccine vaccine = new Vaccine();
+        vaccine.setBatch(vaccineDTO.getBatch());
+        vaccine.setType(vaccineDTO.getType());
+        vaccine.setName(vaccineDTO.getName());
+        Vet vet = vetService.getVetById(vaccineDTO.getVetId()).orElseThrow(() -> new NotFoundException("No vet"));
+        vaccine.setVet(vet);
+        vaccineRepository.save(vaccine);
+        return vaccine;
     }
 
 

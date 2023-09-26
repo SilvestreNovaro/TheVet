@@ -3,6 +3,7 @@ package com.example.veterinaria.controller;
 
 import com.example.veterinaria.DTO.VaccineDTO;
 import com.example.veterinaria.service.VaccineService;
+import com.example.veterinaria.validationgroups.CreateValidationGroup;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +23,11 @@ public class VaccineController {
     public ResponseEntity<String> updateVaccine(@PathVariable Long vaccineId, @PathVariable Long customerId, @PathVariable Long petId, @RequestBody VaccineDTO vaccineDTO){
         vaccineService.update(vaccineId, customerId, petId, vaccineDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Vaccine updated successfully");
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Object> createVaxx(@Validated(CreateValidationGroup.class) @RequestBody VaccineDTO vaccineDTO){
+        vaccineService.createVaccine(vaccineDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(vaccineDTO);
     }
 }

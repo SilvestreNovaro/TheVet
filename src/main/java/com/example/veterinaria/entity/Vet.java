@@ -22,18 +22,18 @@ public class Vet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "Name cant be null")
+    @NotBlank(message = "Name cant be null")
     private String name;
-    @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "surName cant be null")
+    @NotBlank(message = "surName cant be null")
     private String surname;
    @Email(message = "Email must be valid")
-    @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "Email cant be null")
+    @NotBlank(message = "Email cant be null")
     private String email;
-    @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "License cant be null")
+    @NotBlank(message = "License cant be null")
     private String license;
-    @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "Image cant be null")
+    @NotBlank(message = "Image cant be null")
     private String image;
-    @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class}, message = "Specialty cant be null")
+    @NotBlank(message = "Specialty cant be null")
     private String specialty;
 
     @ManyToMany(cascade = CascadeType.ALL)

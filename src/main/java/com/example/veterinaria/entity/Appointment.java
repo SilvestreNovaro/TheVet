@@ -24,11 +24,11 @@ public class Appointment {
     private Long id;
 
     @Column
-    @NotNull(groups = {CreateValidationGroup.class},message = "date time cant be null")
+    @NotNull(message = "date time cant be null")
     private LocalDateTime appointmentDateTime;
 
     @Column
-    @NotBlank(groups = {CreateValidationGroup.class},message = "reason cant be null")
+    @NotBlank(message = "reason cant be null")
     private String appointmentReason;
 
 
