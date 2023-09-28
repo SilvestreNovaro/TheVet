@@ -1,12 +1,13 @@
 package com.example.veterinaria.service;
-import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Mail;
 import com.example.veterinaria.repository.MailRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -19,8 +20,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-
-    private final MailRepository mailRepository;
 
     private final SpringTemplateEngine templateEngine;
 
@@ -38,7 +37,7 @@ public class MailService {
     }
 
 
-    public void sendRegistrationEmail(Customer customer) {
+    public void sendRegistrationEmail(@NotNull Customer customer) {
         String recipient = customer.getEmail();
         String subject = "Registry exitoso en VETHOME";
 
@@ -55,7 +54,6 @@ public class MailService {
         mail.setContent(content);
         sendEmail(mail);
     }
-
 
 
 

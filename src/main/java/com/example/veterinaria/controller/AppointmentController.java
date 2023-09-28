@@ -9,6 +9,7 @@ import com.example.veterinaria.DTO.AppointmentDTO;
 import com.example.veterinaria.convert.UtilityService;
 import com.example.veterinaria.entity.*;
 import com.example.veterinaria.service.*;
+import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -143,9 +144,7 @@ public class AppointmentController {
     //CREATE
 
    @PostMapping("/create")
-    public ResponseEntity<Object> createAppointment(@Validated @RequestBody AppointmentDTO appointmentDTO){
-
-       //utilityService.buildAppointmentConfirmationEmail(appointmentDTO);
+    public ResponseEntity<Object> createAppointment(@Validated @RequestBody AppointmentDTO appointmentDTO) throws MessagingException {
 
         appointmentService.createAppointment(appointmentDTO);
         return new ResponseEntity<>(appointmentDTO, HttpStatus.CREATED);
