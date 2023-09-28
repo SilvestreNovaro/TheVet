@@ -62,6 +62,12 @@ public class AppointmentController {
         }
     }
 
+    @GetMapping("/findAppointmentsBylastName&Address")
+    public ResponseEntity<List<Appointment>> getCustomersAppointmentsByLastNameAndAddress(@RequestParam String lastName, String Address){
+        List<Appointment> appointments = appointmentService.getAppointmentByLastNameAndAddress(lastName, Address);
+        return new ResponseEntity<>(appointments, HttpStatus.OK);
+    }
+
 
     @GetMapping("/listOfAppointmentsByDate/{date}")
     public ResponseEntity<Object> findListOfAppointmentsInParticularDate(@PathVariable LocalDate date){

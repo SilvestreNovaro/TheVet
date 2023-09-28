@@ -7,10 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.veterinaria.DTO.AppointmentDTO;
-import com.example.veterinaria.entity.Appointment;
-import com.example.veterinaria.entity.Customer;
-import com.example.veterinaria.entity.Pet;
-import com.example.veterinaria.entity.Vet;
+import com.example.veterinaria.entity.*;
 import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.AppointmentRepository;
@@ -23,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @AllArgsConstructor
 @Service
@@ -36,7 +35,8 @@ public class AppointmentService {
     private final CustomerService customerService;
 
     private final PetService petService;
-
+    private final SpringTemplateEngine templateEngine;
+    private static final String sender = "noreply@vethome.com";
     @Autowired
     private JavaMailSender javaMailSender;
 
@@ -51,6 +51,9 @@ public class AppointmentService {
         return appointmentRepository.findById(id);
     }
 
+    public List<Appointment> getAppointmentByLastNameAndAddress(String lastName, String Address){
+        return appointmentRepository.findAppointmentFromCustomerLastNameAndAddress(lastName, Address);
+        }
 
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
@@ -79,11 +82,14 @@ public class AppointmentService {
         return appointmentRepository.findByPetsId(petsId);
     }
 
+    public List<Appointment> allAppointmentsByXDate(LocalDate date){
+        return appointmentRepository.findAppointmentsByDate(date);
+    }
+
 
 
 
     // CREATE (POST REQUEST)
-
 
     public void createAppointment(AppointmentDTO appointmentDTO) {
 
@@ -111,7 +117,9 @@ public class AppointmentService {
         appointment.setAppointmentReason(appointmentDTO.getAppointmentReason());
         appointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
         appointment.setPets(selectedPets);
-         appointmentRepository.save(appointment);
+        appointmentRepository.save(appointment);
+        String petsText = buildPetsText(appointment.getPets());
+        sendAppointmentConfirmationEmail(appointment);
     }
 
     //UPDATE (PUT PATCH REQUESTS)
@@ -159,8 +167,11 @@ public class AppointmentService {
     }
 
 
-    // DELETE REQUESTS
 
+
+
+
+    // DELETE REQUESTS
 
     public void deleteAppointmentId(Long id) {
         Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_APPOINTMENT));
@@ -208,7 +219,33 @@ public class AppointmentService {
         return inexistentIds;
     }
 
-    @Transactional
+
+
+
+
+
+    //APPOINTMENT NOTIFICATIONS
+
+    public String buildPetsText(List<Pet> pets) {
+        StringBuilder petsText = new StringBuilder();
+        int numPets = pets.size();
+
+        for (int i = 0; i < numPets; i++) {
+            Pet pet = pets.get(i);
+            petsText.append(pet.getPetName());
+
+            if (numPets > 1) {
+                if (i < numPets - 2) {
+                    petsText.append(", ");
+                } else if (i == numPets - 2) {
+                    petsText.append(" y ");
+                }
+            }
+        }
+
+        return petsText.toString();
+    }
+
     public void sendAppointmentNotifications() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         LocalDateTime startOfDay = tomorrow.atStartOfDay();
@@ -218,62 +255,67 @@ public class AppointmentService {
 
         if (!appointments.isEmpty()) {
             for (Appointment appointment : appointments) {
-
                 Customer customer = appointment.getCustomer();
-                String email = customer.getEmail();
-
-                StringBuilder petsText = new StringBuilder();
-
-                List<Pet> pets = appointment.getPets();
-                int numPets = pets.size();
-
-                for (int i = 0; i < numPets; i++) {
-                    Pet pet = pets.get(i);
-                    // Agregar el nombre de la mascota
-                    petsText.append(pet.getPetName());
-
-                    if (numPets > 1) {
-                        // Más de una mascota, manejar casos especiales de separación
-                        if (i < numPets - 2) {
-                            // No es la última mascota, agregar coma y espacio
-                            petsText.append(", ");
-                        } else if (i == numPets - 2) {
-                            // Penúltima mascota, agregar coma y "y"
-                            petsText.append(" y ");
-                        }
-                    }
-                }
-
-// Construir el mensaje del correo electrónico
+                String recipientEmail = customer.getEmail();
                 String subject = "Recordatorio de Appointment";
-                String message = "Estimado " + customer.getName() + ",\n\n"
-                        + "Este es un recordatorio amable de que tienes un Appointment programado para mañana.\n"
-                        + "Fecha y Hora: " + appointment.getAppointmentDateTime() + "\n"
-                        + "Lugar: VETHOME"  + "\n\n"
-                        + "Con tu/s mascotas: " + petsText.toString() + "\n\n"
-                        + "¡Esperamos verte allí!\n\n"
-                        + "Saludos,\n"
-                        + "El equipo de tu clínica veterinaria";
 
-                // Envía el correo electrónico al cliente
-                sendEmail(email, subject, message);
+                // Crear el objeto Mail
+                Mail mail = new Mail();
+                mail.setSender(sender);
+                mail.setRecipient(recipientEmail);
+                mail.setSubject(subject);
+
+                // Procesar el template Thymeleaf
+                Context context = new Context();
+                context.setVariable("customerName", customer.getName());
+                context.setVariable("appointmentDateTime", appointment.getAppointmentDateTime().toString());
+                context.setVariable("petsText", buildPetsText(appointment.getPets()));
+
+                // Procesar la plantilla Thymeleaf con el Context
+                String content = templateEngine.process("appointment_notification_template", context);
+                mail.setContent(content);
+
+                // Enviar correo utilizando el método sendEmail(Mail mail)
+                sendEmail(mail);
             }
-        }
-        else{
+        } else {
             throw new NotFoundException("No se encontraron citas programadas para mañana.");
         }
     }
 
-    private void sendEmail(String to, String subject, String body) {
+
+    public void sendAppointmentConfirmationEmail(Appointment appointment) {
+        String recipient = appointment.getCustomer().getEmail();
+        String subject = "Confirmación de Turno en VETHOME";
+
+        String buildPetsText = buildPetsText(appointment.getPets());
+
+        Context context = new Context();
+        context.setVariable("name", appointment.getCustomer().getName());
+        context.setVariable("appointmentDateTime", appointment.getAppointmentDateTime().toString());
+        context.setVariable("petsText", buildPetsText);
+
+        // Procesar la plantilla Thymeleaf con el Context
+        String content = templateEngine.process("appointment_email_template", context);
+
+        Mail mail = new Mail();
+        mail.setSender(sender);
+        mail.setRecipient(recipient);
+        mail.setSubject(subject);
+        mail.setContent(content);
+        sendEmail(mail);
+    }
+
+
+    private void sendEmail(Mail mail) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
+        message.setFrom(mail.getSender());
+        message.setTo(mail.getRecipient());
+        message.setSubject(mail.getSubject());
+        message.setText(mail.getContent());
+
         javaMailSender.send(message);
     }
 
-    public List<Appointment> allAppointmentsByXDate(LocalDate date){
-        return appointmentRepository.findAppointmentsByDate(date);
-    }
 }
 

@@ -134,11 +134,7 @@ public class UtilityService {
         customer.getPets().add(newPet);
     }
 
-    public void updatePetProperties(Pet existingPet, Pet pet) {
-        modelMapper.map(pet, existingPet);
-    }
-
-   /* public String buildAppointmentConfirmationEmail(AppointmentDTO appointmentDTO) {
+    /* public String buildAppointmentConfirmationEmail(AppointmentDTO appointmentDTO) {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         String formattedDateTime = now.format(formatter);

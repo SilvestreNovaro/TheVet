@@ -11,6 +11,8 @@ public class AvailabilitySlotService {
 
     private final AvailabilitySlotRepository availableSlotRepository;
 
+
+    // Este service no tiene sentido.
     public AvailabilitySlot add(AvailabilitySlot availabilitySlot){
         return availableSlotRepository.save(availabilitySlot);
     }

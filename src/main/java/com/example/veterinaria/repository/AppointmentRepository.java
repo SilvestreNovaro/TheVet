@@ -30,6 +30,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             "WHERE a.appointmentDateTime = :appointmentDateTime")
     boolean isAppointmentAvailable(@Param("appointmentDateTime") LocalDateTime appointmentDateTime);
 
+    @Query("SELECT a FROM Appointment a JOIN a.customer c WHERE UPPER(c.lastName) = UPPER(:lastName) AND UPPER(c.address) = UPPER(:address)")
+    List<Appointment> findAppointmentFromCustomerLastNameAndAddress(@Param("lastName") String lastName, @Param("address") String address);
 
     List<Appointment> findByVetId(Long vetId);
 

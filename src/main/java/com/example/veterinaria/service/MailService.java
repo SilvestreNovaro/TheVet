@@ -1,8 +1,10 @@
 package com.example.veterinaria.service;
+import com.example.veterinaria.entity.Appointment;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Mail;
 import com.example.veterinaria.repository.MailRepository;
 import lombok.AllArgsConstructor;
+
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,8 @@ public class MailService {
     private final MailRepository mailRepository;
 
     private final SpringTemplateEngine templateEngine;
-    private static final String sender = "noreply@vethome.com";
 
+    private static final String sender = "noreply@vethome.com";
 
 
     public void sendEmail(Mail mail) {
@@ -34,7 +36,6 @@ public class MailService {
 
         javaMailSender.send(message);
     }
-
 
 
     public void sendRegistrationEmail(Customer customer) {
@@ -54,5 +55,9 @@ public class MailService {
         mail.setContent(content);
         sendEmail(mail);
     }
+
+
+
+
 
 }

@@ -23,7 +23,7 @@ public class AppointmentScheduler {
     }
 
 
-    @Scheduled(cron = "0 29 13 * * ?") // Se ejecuta todos los días a las 9:50 AM
+    @Scheduled(cron = "0 55 11 * * ?") // Se ejecuta todos los días a las 9:50 AM
 
     public void sendAppointmentReminders() {
 
