@@ -43,7 +43,7 @@ public class Appointment {
     private Vet vet;
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL) //LO CAMBIE A DETACH SOLO PARA PODER ELIMINAR APPOINTMENTS, SI NO NO ME DEJABA ELIMNAR XQ PET ESTABA SIENDO REFERENCIADO EN APPOINTMENT_PET, PERO ESTABA EN TYPE.ALL ASI QUE MIRAR QUE COMBIENE.
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH) //LO CAMBIE A DETACH SOLO PARA PODER ELIMINAR APPOINTMENTS, SI NO NO ME DEJABA ELIMNAR XQ PET ESTABA SIENDO REFERENCIADO EN APPOINTMENT_PET, PERO ESTABA EN TYPE.ALL ASI QUE MIRAR QUE COMBIENE.
     @JoinTable(
             name = "appointment_pet",
             joinColumns = @JoinColumn(name = "appointment_id"),

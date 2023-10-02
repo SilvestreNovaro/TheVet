@@ -1,6 +1,7 @@
 package com.example.veterinaria.entity;
 
 import com.example.veterinaria.service.AppointmentService;
+import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,9 @@ public class AppointmentScheduler {
     }
 
 
-    @Scheduled(cron = "0 50 18 * * ?") // Se ejecuta todos los días a las 9:50 AM
+    @Scheduled(cron = "0 58 16 * * ?") // Se ejecuta todos los días a las 9:50 AM
 
-    public void sendAppointmentReminders() {
+    public void sendAppointmentReminders() throws MessagingException {
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 

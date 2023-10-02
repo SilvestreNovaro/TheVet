@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,16 +37,16 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
 
     private final VetService vetService;
+
     private final CustomerService customerService;
 
     private final PetService petService;
+
     private final SpringTemplateEngine templateEngine;
     private static final String sender = "noreply@vethome.com";
     @Autowired
     private JavaMailSender javaMailSender;
 
-
-    private final MailService mailService;
 
     private static final String NOT_FOUND_APPOINTMENT = "Appointment not found";
 
@@ -91,8 +92,6 @@ public class AppointmentService {
     }
 
 
-
-
     // CREATE (POST REQUEST)
 
     public void createAppointment(AppointmentDTO appointmentDTO) throws MessagingException {
@@ -114,7 +113,7 @@ public class AppointmentService {
                 .filter(pet -> appPetIds.contains(pet.getId()))
                 .toList();
 
-        if (!selectedPets.stream().map(Pet::getId).toList().containsAll(appPetIds)) {
+        if (!new HashSet<>(selectedPets.stream().map(Pet::getId).toList()).containsAll(appPetIds)) {
             throw new NotFoundException("One or more petIds not found for the customer");
         }
 
@@ -122,8 +121,7 @@ public class AppointmentService {
         appointment.setAppointmentDateTime(appointmentDTO.getAppointmentDateTime());
         appointment.setPets(selectedPets);
         appointmentRepository.save(appointment);
-        //sendAppointmentConfirmationEmail(appointment);
-        createAppointmentConfirmation(customer, appointmentDTO);
+        sendAppointmentConfirmationEmail(appointment);
     }
 
     //UPDATE (PUT PATCH REQUESTS)
@@ -158,7 +156,6 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
 }
 
-
     //Funciona.
     public void updateAppointment(Long appointmentId, Appointment appointment1) {
         Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new NotFoundException(NOT_FOUND_APPOINTMENT));
@@ -170,11 +167,6 @@ public class AppointmentService {
             appointmentRepository.save(appointment);
     }
 
-
-
-
-
-
     // DELETE REQUESTS
 
     public void deleteAppointmentId(Long id) {
@@ -182,7 +174,6 @@ public class AppointmentService {
         //appointment.getPets().clear(); Si quiero eliminar, y no tener que usar cascade DETACH.
         appointmentRepository.delete(appointment);
     }
-
 
     public void deleteAppointmentsByIds(Long[] appointmentIds) {
         List<Long> deletedIds = new ArrayList<>();
@@ -206,7 +197,6 @@ public class AppointmentService {
         }
     }
 
-
     // ALSO DELETES MANY APPOINTEMTS
     @Transactional
     public List<Long> deleteAppointment(List<Long> appointmentIds) {
@@ -222,10 +212,6 @@ public class AppointmentService {
         }
         return inexistentIds;
     }
-
-
-
-
 
 
     //APPOINTMENT NOTIFICATIONS
@@ -252,7 +238,7 @@ public class AppointmentService {
     }
 
     @Transactional
-    public void sendAppointmentNotifications() {
+    public void sendAppointmentNotifications() throws MessagingException {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         LocalDateTime startOfDay = tomorrow.atStartOfDay();
         LocalDateTime endOfDay = tomorrow.plusDays(1).atStartOfDay();
@@ -265,11 +251,6 @@ public class AppointmentService {
                 String recipientEmail = customer.getEmail();
                 String subject = "Recordatorio de Appointment";
 
-                // Crear el objeto Mail
-                Mail mail = new Mail();
-                mail.setSender(sender);
-                mail.setRecipient(recipientEmail);
-                mail.setSubject(subject);
 
                 // Procesar el template Thymeleaf
                 Context context = new Context();
@@ -279,18 +260,19 @@ public class AppointmentService {
 
                 // Procesar la plantilla Thymeleaf con el Context
                 String content = templateEngine.process("appointment_notification_template", context);
-                mail.setContent(content);
-
-                // Enviar correo utilizando el método sendEmail(Mail mail)
-                sendEmail(mail);
+                MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                helper.setTo(recipientEmail);
+                helper.setSubject(subject);
+                helper.setText(content, true);
+                javaMailSender.send(mimeMessage);
             }
         } else {
             throw new NotFoundException("No se encontraron citas programadas para mañana.");
         }
     }
 
-
-   /* public void sendAppointmentConfirmationEmail(Appointment appointment) throws MessagingException {
+    public void sendAppointmentConfirmationEmail(Appointment appointment) throws MessagingException {
         String recipient = appointment.getCustomer().getEmail();
         String subject = "Confirmación de Turno en VETHOME";
 
@@ -304,7 +286,6 @@ public class AppointmentService {
         // Procesar la plantilla Thymeleaf con el Context
         String content = templateEngine.process("appointment_email_template.html", context);
 
-        System.out.println("Contenido generado por Thymeleaf: " + content);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         helper.setTo(recipient);
@@ -312,84 +293,9 @@ public class AppointmentService {
 
         // Establece el contenido como HTML
         helper.setText(content, true);
+        //ESTA LINEA ENVIA EL MAIL DE RECORDATORIO DE FORMA CORRECTA!!
+        javaMailSender.send(mimeMessage);
 
-
-        Mail mail = new Mail();
-        mail.setSender(sender);
-        mail.setRecipient(recipient);
-        mail.setSubject(subject);
-        mail.setContent(content);
-        sendEmail(mail);
-    }
-
-    */
-
-
-    public void createAppointmentConfirmation(Customer customer, AppointmentDTO appointmentDTO) throws MessagingException {
-        Customer customer1 = customerService.getCustomerById(appointmentDTO.getCustomerId());
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        String formattedDateTime = now.format(formatter);
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-        helper.setTo(customer.getEmail());
-        helper.setSubject("¡Appointment confirmation!");
-        String htmlMsg =
-                "<html>" +
-                        "<head>" +
-                        "<style>" +
-                        "table {" +
-                        "  border-collapse: collapse;" +
-                        "  width: 100%;" +
-                        "}" +
-                        "th, td {" +
-                        "  text-align: left;" +
-                        "  padding: 8px;" +
-                        "}" +
-                        "th {" +
-                        "  background-color: #dddddd;" +
-                        "  color: #333333;" +
-                        "}" +
-                        "</style>" +
-                        "</head>" +
-                        "<body>" +
-                        "<h1 style='color: #007bff;'>Confirmación de reserva</h1>" +
-                        "<p>Estimado/a " + customer1.getName() + ",</p>" +
-                        "<p>Please, review the details of your reservation in the following table:</p>" +
-                        "<table>" +
-                        "<tr>" +
-                        "<th>Customer</th>" +
-                        "<th>appointmentReason</th>" +
-                        "<th>appointmentNotes</th>" +
-                        "<th>Vet</th>" +
-                        "<th>Pet</th>" +
-                        "</tr>" +
-                        "<tr>" +
-                        "<td>" + customer1.getName() + "</td>" +
-                        "<td>" + appointmentDTO.getAppointmentReason() + "</td>" +
-                        "<td>" + appointmentDTO.getVetId() + "</td>" +
-                        "td>" + customer1.getPets().toString() + "</td>" +
-                        "<td>" + formattedDateTime + "</td>" +
-                        "</tr>" +
-                        "</table>" +
-                        "<p>Hope to see you soon!.</p>" +
-                        "<p>Sincirely,</p>" +
-                        "<p>The vet</p>" +
-                        "</body>" +
-                        "</html>";
-        helper.setText(htmlMsg, true);
-        javaMailSender.send(message);
-    }
-
-
-    private void sendEmail(Mail mail) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(mail.getSender());
-        message.setTo(mail.getRecipient());
-        message.setSubject(mail.getSubject());
-        message.setText(mail.getContent());
-
-        javaMailSender.send(message);
     }
 
 }

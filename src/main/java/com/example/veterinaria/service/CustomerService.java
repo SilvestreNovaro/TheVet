@@ -9,6 +9,11 @@ import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
 import com.example.veterinaria.repository.PetRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.thymeleaf.context.Context;
 import lombok.AllArgsConstructor;
 
 import org.modelmapper.ModelMapper;
@@ -16,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 
 import java.util.ArrayList;
@@ -39,7 +44,12 @@ public class CustomerService {
 
     private final PetRepository petRepository;
 
-    private final MailService mailService;
+
+    private final SpringTemplateEngine templateEngine;
+
+    private JavaMailSender javaMailSender;
+
+    private static final String sender = "noreply@vethome.com";
 
     private static final String NOT_FOUND_CUSTOMER = "Customer not found";
 
@@ -50,7 +60,7 @@ public class CustomerService {
 
 
 
-    public void createCustomer(CustomerDTO customerDTO) {
+    public void createCustomer(CustomerDTO customerDTO) throws MessagingException {
         customerRepository.findByEmail(customerDTO.getEmail()).ifPresent( c -> {
             throw new BadRequestException("Email already in use");
         });
@@ -59,10 +69,30 @@ public class CustomerService {
         customer.setPassword(encodedPassword);
         Role role = roleService.findById(3L).orElseThrow(() -> new NotFoundException(NOT_FOUND_ROLE));
         customer.setRole(role);
-        mailService.sendRegistrationEmail(customer);
+        sendRegistrationEmail(customer);
         customerRepository.save(customer);
     }
+    public void sendRegistrationEmail(Customer customer) throws MessagingException {
+        String recipient = customer.getEmail();
+        String subject = "Registry exitoso en VETHOME";
 
+        Context context = new Context();
+        context.setVariable("name", customer.getName());
+
+        // Procesar la plantilla Thymeleaf con el Context
+        String content = templateEngine.process("email-template", context);
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        helper.setTo(recipient);
+        helper.setSubject(subject);
+
+
+        // Establece el contenido como HTML
+        helper.setText(content, true);
+        //ESTA LINEA ENVIA EL MAIL DE RECORDATORIO DE FORMA CORRECTA!!
+        javaMailSender.send(mimeMessage);
+    }
 
 
     public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {

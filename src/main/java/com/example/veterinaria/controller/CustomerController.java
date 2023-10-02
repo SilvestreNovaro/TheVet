@@ -5,6 +5,7 @@ import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.service.CustomerService;
+import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,7 @@ public class CustomerController {
 
 
     @PostMapping("/addCustomer")
-    public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) throws MessagingException {
         customerService.createCustomer(customerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully");
     }
