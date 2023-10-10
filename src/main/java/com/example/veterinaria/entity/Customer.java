@@ -45,6 +45,7 @@ public class Customer {
     @Column
     @NotBlank(message = "Password cant be null")
     private String password;
+    @Column
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")

@@ -2,9 +2,7 @@ package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.convert.UtilityService;
-import com.example.veterinaria.entity.Customer;
-import com.example.veterinaria.entity.Pet;
-import com.example.veterinaria.entity.Role;
+import com.example.veterinaria.entity.*;
 import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
@@ -24,9 +22,8 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @AllArgsConstructor
 @Service
@@ -35,6 +32,7 @@ public class CustomerService {
 
     @Autowired
     private final ModelMapper modelMapper;
+
     private final CustomerRepository customerRepository;
 
     private final PetService petService;
@@ -43,7 +41,6 @@ public class CustomerService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private final PetRepository petRepository;
-
 
     private final SpringTemplateEngine templateEngine;
 
@@ -54,6 +51,7 @@ public class CustomerService {
     private static final String NOT_FOUND_CUSTOMER = "Customer not found";
 
     private static final String NOT_FOUND_ROLE = "Role not found";
+
 
     @Autowired
     UtilityService utilityService;
@@ -93,6 +91,73 @@ public class CustomerService {
         //ESTA LINEA ENVIA EL MAIL DE RECORDATORIO DE FORMA CORRECTA!!
         javaMailSender.send(mimeMessage);
     }
+
+    public void sendEmailToAllCustomers(Customer customer) throws MessagingException {
+            customer.getEmail();
+            String recipient = customer.getEmail();
+            String subject = "Hora de llevar a tu mascota!";
+
+            Context context = new Context();
+            context.setVariable("name", customer.getName());
+            //context.setVariable("");
+
+
+            // Procesar la plantilla Thymeleaf con el Context
+            String content = templateEngine.process("email-template", context);
+
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setTo(recipient);
+            helper.setSubject(subject);
+
+
+            // Establece el contenido como HTML
+            helper.setText(content, true);
+            //ESTA LINEA ENVIA EL MAIL DE RECORDATORIO DE FORMA CORRECTA!!
+            javaMailSender.send(mimeMessage);
+
+    }
+
+
+    public void checkPetsMedicalRecords() throws MessagingException {
+        List<Customer> customerList = customerRepository.findAll();
+        for (Customer customer : customerList) {
+            List<Pet> pets = customer.getPets();
+
+            for (Pet pet : pets) {
+                List<MedicalRecord> medicalRecords = pet.getMedicalRecords();
+
+                // Verifica si hay registros médicos
+                if (!medicalRecords.isEmpty()) {
+                    // Ordena los registros médicos por fecha en orden descendente
+                    medicalRecords.sort(Comparator.comparing(MedicalRecord::getRecordDate).reversed());
+
+                    // Obtiene el último registro médico
+                    MedicalRecord lastMedicalRecord = medicalRecords.get(0);
+
+                    // Verifica si el último registro médico fue hace 6 meses o más
+                    if (isOlderThanSixMonths(lastMedicalRecord.getRecordDate())) {
+                        // La mascota tiene un registro médico hace 6 meses o más
+                        // Realiza la acción que necesites con esta información
+                        // Por ejemplo, notificar al cliente o tomar alguna otra acción
+                        sendEmailToAllCustomers(customer);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isOlderThanSixMonths(LocalDateTime recordDate) {
+        // Obtén la fecha y hora actual
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        // Calcula la fecha y hora hace 6 meses desde la fecha actual
+        LocalDateTime sixMonthsAgoDateTime = currentDateTime.minusMonths(6);
+
+        // Compara la fecha y hora del registro médico con la fecha y hora hace 6 meses
+        return recordDate.isBefore(sixMonthsAgoDateTime);
+    }
+
 
 
     public void updateCustomerDTO(CustomerDTO customerDTO, Long id) {
@@ -270,10 +335,7 @@ public class CustomerService {
             }else {
                 throw new NotFoundException(NOT_FOUND_CUSTOMER);
             }
-
-
         }
-
 
     }
 

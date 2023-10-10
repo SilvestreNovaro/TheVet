@@ -39,7 +39,6 @@ public class UtilityService {
         customer.setName(customerDTO.getName());
         customer.setLastName(customerDTO.getLastName());
         customer.setPets(customerDTO.getPets());
-        customer.setPassword(customerDTO.getPassword());
         customer.setAddress(customerDTO.getAddress());
         customer.setEmail(customerDTO.getEmail());
         customer.setContactNumber(customerDTO.getContactNumber());
@@ -70,6 +69,7 @@ public class UtilityService {
         medicalRecord.setAllergies(medicalRecordDTO.getAllergies());
         medicalRecord.setExistingPathologies(medicalRecordDTO.getExistingPathologies());
         medicalRecord.setSurgeries(medicalRecordDTO.getSurgeries());
+        medicalRecord.setRecordDate(medicalRecordDTO.getRecordDate());
         Long vetId = medicalRecordDTO.getVetId();
         Vet vet = vetService.getVetById(vetId).orElseThrow(() -> new NotFoundException("Vet not found"));
         medicalRecord.setVet(vet);
@@ -124,7 +124,6 @@ public class UtilityService {
         return existingCustomer;
     }
 
-
     public void createPet(Customer customer, Pet pet){
         Pet newPet = new Pet();
         newPet.setPetName(pet.getPetName());
@@ -133,62 +132,6 @@ public class UtilityService {
         newPet.setPetSpecies(pet.getPetSpecies());
         customer.getPets().add(newPet);
     }
-
-    /* public String buildAppointmentConfirmationEmail(AppointmentDTO appointmentDTO) {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        String formattedDateTime = now.format(formatter);
-        Customer customer = customerService.getCustomerById(appointmentDTO.getCustomerId());
-        Optional<Vet> optionalVet = vetService.getVetById(appointmentDTO.getVetId());
-        Vet vet = optionalVet.get();
-        String htmlMsg =
-                "<html>" +
-                        "<head>" +
-                        "<style>" +
-                        "table {" +
-                        "  border-collapse: collapse;" +
-                        "  width: 100%;" +
-                        "}" +
-                        "th, td {" +
-                        "  text-align: left;" +
-                        "  padding: 8px;" +
-                        "}" +
-                        "th {" +
-                        "  background-color: #dddddd;" +
-                        "  color: #333333;" +
-                        "}" +
-                        "</style>" +
-                        "</head>" +
-                        "<body>" +
-                        "<h1 style='color: #007bff;'>Confirmación de reserva</h1>" +
-                        "<p>Estimado/a " + customer.getName() + ",</p>" +
-                        "<p>Please, review the details of your reservation in the following table:</p>" +
-                        "<table>" +
-                        "<tr>" +
-                        "<th>Customer</th>" +
-                        "<th>appointmentReason</th>" +
-                        "<th>appointmentNotes</th>" +
-                        "<th>Vet</th>" +
-                        "<th>Pet</th>" +
-                        "</tr>" +
-                        "<tr>" +
-                        "<td>" + customer.getName() + "</td>" +
-                        "<td>" + appointmentDTO.getAppointmentReason() + "</td>" +
-                        "<td>" + vet.getName() + "</td>" +
-                        "<td>" + customer.getPets().toString() + "</td>" +
-                        "<td>" + formattedDateTime + "</td>" +
-                        "</tr>" +
-                        "</table>" +
-                        "<p>Hope to see you soon!.</p>" +
-                        "<p>Sincirely,</p>" +
-                        "<p>The vet</p>" +
-                        "</body>" +
-                        "</html>";
-
-        return htmlMsg;
-    }
-
-    */
 
 
 

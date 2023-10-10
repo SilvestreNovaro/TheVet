@@ -3,6 +3,7 @@ package com.example.veterinaria.service;
 import com.example.veterinaria.DTO.MedicalRecordDTO;
 import com.example.veterinaria.DTO.VaccineDTO;
 import com.example.veterinaria.convert.UtilityService;
+import com.example.veterinaria.entity.MedicalRecord;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Vaccine;
 import com.example.veterinaria.exception.NotFoundException;
@@ -136,8 +137,21 @@ public class PetService {
 
     public List<Vaccine> findVaccines(Long id){
         Pet pet = petRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_PET));
+        if(pet.getVaccines().isEmpty()){
+            throw new NotFoundException("No vaccines found");
+        }
         return pet.getVaccines();
     }
+
+
+    public List<MedicalRecord> findMedicalRecords(Long petId) {
+        Pet pet = petRepository.findById(petId).orElseThrow(() -> new NotFoundException(NOT_FOUND_PET));
+        if (pet.getMedicalRecords().isEmpty()) {
+            throw new NotFoundException("No medical records found");
+        }
+        return pet.getMedicalRecords();
+    }
+
 
 
 }

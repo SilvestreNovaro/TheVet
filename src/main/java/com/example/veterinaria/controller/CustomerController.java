@@ -61,7 +61,11 @@ public class CustomerController {
         return customerService.listCustomersWithSeniorPets();
     }
 
-
+    @GetMapping("/petsMedicalRecords")
+    public ResponseEntity<String> sendEmailsToCustomers() throws MessagingException {
+        customerService.checkPetsMedicalRecords();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Emails sent");
+    }
 
     @PostMapping("/addCustomer")
     public ResponseEntity<String> addCustomer(@Validated @RequestBody CustomerDTO customerDTO) throws MessagingException {
