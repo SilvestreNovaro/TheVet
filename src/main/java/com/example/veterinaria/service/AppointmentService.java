@@ -233,7 +233,6 @@ public class AppointmentService {
                 }
             }
         }
-
         return petsText.toString();
     }
 

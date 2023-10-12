@@ -13,13 +13,13 @@ import java.util.Map;
 
 public class TokenUtils {
 
-    private final static String ACCES_TOKEN_SECRET = "$2a$10$QNHdstpsaYlBxSWXCfVCM.IUM2Kwe.hHwUfoscCOs7MdW0lHPtNUq";
-    private final static Long ACCESS_TOKEN_VALIDITY_SECONDS = 2_592_000L;
+    private static final String ACCES_TOKEN_SECRET = "$2a$10$QNHdstpsaYlBxSWXCfVCM.IUM2Kwe.hHwUfoscCOs7MdW0lHPtNUq";
+    private static final Long ACCESS_TOKEN_VALIDITY_SECONDS = 2_592_000L;
 
 
     public static String createToken(String name, String email) {
-        long expiratonTime = ACCESS_TOKEN_VALIDITY_SECONDS * 1_000;
-        Date expirationDate = new Date(System.currentTimeMillis() + expiratonTime);
+        long expirationTime = ACCESS_TOKEN_VALIDITY_SECONDS * 1_000;
+        Date expirationDate = new Date(System.currentTimeMillis() + expirationTime);
 
         Map<String, Object> extra = new HashMap<>();
         extra.put("name", name);

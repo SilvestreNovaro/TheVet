@@ -23,6 +23,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @AllArgsConstructor
@@ -92,18 +93,21 @@ public class CustomerService {
         javaMailSender.send(mimeMessage);
     }
 
-    public void sendEmailToAllCustomers(Customer customer) throws MessagingException {
+    public void sendEmailToAllCustomers(Customer customer, String petName, LocalDateTime date) throws MessagingException {
             customer.getEmail();
             String recipient = customer.getEmail();
             String subject = "Hora de llevar a tu mascota!";
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            String formattedDate = date.format(formatter);
+
             Context context = new Context();
             context.setVariable("name", customer.getName());
-            //context.setVariable("");
-
+            context.setVariable("petName", petName);
+            context.setVariable("recordDate", formattedDate);
 
             // Procesar la plantilla Thymeleaf con el Context
-            String content = templateEngine.process("email-template", context);
+            String content = templateEngine.process("chek-pet-notification-template", context);
 
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -140,7 +144,9 @@ public class CustomerService {
                         // La mascota tiene un registro médico hace 6 meses o más
                         // Realiza la acción que necesites con esta información
                         // Por ejemplo, notificar al cliente o tomar alguna otra acción
-                        sendEmailToAllCustomers(customer);
+                        String petname = pet.getPetName();
+                        LocalDateTime date = lastMedicalRecord.getRecordDate();
+                        sendEmailToAllCustomers(customer, petname, date);
                     }
                 }
             }
