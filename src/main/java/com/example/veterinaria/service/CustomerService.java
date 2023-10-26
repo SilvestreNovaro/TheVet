@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -93,8 +94,8 @@ public class CustomerService {
         javaMailSender.send(mimeMessage);
     }
 
-    public void sendEmailToAllCustomers(Customer customer, String petName, LocalDateTime date) throws MessagingException {
-            customer.getEmail();
+    public void sendEmailWhenLastMedicalRecordSixMonths(Customer customer, String petName, LocalDateTime date) throws MessagingException {
+
             String recipient = customer.getEmail();
             String subject = "Hora de llevar a tu mascota!";
 
@@ -125,6 +126,9 @@ public class CustomerService {
 
     public void checkPetsMedicalRecords() throws MessagingException {
         List<Customer> customerList = customerRepository.findAll();
+        // Cargar los IDs de mascotas enviados desde un archivo de registro
+        Set<String> idsEnviados = cargarIDsEnviadosDesdeArchivo("registro.txt");
+
         for (Customer customer : customerList) {
             List<Pet> pets = customer.getPets();
 
@@ -142,11 +146,25 @@ public class CustomerService {
                     // Verifica si el último registro médico fue hace 6 meses o más
                     if (isOlderThanSixMonths(lastMedicalRecord.getRecordDate())) {
                         // La mascota tiene un registro médico hace 6 meses o más
+                        Long petId = pet.getId();
+
                         // Realiza la acción que necesites con esta información
                         // Por ejemplo, notificar al cliente o tomar alguna otra acción
                         String petname = pet.getPetName();
                         LocalDateTime date = lastMedicalRecord.getRecordDate();
-                        sendEmailToAllCustomers(customer, petname, date);
+                        if (idsEnviados.contains(petId.toString())) {
+                            System.out.println("Correo electrónico ya enviado a la mascota con ID " + petId);
+                        } else {
+                            System.out.println("Enviar correo electrónico a la mascota con ID " + petId);
+                            // Aquí agregarías el código para enviar el correo
+                            sendEmailWhenLastMedicalRecordSixMonths(customer, petname, date);
+                            // Agregar el ID de la mascota al conjunto de IDs enviados
+                            idsEnviados.add(petId.toString());
+
+                            // Guardar los IDs enviados en el archivo de registro
+                            guardarIDsEnviadosEnArchivo(idsEnviados, "registro.txt");
+                        }
+
                     }
                 }
             }
@@ -162,6 +180,36 @@ public class CustomerService {
 
         // Compara la fecha y hora del registro médico con la fecha y hora hace 6 meses
         return recordDate.isBefore(sixMonthsAgoDateTime);
+    }
+
+
+
+    // Este método carga los IDs de mascotas enviados desde un archivo de registro
+    private Set<String> cargarIDsEnviadosDesdeArchivo(String archivo) {
+        Set<String> idsEnviados = new HashSet<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                idsEnviados.add(linea);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return idsEnviados;
+    }
+
+    // Este método guarda los IDs de mascotas enviados en un archivo de registro
+    private void guardarIDsEnviadosEnArchivo(Set<String> idsEnviados, String archivo) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
+            for (String id : idsEnviados) {
+                writer.write(id);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
