@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -62,7 +63,7 @@ public class CustomerController {
     }
 
     @GetMapping("/petsMedicalRecords")
-    public ResponseEntity<String> sendEmailsToCustomers() throws MessagingException {
+    public ResponseEntity<String> sendEmailsToCustomers() throws MessagingException{
         customerService.checkPetsMedicalRecords();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Emails sent");
     }

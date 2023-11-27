@@ -3,14 +3,17 @@ package com.example.veterinaria.service;
 import com.example.veterinaria.DTO.CustomerDTO;
 import com.example.veterinaria.convert.UtilityService;
 import com.example.veterinaria.entity.*;
+import com.example.veterinaria.exception.ApiExceptionHandler;
 import com.example.veterinaria.exception.BadRequestException;
 import com.example.veterinaria.exception.NotFoundException;
 import com.example.veterinaria.repository.CustomerRepository;
 import com.example.veterinaria.repository.PetRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.hibernate.tool.schema.spi.ExceptionHandler;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import lombok.AllArgsConstructor;
 
@@ -47,6 +50,8 @@ public class CustomerService {
     private final SpringTemplateEngine templateEngine;
 
     private JavaMailSender javaMailSender;
+
+    private ApiExceptionHandler apiExceptionHandler;
 
     private static final String sender = "noreply@vethome.com";
 
@@ -124,7 +129,8 @@ public class CustomerService {
     }
 
 
-    public void checkPetsMedicalRecords() throws MessagingException {
+    @Transactional
+    public void checkPetsMedicalRecords() throws MessagingException{
         List<Customer> customerList = customerRepository.findAll();
         // Cargar los IDs de mascotas enviados desde un archivo de registro
         Set<String> idsEnviados = cargarIDsEnviadosDesdeArchivo("registro.txt");
@@ -171,7 +177,7 @@ public class CustomerService {
         }
     }
 
-    private boolean isOlderThanSixMonths(LocalDateTime recordDate) {
+    public boolean isOlderThanSixMonths(LocalDateTime recordDate) {
         // Obtén la fecha y hora actual
         LocalDateTime currentDateTime = LocalDateTime.now();
 
@@ -185,7 +191,7 @@ public class CustomerService {
 
 
     // Este método carga los IDs de mascotas enviados desde un archivo de registro
-    private Set<String> cargarIDsEnviadosDesdeArchivo(String archivo) {
+    public Set<String> cargarIDsEnviadosDesdeArchivo(String archivo){
         Set<String> idsEnviados = new HashSet<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
@@ -201,7 +207,7 @@ public class CustomerService {
     }
 
     // Este método guarda los IDs de mascotas enviados en un archivo de registro
-    private void guardarIDsEnviadosEnArchivo(Set<String> idsEnviados, String archivo) {
+   public void guardarIDsEnviadosEnArchivo(Set<String> idsEnviados, String archivo) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
             for (String id : idsEnviados) {
                 writer.write(id);
@@ -211,6 +217,9 @@ public class CustomerService {
             e.printStackTrace();
         }
     }
+
+
+
 
 
 
@@ -244,9 +253,7 @@ public class CustomerService {
     }
 
 
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
-    }
+    public List<Customer> getAllCustomers(){return customerRepository.findAll();}
 
     public Customer getCustomerById(Long id) {
         return customerRepository.findById(id)

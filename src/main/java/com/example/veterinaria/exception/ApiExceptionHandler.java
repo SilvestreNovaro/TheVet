@@ -2,7 +2,6 @@ package com.example.veterinaria.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 
@@ -119,6 +120,14 @@ public class ApiExceptionHandler {
         return rootCause;
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(IOException.class)
+    @ResponseBody
+    public ErrorMessage handleIOException(HttpServletRequest request, IOException exception) {
+        Throwable rootCause = getRootCause(exception);
+        String errorMessage = "Error de Entrada/Salida: " + rootCause.getMessage();
+        return new ErrorMessage(exception, request.getRequestURI(), errorMessage);
+    }
 
 
 
