@@ -2,6 +2,7 @@ package com.example.veterinaria.controller;
 
 
 import com.example.veterinaria.DTO.CustomerDTO;
+import com.example.veterinaria.DTO.CustomerWithNeuteredPetDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.service.CustomerService;
@@ -45,10 +46,14 @@ public class CustomerController {
         return customerService.countCustomers();
     }
 
-
     @GetMapping("/{petSpecies}/count")
     public Long countCustomersByPetSpecies(@PathVariable("petSpecies") String petSpecies) {
         return customerService.countCustomersByPetSpecies(petSpecies);
+    }
+
+    @GetMapping("/customersWithNeuteredPets")
+    public List<CustomerWithNeuteredPetDTO> findAllNeuteredPetsFromCustomer(){
+        return customerService.neuteredPets();
     }
 
     @GetMapping("/customersWithSpecie/{petSpecies}")

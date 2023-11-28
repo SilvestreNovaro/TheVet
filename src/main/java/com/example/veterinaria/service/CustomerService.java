@@ -1,6 +1,7 @@
 package com.example.veterinaria.service;
 
 import com.example.veterinaria.DTO.CustomerDTO;
+import com.example.veterinaria.DTO.CustomerWithNeuteredPetDTO;
 import com.example.veterinaria.convert.UtilityService;
 import com.example.veterinaria.entity.*;
 import com.example.veterinaria.exception.ApiExceptionHandler;
@@ -69,14 +70,18 @@ public class CustomerService {
         customerRepository.findByEmail(customerDTO.getEmail()).ifPresent( c -> {
             throw new BadRequestException("Email already in use");
         });
+        customerRepository.findByContactNumber(customerDTO.getContactNumber()).ifPresent( customer -> {
+            throw new BadRequestException("Phone number already in use");
+        });
         Customer customer = utilityService.convertCustomerDTOtoCustomerCreate(customerDTO);
         String encodedPassword = this.passwordEncoder.encode(customerDTO.getPassword());
         customer.setPassword(encodedPassword);
-        Role role = roleService.findById(3L).orElseThrow(() -> new NotFoundException(NOT_FOUND_ROLE));
+        Role role = roleService.findById(1L).orElseThrow(() -> new NotFoundException(NOT_FOUND_ROLE));
         customer.setRole(role);
         sendRegistrationEmail(customer);
         customerRepository.save(customer);
     }
+
     public void sendRegistrationEmail(Customer customer) throws MessagingException {
         String recipient = customer.getEmail();
         String subject = "Registry exitoso en VETHOME";
@@ -396,6 +401,11 @@ public class CustomerService {
             }else {
                 throw new NotFoundException(NOT_FOUND_CUSTOMER);
             }
+        }
+
+        public List<CustomerWithNeuteredPetDTO> neuteredPets(){
+            return customerRepository.findAllNeuteredAnimals();
+
         }
 
     }

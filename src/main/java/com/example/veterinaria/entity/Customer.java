@@ -2,12 +2,15 @@ package com.example.veterinaria.entity;
 
 
 import com.example.veterinaria.validationgroups.CreateValidationGroup;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +45,13 @@ public class Customer {
     @NotBlank(message = "Contactnumber cant be null")
     @Min(1)
     private String contactNumber;
+    @JsonIgnore
     @Column
     @NotBlank(message = "Password cant be null")
     private String password;
     @Column
+    @NotNull
+    private LocalDateTime created_at = LocalDateTime.now();;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
@@ -55,5 +61,6 @@ public class Customer {
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "role_id")
     private Role role;
+
 
 }

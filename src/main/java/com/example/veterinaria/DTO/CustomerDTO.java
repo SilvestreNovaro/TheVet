@@ -5,11 +5,13 @@ import com.example.veterinaria.entity.Pet;
 import com.example.veterinaria.entity.Role;
 import com.example.veterinaria.validationgroups.CreateValidationGroup;
 import com.example.veterinaria.validationgroups.UpdateValidationGroup;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +37,21 @@ public class CustomerDTO {
     @NotBlank(message = "Contactnumber cant be null")
     @Min(1)
     private String contactNumber;
+    @JsonIgnore
     @Column
     @NotBlank(message = "Password cant be null")
     private String password;
-
+    @Column
+    @NotNull
+    private LocalDateTime created_at;
+    @Column
     private Long roleId;
+    @Column
     @NotEmpty(message = "Pets cant be null")
     private List<Pet> pets = new ArrayList<>();
+
+    public CustomerDTO(){
+        this.created_at = LocalDateTime.now();
+    }
 
 }

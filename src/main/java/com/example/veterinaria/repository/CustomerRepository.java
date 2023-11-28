@@ -1,18 +1,12 @@
 package com.example.veterinaria.repository;
 
+import com.example.veterinaria.DTO.CustomerWithNeuteredPetDTO;
 import com.example.veterinaria.entity.Customer;
 import com.example.veterinaria.entity.Pet;
-import com.example.veterinaria.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +45,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Optional<Customer> findByEmail(String email);
 
+    Optional<Customer> findByContactNumber(String contactNumber);
+
     List<Customer> findCustomerByRoleId(Long idRol);
+
+
+    @Query("SELECT new com.example.veterinaria.DTO.CustomerWithNeuteredPetDTO(c.id, c.name, c.address, c.email, c.contactNumber, p.id, p.petName) FROM Customer c JOIN c.pets p JOIN p.medicalRecords mr WHERE mr.isNeutered = true")
+    List<CustomerWithNeuteredPetDTO> findAllNeuteredAnimals();
+
 
 
 
